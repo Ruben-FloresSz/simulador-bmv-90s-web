@@ -1,0 +1,2970 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0e1114">
+<title>Panel de control · Simulador BVA 90s</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1114;
+  --panel: #151a1f;
+  --panel-2: #1b2128;
+  --hundido: #0b0e11;
+  --linea: #28313a;
+  --linea-2: #3a4550;
+  --texto: #e9edf0;
+  --texto-2: #b3bdc6;
+  --texto-3: #8b97a2;
+  --ambar: #E9550E;
+  --ambar-2: #ff7a3d;
+  --ambar-tenue: rgba(233, 85, 14, .12);
+  --verde: #39d98a;
+  --verde-oscuro: #03200f;
+  --verde-tenue: rgba(57, 217, 138, .12);
+  --rojo: #ff5a5f;
+  --rojo-fuerte: #c8232c;
+  --rojo-tenue: rgba(255, 90, 95, .13);
+  --rojo-raya-1: #3a0f12;
+  --rojo-raya-2: #260a0c;
+  --azul: #6cb6ff;
+  --azul-tenue: rgba(108, 182, 255, .12);
+  --naranja: #ff9b45;
+  --foco: #ffd166;
+  --sombra: 0 10px 30px rgba(0, 0, 0, .45);
+  --radio: 10px;
+  --fuente-ui: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font: 15px/1.45 var(--fuente-ui);
+  overflow-x: clip;
+}
+[hidden] { display: none !important; }
+.mono { font-family: var(--fuente-mono); font-variant-numeric: tabular-nums; }
+h1, h2, h3 { margin: 0; line-height: 1.2; }
+p { margin: 0; }
+a { color: var(--ambar-2); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+
+.sube { color: var(--verde); }
+.baja { color: var(--rojo); }
+.igual { color: var(--texto-2); }
+.txt-verde { color: var(--verde); }
+.txt-rojo { color: var(--rojo); }
+.txt-ambar { color: var(--ambar); }
+.txt-dim { color: var(--texto-3); }
+
+/* ---------- Botones ---------- */
+.btn {
+  appearance: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 16px;
+  border-radius: 8px; border: 1px solid var(--linea-2);
+  background: var(--panel-2); color: var(--texto);
+  font: 600 14px/1.2 var(--fuente-ui);
+  text-align: center; cursor: pointer;
+  touch-action: manipulation; user-select: none;
+  transition: background-color .15s, border-color .15s, transform .05s;
+}
+.btn:hover:not(:disabled) { border-color: var(--texto-3); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .42; cursor: not-allowed; }
+.btn[aria-busy="true"] { cursor: progress; opacity: .75; }
+.btn-chico { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+.btn-grande { min-height: 52px; font-size: 16px; padding: 12px 20px; }
+.btn-ancho { width: 100%; }
+.btn-primario { background: var(--ambar); border-color: var(--ambar); color: #1d0c00; }
+.btn-primario:hover:not(:disabled) { background: var(--ambar-2); border-color: var(--ambar-2); }
+.btn-verde { background: var(--verde); border-color: var(--verde); color: var(--verde-oscuro); }
+.btn-peligro { background: var(--rojo-fuerte); border-color: var(--rojo); color: #fff; }
+.btn-contorno-rojo { background: transparent; border-color: var(--rojo); color: var(--rojo); }
+.btn-panico {
+  background: repeating-linear-gradient(-45deg, var(--rojo-raya-1) 0 12px, var(--rojo-raya-2) 12px 24px);
+  border: 2px solid var(--rojo); color: #ffe3e3;
+  text-transform: uppercase; letter-spacing: .05em; font-weight: 700;
+}
+.btn-panico:hover:not(:disabled) { border-color: #ff8a8e; }
+.btn.armado {
+  background: var(--rojo-fuerte); border-color: #fff; color: #fff;
+  animation: latido .7s ease-in-out infinite;
+}
+.btn-verde.armado { background: #0f6b3c; border-color: #fff; color: #fff; }
+.btn-primario.armado { background: #8a5f00; border-color: #fff; color: #fff; }
+@keyframes latido { 50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, .25); } }
+@media (prefers-reduced-motion: reduce) {
+  .btn.armado, .kpi-alarma, .badge-parpadeo { animation: none !important; }
+}
+
+.chip {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 999px;
+  font: 600 11px/1.5 var(--fuente-mono); letter-spacing: .04em;
+  border: 1px solid currentColor; white-space: nowrap;
+}
+.chip-rojo { color: var(--rojo); background: var(--rojo-tenue); }
+.chip-verde { color: var(--verde); background: var(--verde-tenue); }
+.chip-ambar { color: var(--ambar); background: var(--ambar-tenue); }
+.chip-azul { color: var(--azul); background: var(--azul-tenue); }
+.chip-naranja { color: var(--naranja); background: rgba(255, 155, 69, .12); }
+.chip-dim { color: var(--texto-2); background: rgba(255, 255, 255, .04); }
+.chip-fuera { text-decoration: line-through; opacity: .75; }
+
+.info-sim {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 26px; min-width: 26px; padding: 0 8px;
+  border-radius: 13px; border: 1px solid var(--ambar); background: transparent; color: var(--ambar);
+  font: italic 700 14px/1 Georgia, serif; cursor: pointer; white-space: nowrap;
+}
+.info-sim-t { display: none; font: 600 11px/1 var(--fuente-mono); letter-spacing: .08em; text-transform: uppercase; font-style: normal; }
+.info-sim[aria-expanded="true"] .info-sim-t { display: inline; }
+
+/* ---------- Pantalla de PIN ---------- */
+.pantalla-pin {
+  min-height: 100vh; min-height: 100dvh;
+  display: grid; place-items: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(ellipse at top, rgba(233, 85, 14, .08), transparent 60%),
+    var(--bg);
+}
+.pin-caja {
+  width: 100%; max-width: 400px;
+  background: var(--panel); border: 1px solid var(--linea);
+  border-top: 3px solid var(--ambar);
+  border-radius: var(--radio); padding: 24px 20px;
+  display: grid; gap: 14px;
+  box-shadow: var(--sombra);
+}
+.marca-led {
+  font: 700 22px/1 var(--fuente-mono); color: var(--ambar); letter-spacing: .08em;
+}
+.pin-caja h1 { font-size: 22px; }
+.pin-caja .sub { color: var(--texto-2); font-size: 14px; }
+.campo { display: grid; gap: 6px; min-width: 0; }
+.campo > span, .campo > label { font-size: 13px; color: var(--texto-2); font-weight: 500; }
+.entrada {
+  width: 100%; min-width: 0; min-height: 44px;
+  padding: 10px 12px; border-radius: 8px;
+  background: var(--hundido); border: 1px solid var(--linea-2); color: var(--texto);
+}
+.entrada:focus { border-color: var(--ambar); outline: none; box-shadow: 0 0 0 3px var(--ambar-tenue); }
+.entrada-pin { font: 600 22px/1 var(--fuente-mono); letter-spacing: .25em; text-align: center; }
+.check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--texto-2); cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--ambar); }
+.msg-error {
+  color: var(--rojo); background: var(--rojo-tenue); border: 1px solid rgba(255, 90, 95, .4);
+  border-radius: 8px; padding: 10px 12px; font-size: 14px;
+}
+.msg-aviso {
+  color: var(--ambar-2); background: var(--ambar-tenue); border: 1px solid rgba(233, 85, 14, .35);
+  border-radius: 8px; padding: 10px 12px; font-size: 14px;
+}
+.pin-nota { color: var(--texto-3); font-size: 12px; text-align: center; }
+
+/* ---------- Barra superior ---------- */
+.barra {
+  position: sticky; top: 0; z-index: 30;
+  background: rgba(14, 17, 20, .96);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--linea);
+  box-shadow: inset 0 3px 0 var(--ambar);
+  padding: 10px 16px 8px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+.barra-fila {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap;
+}
+.marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.marca .marca-led { font-size: 17px; }
+.marca-sub { color: var(--texto-2); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.barra-der { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.reloj { font: 600 14px/1 var(--fuente-mono); color: var(--texto); }
+.reloj small { color: var(--texto-3); font-size: 11px; margin-left: 2px; }
+.tira {
+  max-width: 1280px; margin: 8px auto 0;
+  display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center;
+  font: 500 13px/1.3 var(--fuente-mono); color: var(--texto-2);
+}
+.tira b { color: var(--texto); font-weight: 600; }
+.tira .t-item { white-space: nowrap; }
+.conexion {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 600 11px/1 var(--fuente-mono); letter-spacing: .06em; white-space: nowrap;
+}
+.conexion::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.con-verde { color: var(--verde); }
+.con-ambar { color: var(--ambar); }
+.con-rojo { color: var(--rojo); }
+
+.indice-nav {
+  max-width: 1280px; margin: 0 auto; padding: 12px 16px 0;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.indice-nav a {
+  font: 500 12px/1 var(--fuente-mono); color: var(--texto-2); text-decoration: none;
+  border: 1px solid var(--linea); border-radius: 999px; padding: 7px 10px;
+  background: var(--panel);
+}
+.indice-nav a:hover { color: var(--ambar); border-color: var(--ambar); }
+
+/* ---------- Estructura ---------- */
+main {
+  max-width: 1280px; margin: 0 auto;
+  padding: 12px 16px 32px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+.columnas { display: grid; gap: 16px; margin-top: 16px; }
+.col { display: grid; gap: 16px; align-content: start; min-width: 0; }
+@media (min-width: 1024px) {
+  .columnas { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
+}
+.tarjeta {
+  background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: 16px; min-width: 0; scroll-margin-top: 120px;
+}
+.tarjeta-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.tarjeta-titulo {
+  font: 700 13px/1.2 var(--fuente-mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ambar); display: flex; align-items: center; gap: 8px;
+}
+.tarjeta-titulo::before { content: ''; width: 8px; height: 8px; background: var(--ambar); }
+.tarjeta-desc { color: var(--texto-2); font-size: 13px; }
+.tarjeta-destacada { border-color: rgba(233, 85, 14, .45); background: linear-gradient(180deg, rgba(233, 85, 14, .06), transparent 120px), var(--panel); }
+.tarjeta-peligro { border-color: rgba(255, 90, 95, .45); }
+.tarjeta-peligro .tarjeta-titulo { color: var(--rojo); }
+.tarjeta-peligro .tarjeta-titulo::before { background: var(--rojo); }
+.sub-titulo { font: 600 12px/1.2 var(--fuente-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-3); margin: 16px 0 8px; }
+
+/* ---------- Estado en vivo ---------- */
+.kpis { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 760px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.kpi {
+  background: var(--panel-2); border: 1px solid var(--linea); border-radius: 8px;
+  padding: 12px; min-width: 0; display: grid; gap: 4px; align-content: start;
+}
+.kpi-lbl { font: 600 11px/1.2 var(--fuente-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-3); }
+.kpi-valor { font: 700 clamp(18px, 5.4vw, 30px)/1.1 var(--fuente-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kpi-valor.led { color: var(--ambar); }
+.kpi-valor.chico { font-size: clamp(16px, 4.2vw, 22px); }
+.kpi-sub { font-size: 13px; color: var(--texto-2); overflow-wrap: anywhere; }
+.kpi-cuenta { font: 700 clamp(18px, 5vw, 26px)/1.1 var(--fuente-mono); }
+.kpi-alarma { border-color: var(--rojo); background: var(--rojo-tenue); animation: alarma 1s steps(2, start) infinite; }
+@keyframes alarma { 50% { border-color: transparent; } }
+
+.emisoras { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
+@media (min-width: 900px) { .emisoras { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.emisora {
+  background: var(--panel-2); border: 1px solid var(--linea); border-radius: 8px;
+  padding: 10px 12px; min-width: 0; display: grid; gap: 6px;
+}
+.emisora-susp { border-color: var(--rojo); box-shadow: inset 0 0 0 1px var(--rojo); }
+.emi-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.emi-ticker { font: 700 15px/1.1 var(--fuente-mono); color: var(--ambar); }
+.emi-serie { color: var(--texto-2); font-weight: 500; }
+.emi-var { font: 700 15px/1.1 var(--fuente-mono); }
+.emi-posturas { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.emi-posturas div { display: grid; gap: 2px; min-width: 0; }
+.emi-posturas .lbl { font: 500 10px/1 var(--fuente-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--texto-3); }
+.emi-posturas b { font: 700 clamp(15px, 4.4vw, 19px)/1.1 var(--fuente-mono); }
+.emi-pie { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--texto-3); }
+.emi-badge { font: 700 11px/1.3 var(--fuente-mono); letter-spacing: .04em; border-radius: 4px; padding: 4px 6px; text-align: center; }
+.badge-rojo { background: var(--rojo-fuerte); color: #fff; }
+.badge-dim { background: rgba(255, 255, 255, .04); color: var(--texto-3); }
+.badge-parpadeo { animation: alarma 1s steps(2, start) infinite; }
+
+/* Modo de mercado (línea del estado en vivo) */
+.estado-modo {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px;
+  margin-top: 12px; padding: 8px 12px;
+  background: var(--hundido); border: 1px solid var(--linea); border-radius: 8px; font-size: 14px;
+}
+.estado-modo b { font-weight: 700; }
+
+.eventos { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.evento {
+  display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 2px 10px;
+  padding: 7px 0; border-bottom: 1px dashed var(--linea);
+}
+.evento:last-child { border-bottom: 0; }
+.ev-hora { font-size: 12px; color: var(--texto-3); padding-top: 2px; }
+.ev-cuerpo { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; min-width: 0; }
+.ev-titulo { font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
+.ev-det { font-size: 12px; color: var(--texto-2); overflow-wrap: anywhere; }
+.vacio { color: var(--texto-3); font-size: 13px; padding: 8px 0; }
+@media (min-width: 1024px) {
+  /* dos columnas en orden vertical: los 6 más recientes a la izquierda */
+  .eventos { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(6, auto); grid-auto-flow: column; column-gap: 24px; }
+}
+
+/* ---------- Ronda ---------- */
+.fila { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.fila > .campo { flex: 1 1 140px; }
+.chips-min { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip-btn {
+  appearance: none; min-height: 34px; min-width: 44px; padding: 4px 10px;
+  border-radius: 999px; border: 1px solid var(--linea-2); background: var(--hundido);
+  color: var(--texto-2); font: 600 12px/1 var(--fuente-mono); cursor: pointer;
+}
+.chip-btn:hover { border-color: var(--ambar); color: var(--ambar); }
+.chip-btn[aria-pressed="true"] { border-color: var(--ambar); color: #1d0c00; background: var(--ambar); }
+.ronda-estado {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  background: var(--hundido); border: 1px solid var(--linea); border-radius: 8px;
+  padding: 10px 12px; margin-bottom: 12px;
+}
+.ronda-estado b { font: 700 16px/1.2 var(--fuente-mono); }
+.acciones { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top: 12px; }
+.pista { color: var(--texto-3); font-size: 12px; }
+.campeon {
+  margin-top: 12px; border: 1px solid var(--ambar); border-radius: 8px; padding: 12px;
+  background: var(--ambar-tenue); display: grid; gap: 4px;
+}
+.campeon-tit { font: 700 12px/1.2 var(--fuente-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ambar); }
+.campeon-nombre { font-size: 18px; font-weight: 700; overflow-wrap: anywhere; }
+.zona-peligro {
+  margin-top: 18px; padding: 14px; border-radius: 8px;
+  border: 1px dashed var(--rojo); background: var(--rojo-tenue);
+  display: grid; gap: 10px;
+}
+.zona-peligro h3 { font: 700 12px/1.2 var(--fuente-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--rojo); }
+.zona-peligro p { font-size: 13px; color: var(--texto-2); }
+
+/* ---------- Empresas en juego ---------- */
+.empresas { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); }
+.empresa {
+  display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; column-gap: 10px; row-gap: 2px; align-items: baseline;
+  padding: 10px 12px; min-width: 0; cursor: pointer;
+  background: var(--panel-2); border: 1px solid var(--linea); border-radius: 8px;
+  transition: border-color .15s, background-color .15s;
+}
+.empresa:hover { border-color: var(--texto-3); }
+.empresa.sel { border-color: rgba(233, 85, 14, .6); background: linear-gradient(180deg, var(--ambar-tenue), transparent 90%), var(--panel-2); }
+.empresa.bloq { cursor: not-allowed; }
+.empresa.bloq:hover { border-color: var(--linea); }
+.empresa.bloq.sel:hover { border-color: rgba(233, 85, 14, .6); }
+.empresa input { grid-column: 1; grid-row: 1; align-self: center; width: 18px; height: 18px; margin: 0; accent-color: var(--ambar); cursor: inherit; }
+.emp-ticker { grid-column: 2; grid-row: 1; font: 700 15px/1.2 var(--fuente-mono); color: var(--texto-2); min-width: 0; overflow-wrap: anywhere; }
+.empresa.sel .emp-ticker { color: var(--ambar); }
+.emp-precio { grid-column: 3; grid-row: 1; font: 600 14px/1.2 var(--fuente-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.emp-nombre { grid-column: 2; grid-row: 2; font-size: 13px; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.emp-cambio { grid-column: 3; grid-row: 2; justify-self: end; }
+.emp-perfil { grid-column: 2 / -1; grid-row: 3; font-size: 12px; color: var(--texto-3); overflow-wrap: anywhere; }
+.emp-msg { display: grid; gap: 8px; justify-items: start; }
+.emp-msg:empty { display: none; }
+#emp-bloqueo { margin-bottom: 10px; }
+
+/* ---------- Sliders ---------- */
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 32px; margin: 2px 0; background: transparent; cursor: pointer;
+  --p: 50%; --relleno: var(--ambar); --pista: var(--linea-2);
+}
+input[type="range"]:focus { outline: none; }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(to right, var(--relleno) var(--p), var(--pista) var(--p));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 24px; height: 24px; margin-top: -9px; border-radius: 50%;
+  background: var(--ambar-2); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--relleno);
+}
+input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--pista); }
+input[type="range"]::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--relleno); }
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--ambar-2); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--relleno);
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--foco); }
+input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--foco); }
+input[type="range"].rango-rojo { --relleno: var(--rojo); }
+input[type="range"].rango-rojo::-webkit-slider-thumb { background: #ffb3b5; }
+input[type="range"].rango-rojo::-moz-range-thumb { background: #ffb3b5; }
+
+.param { display: grid; gap: 2px; padding: 10px 0; border-bottom: 1px dashed var(--linea); min-width: 0; }
+.param:last-child { border-bottom: 0; }
+.param-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; }
+.param-cab label { font-size: 14px; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+.param-clave { display: block; font: 400 11px/1.3 var(--fuente-mono); color: var(--texto-3); }
+.param-valor { font: 700 16px/1.1 var(--fuente-mono); color: var(--ambar); white-space: nowrap; }
+.param-pie { display: flex; justify-content: space-between; align-items: center; gap: 8px; font: 400 11px/1.3 var(--fuente-mono); color: var(--texto-3); }
+.param-nota { text-align: center; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.param-nota.ok { color: var(--verde); }
+.param-nota.pendiente { color: var(--ambar); }
+.param-nota.error { color: var(--rojo); }
+.param-pista { font-size: 12px; color: var(--texto-2); }
+.param-pista:empty { display: none; }
+.param-grande { padding: 12px; border: 1px solid var(--linea); border-radius: 8px; background: var(--panel-2); }
+.param-grande + .param-grande { margin-top: 10px; }
+.param-grande .param-cab label { font-size: 16px; font-weight: 600; }
+.param-grande .param-valor { font-size: 22px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+
+/* Modo de mercado: control segmentado */
+.modo-ctl { border-color: rgba(233, 85, 14, .45); }
+.modo-tit { font-size: 16px; font-weight: 600; min-width: 0; }
+.modo-ctl .param-nota { text-align: right; }
+.segmento {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-top: 8px;
+  border: 1px solid var(--linea-2); border-radius: 10px; background: var(--hundido);
+}
+.segmento button {
+  appearance: none; min-height: 44px; padding: 8px 10px;
+  border: 1px solid transparent; border-radius: 7px; background: transparent;
+  color: var(--texto-2); font: 600 14px/1.2 var(--fuente-ui); cursor: pointer;
+  touch-action: manipulation; transition: background-color .15s, color .15s, border-color .15s;
+}
+.segmento button:hover:not(:disabled):not([aria-pressed="true"]) { color: var(--texto); border-color: var(--linea-2); }
+.segmento button[aria-pressed="true"] { background: var(--ambar); border-color: var(--ambar); color: #1d0c00; }
+.segmento button:disabled { cursor: progress; opacity: .6; }
+.modo-desc { font-size: 13px; color: var(--texto-2); margin-top: 8px; }
+
+.grupo { border: 1px solid var(--linea); border-radius: 8px; background: var(--panel-2); }
+.grupo + .grupo { margin-top: 8px; }
+.grupo > summary {
+  list-style: none; cursor: pointer; padding: 12px 14px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-weight: 600;
+}
+.grupo > summary::-webkit-details-marker { display: none; }
+.grupo > summary::before { content: '▸'; color: var(--ambar); margin-right: 4px; transition: transform .15s; display: inline-block; }
+.grupo[open] > summary::before { transform: rotate(90deg); }
+.grupo-nombre { flex: 1; min-width: 0; }
+.grupo-n { font: 500 11px/1 var(--fuente-mono); color: var(--texto-3); }
+.grupo-cuerpo { padding: 0 14px 6px; }
+.grupo-desc { font-size: 12px; color: var(--texto-3); padding-bottom: 4px; }
+
+/* ---------- Noticias y eventos ---------- */
+.rejilla { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.noticia {
+  background: var(--panel-2); border: 1px solid var(--linea); border-radius: 8px;
+  padding: 12px; display: grid; gap: 8px; align-content: start; min-width: 0;
+}
+.not-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.not-cab h3 { font-size: 16px; overflow-wrap: anywhere; }
+.not-desc { font-size: 13px; color: var(--texto-2); }
+.datos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; margin: 0; font-size: 13px; }
+.datos dt { color: var(--texto-3); }
+.datos dd { margin: 0; overflow-wrap: anywhere; }
+.datos .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.noticia .btn { margin-top: 4px; white-space: normal; }
+.evento-mkt { border-width: 1px; }
+.evento-crash { border-color: rgba(255, 90, 95, .35); }
+.evento-rally { border-color: rgba(57, 217, 138, .35); }
+.estim { font-size: 12px; color: var(--texto-2); overflow-wrap: anywhere; }
+.alerta-susp { font-size: 12px; color: var(--naranja); }
+
+.crash-caja { display: grid; gap: 10px; }
+.crash-valor { font: 700 clamp(30px, 9vw, 44px)/1 var(--fuente-mono); color: var(--rojo); }
+.crash-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.crash-escala { display: flex; justify-content: space-between; font: 400 11px/1 var(--fuente-mono); color: var(--texto-3); }
+.crash-valor.neutro { color: var(--ambar); }
+.dos-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dos-botones .btn { padding-left: 10px; padding-right: 10px; }
+#em-chips { margin-top: 0; }
+
+/* ---------- Registro ---------- */
+.registro { list-style: none; margin: 0; padding: 0; max-height: 340px; overflow-y: auto; overscroll-behavior: contain; }
+.registro li {
+  display: grid; grid-template-columns: 62px 18px minmax(0, 1fr); gap: 6px;
+  padding: 7px 0; border-bottom: 1px dashed var(--linea); font-size: 13px;
+}
+.reg-hora { color: var(--texto-3); font-size: 12px; padding-top: 1px; }
+.reg-ico { font-weight: 700; }
+.reg-ok .reg-ico { color: var(--verde); }
+.reg-error .reg-ico { color: var(--rojo); }
+.reg-error .reg-txt { color: #ffc7c9; }
+.reg-txt { overflow-wrap: anywhere; }
+
+/* ---------- Exportar ---------- */
+.enlaces { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.enlaces li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 8px 10px; border: 1px solid var(--linea); border-radius: 8px; background: var(--panel-2); }
+.enlaces a { font: 600 13px/1.3 var(--fuente-mono); overflow-wrap: anywhere; }
+.enlaces span { font-size: 12px; color: var(--texto-3); }
+
+/* ---------- Calibración ---------- */
+.plegable { border: 1px solid var(--linea); border-radius: var(--radio); background: var(--panel); scroll-margin-top: 120px; }
+.plegable > summary {
+  list-style: none; cursor: pointer; padding: 16px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.plegable > summary::-webkit-details-marker { display: none; }
+.plegable > summary .tarjeta-titulo::after { content: '▸'; margin-left: 4px; color: var(--texto-3); transition: transform .15s; display: inline-block; }
+.plegable[open] > summary .tarjeta-titulo::after { transform: rotate(90deg); }
+.plegable-cuerpo { padding: 0 16px 16px; display: grid; gap: 12px; }
+.cal-form { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.cal-form .campo-esc { grid-column: 1 / -1; }
+select.entrada { appearance: auto; }
+.cal-res { display: grid; gap: 10px; }
+.cal-bloque { background: var(--panel-2); border: 1px solid var(--linea); border-radius: 8px; padding: 10px 12px; }
+.cal-bloque h4 { margin: 0 0 6px; font: 700 12px/1.2 var(--fuente-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ambar); }
+.cal-lista { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 6px; font-size: 13px; }
+.cal-lista li { overflow-wrap: anywhere; }
+.cal-lista b { font-family: var(--fuente-mono); }
+.crudo summary { cursor: pointer; color: var(--texto-2); font-size: 13px; }
+.crudo pre {
+  margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--hundido); border: 1px solid var(--linea);
+  font: 12px/1.4 var(--fuente-mono); white-space: pre-wrap; word-break: break-all; max-height: 360px; overflow: auto;
+}
+
+/* ---------- Avisos flotantes y diálogo ---------- */
+.toasts {
+  position: fixed; z-index: 60;
+  right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom));
+  width: min(420px, calc(100vw - 32px));
+  display: grid; gap: 8px; pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: grid; grid-template-columns: 20px minmax(0, 1fr) auto auto; gap: 8px; align-items: center;
+  padding: 10px 10px 10px 12px; border-radius: 8px; box-shadow: var(--sombra);
+  background: #10251a; border: 1px solid var(--verde); color: #d8ffe9; font-size: 14px;
+  animation: entra .18s ease-out;
+}
+.toast-error { background: #2a1013; border-color: var(--rojo); color: #ffe0e1; }
+.toast-aviso { background: #2a1607; border-color: var(--ambar); color: #ffe2c7; }
+.toast-ico { font-weight: 700; text-align: center; }
+.toast-txt { overflow-wrap: anywhere; }
+.toast-accion { min-height: 32px; padding: 4px 10px; font-size: 13px; }
+.toast-x { appearance: none; border: 0; background: transparent; color: inherit; font-size: 20px; line-height: 1; cursor: pointer; min-width: 32px; min-height: 32px; }
+@keyframes entra { from { transform: translateY(8px); opacity: 0; } }
+
+dialog.dlg {
+  width: min(480px, calc(100vw - 32px)); padding: 0;
+  background: var(--panel); color: var(--texto);
+  border: 1px solid var(--rojo); border-radius: 12px;
+  box-shadow: var(--sombra);
+}
+dialog.dlg.suave { border-color: var(--ambar); }
+dialog.dlg::backdrop { background: rgba(0, 0, 0, .72); }
+.dlg-caja { padding: 20px; display: grid; gap: 14px; margin: 0; }
+.dlg-caja h2 { font-size: 19px; }
+#dlg-cuerpo { display: grid; gap: 8px; color: var(--texto-2); font-size: 14px; }
+.dlg-botones { display: flex; flex-direction: row-reverse; flex-wrap: wrap; gap: 10px; }
+.dlg-botones .btn { flex: 1 1 160px; }
+
+footer.pie {
+  max-width: 1280px; margin: 0 auto; padding: 0 16px 28px;
+  color: var(--texto-3); font: 12px/1.4 var(--fuente-mono); display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between;
+}
+</style>
+</head>
+<body>
+<noscript><p class="msg-error" style="margin:16px">Este panel necesita JavaScript.</p></noscript>
+
+<!-- =================== Pantalla de PIN =================== -->
+<div id="pantalla-pin" class="pantalla-pin">
+  <form id="form-pin" class="pin-caja" autocomplete="off" novalidate>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <span class="marca-led">BVA·SIM</span>
+      <button type="button" class="info-sim" aria-expanded="false" aria-label="Información sobre los datos">i<span class="info-sim-t">Datos simulados</span></button>
+    </div>
+    <div>
+      <h1>Panel de control</h1>
+      <p class="sub">Piso de Remates · Bolsa de Valores Anáhuac, años 90 (simulador)</p>
+    </div>
+    <p id="pin-fatal" class="msg-error" hidden></p>
+    <label class="campo" for="pin">
+      <span>PIN de administración</span>
+      <input id="pin" class="entrada entrada-pin" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" required>
+    </label>
+    <label class="check"><input id="pin-ver" type="checkbox"> Mostrar PIN</label>
+    <button id="btn-entrar" class="btn btn-primario btn-grande btn-ancho" type="submit">Entrar</button>
+    <p id="pin-msg" class="msg-error" role="alert" hidden></p>
+    <p class="pin-nota">5 intentos fallidos bloquean el panel durante 60 segundos.</p>
+  </form>
+</div>
+
+<!-- =================== Panel =================== -->
+<div id="panel" hidden>
+  <header class="barra">
+    <div class="barra-fila">
+      <div class="marca"><span class="marca-led">BVA·SIM</span><span class="marca-sub">Panel de control</span></div>
+      <button type="button" class="info-sim" aria-expanded="false" aria-label="Información sobre los datos">i<span class="info-sim-t">Datos simulados</span></button>
+      <div class="barra-der">
+        <span class="reloj" title="Hora de la Ciudad de México"><span id="reloj">--:--:--</span><small>CDMX</small></span>
+        <button id="btn-salir" class="btn btn-chico" type="button">Salir</button>
+      </div>
+    </div>
+    <div class="tira" aria-label="Resumen del mercado">
+      <span id="conexion" class="conexion con-ambar">CONECTANDO</span>
+      <span class="t-item">Índice <b id="t-ipc">—</b> <span id="t-ipc-var"></span></span>
+      <span class="t-item" id="t-mercado">—</span>
+      <span class="t-item" id="t-modo" hidden></span>
+      <span class="t-item" id="t-ronda">—</span>
+      <span class="t-item"><b id="t-jug">—</b> jugadores</span>
+    </div>
+  </header>
+
+  <nav class="indice-nav" aria-label="Secciones">
+    <a href="#sec-estado">Estado</a>
+    <a href="#sec-ronda">Ronda</a>
+    <a href="#sec-empresas">Empresas</a>
+    <a href="#sec-rapidos">Rápidos</a>
+    <a href="#sec-noticias">Noticias</a>
+    <a href="#sec-mercado">Eventos</a>
+    <a href="#sec-crash">Crash / rally</a>
+    <a href="#sec-registro">Registro</a>
+    <a href="#sec-exportar">CSV</a>
+    <a href="#sec-parametros">Parámetros</a>
+    <a href="#sec-calibracion">Calibración</a>
+    <a href="#sec-pin">PIN</a>
+  </nav>
+
+  <main>
+    <!-- 1. Estado en vivo -->
+    <section id="sec-estado" class="tarjeta" aria-labelledby="tit-estado">
+      <div class="tarjeta-cab">
+        <h2 id="tit-estado" class="tarjeta-titulo">Estado en vivo</h2>
+        <span class="tarjeta-desc mono" id="estado-tick"></span>
+      </div>
+      <div class="kpis">
+        <div class="kpi">
+          <span class="kpi-lbl">Índice BVA</span>
+          <span id="ipc-valor" class="kpi-valor led">—</span>
+          <span id="ipc-var" class="kpi-sub mono">—</span>
+        </div>
+        <div class="kpi" id="kpi-mercado">
+          <span class="kpi-lbl">Mercado</span>
+          <span id="mercado-estado" class="kpi-valor chico">—</span>
+          <span id="mercado-cuenta" class="kpi-sub mono"></span>
+        </div>
+        <div class="kpi" id="kpi-ronda">
+          <span class="kpi-lbl">Ronda</span>
+          <span id="ronda-estado-kpi" class="kpi-valor chico">—</span>
+          <span id="ronda-cuenta-kpi" class="kpi-cuenta"></span>
+          <span id="ronda-sub-kpi" class="kpi-sub"></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-lbl">Jugadores</span>
+          <span class="kpi-valor"><span id="jug-total">—</span><span id="jug-cupo" class="txt-dim" style="font-size:.55em"></span></span>
+          <span id="jug-lider" class="kpi-sub"></span>
+          <span id="jug-casa" class="kpi-sub"></span>
+        </div>
+      </div>
+      <div id="estado-modo" class="estado-modo" hidden></div>
+      <div id="emisoras" class="emisoras" aria-label="Emisoras"></div>
+      <h3 class="sub-titulo">Últimos eventos</h3>
+      <ul id="eventos" class="eventos" aria-live="off"><li class="vacio">Cargando…</li></ul>
+    </section>
+
+    <div class="columnas">
+      <div class="col">
+        <!-- 2. Ronda -->
+        <section id="sec-ronda" class="tarjeta" aria-labelledby="tit-ronda">
+          <div class="tarjeta-cab"><h2 id="tit-ronda" class="tarjeta-titulo">Ronda</h2></div>
+          <div class="ronda-estado" id="ronda-estado"><span class="txt-dim">Cargando estado…</span></div>
+          <div class="fila">
+            <label class="campo" for="ronda-min">
+              <span>Duración de la nueva ronda (minutos)</span>
+              <input id="ronda-min" class="entrada mono" type="number" inputmode="numeric" min="1" max="120" step="1" value="10">
+            </label>
+          </div>
+          <div class="chips-min" id="chips-min" aria-label="Duraciones rápidas">
+            <button type="button" class="chip-btn" data-min="5">5</button>
+            <button type="button" class="chip-btn" data-min="10">10</button>
+            <button type="button" class="chip-btn" data-min="15">15</button>
+            <button type="button" class="chip-btn" data-min="20">20</button>
+            <button type="button" class="chip-btn" data-min="30">30</button>
+          </div>
+          <div class="acciones">
+            <button id="btn-iniciar" class="btn btn-primario btn-grande" type="button">Iniciar ronda</button>
+            <button id="btn-cerrar" class="btn btn-contorno-rojo btn-grande" type="button">Cerrar ronda</button>
+          </div>
+          <p class="pista" id="ronda-pista" style="margin-top:8px"></p>
+          <div id="campeon" class="campeon" hidden></div>
+
+          <div class="zona-peligro">
+            <h3>Zona peligrosa</h3>
+            <p>Reset de jugadores y precios: borra jugadores, fichas, velas, rondas y eventos, y regresa los precios a su nivel inicial. No se puede deshacer.</p>
+            <button id="btn-reset" class="btn btn-peligro" type="button">Reset de jugadores y precios…</button>
+          </div>
+        </section>
+
+        <!-- Empresas en juego -->
+        <section id="sec-empresas" class="tarjeta" aria-labelledby="tit-empresas">
+          <div class="tarjeta-cab">
+            <h2 id="tit-empresas" class="tarjeta-titulo">Empresas en juego</h2>
+            <span id="emp-cuenta" class="chip chip-ambar" aria-live="polite" hidden></span>
+          </div>
+          <p class="tarjeta-desc" style="margin-bottom:10px">Elige qué empresas del catálogo cotizan. Al aplicar, los portafolios se ajustan sin que nadie gane ni pierda valor.</p>
+          <p id="emp-bloqueo" class="msg-aviso" hidden>Se cambia entre rondas: cierra la ronda primero.</p>
+          <div id="emp-msg" class="emp-msg"><p class="vacio">Cargando emisoras…</p></div>
+          <div id="emp-lista" class="empresas" role="group" aria-labelledby="tit-empresas" hidden></div>
+          <div id="emp-acciones" class="acciones" hidden>
+            <button id="btn-emp-aplicar" class="btn btn-primario" type="button">Aplicar</button>
+            <button id="btn-emp-descartar" class="btn" type="button">Descartar cambios</button>
+          </div>
+          <p id="emp-pista" class="pista" style="margin-top:8px"></p>
+        </section>
+
+        <!-- Controles rápidos -->
+        <section id="sec-rapidos" class="tarjeta tarjeta-destacada" aria-labelledby="tit-rapidos">
+          <div class="tarjeta-cab">
+            <h2 id="tit-rapidos" class="tarjeta-titulo">Controles rápidos</h2>
+            <span class="tarjeta-desc">Se guardan al soltar el control.</span>
+          </div>
+          <div id="rapidos"><p class="vacio">Cargando parámetros…</p></div>
+        </section>
+
+        <!-- 3. Noticias por emisora -->
+        <section id="sec-noticias" class="tarjeta" aria-labelledby="tit-noticias">
+          <div class="tarjeta-cab">
+            <h2 id="tit-noticias" class="tarjeta-titulo">Noticias por emisora</h2>
+            <span class="tarjeta-desc">Toca dos veces para publicar.</span>
+          </div>
+          <div id="noticias-emisora" class="rejilla"><p class="vacio">Cargando noticias…</p></div>
+        </section>
+
+        <!-- 4. Eventos de mercado completo -->
+        <section id="sec-mercado" class="tarjeta" aria-labelledby="tit-mercado">
+          <div class="tarjeta-cab">
+            <h2 id="tit-mercado" class="tarjeta-titulo">Eventos de mercado completo</h2>
+            <span class="tarjeta-desc" id="mercado-desc">Mueven a todas las emisoras en juego según su beta.</span>
+          </div>
+          <div id="noticias-mercado" class="rejilla"><p class="vacio">Cargando eventos…</p></div>
+        </section>
+
+        <!-- 5. Crashes y rallies manuales -->
+        <section id="sec-crash" class="tarjeta tarjeta-peligro" aria-labelledby="tit-crash">
+          <div class="tarjeta-cab"><h2 id="tit-crash" class="tarjeta-titulo">Crashes y rallies manuales</h2></div>
+          <h3 class="sub-titulo">Todo el mercado</h3>
+          <div class="crash-caja">
+            <div class="crash-cab">
+              <label for="crash-mag" class="kpi-lbl">Magnitud</label>
+              <output id="crash-valor" class="crash-valor neutro" for="crash-mag">5 %</output>
+            </div>
+            <input id="crash-mag" type="range" min="1" max="15" step="0.5" value="5">
+            <div class="crash-escala"><span>1 %</span><span>15 %</span></div>
+            <p id="crash-estim" class="estim"></p>
+            <p id="crash-alerta" class="alerta-susp" hidden></p>
+            <div class="dos-botones">
+              <button id="btn-crash" class="btn btn-panico btn-grande" type="button">CRASH GENERAL</button>
+              <button id="btn-rally" class="btn btn-verde btn-grande" type="button">RALLY GENERAL</button>
+            </div>
+          </div>
+          <h3 class="sub-titulo">Una emisora</h3>
+          <div class="crash-caja">
+            <div id="em-chips" class="chips-min" role="group" aria-label="Emisora"></div>
+            <div class="crash-cab">
+              <label for="em-mag" class="kpi-lbl">Magnitud</label>
+              <output id="em-valor" class="crash-valor neutro" for="em-mag">10 %</output>
+            </div>
+            <input id="em-mag" type="range" min="1" max="20" step="0.5" value="10">
+            <div class="crash-escala"><span>1 %</span><span>20 %</span></div>
+            <p id="em-estim" class="estim"></p>
+            <p id="em-alerta" class="alerta-susp" hidden></p>
+            <div class="dos-botones">
+              <button id="btn-em-crash" class="btn btn-panico btn-grande" type="button">DESPLOMAR</button>
+              <button id="btn-em-rally" class="btn btn-verde btn-grande" type="button">RALLY</button>
+            </div>
+          </div>
+          <p class="pista">Toca dos veces: el primer toque arma el botón por 4 segundos.</p>
+        </section>
+      </div>
+
+      <div class="col">
+        <!-- Registro de acciones -->
+        <section id="sec-registro" class="tarjeta" aria-labelledby="tit-registro">
+          <div class="tarjeta-cab">
+            <h2 id="tit-registro" class="tarjeta-titulo">Registro de acciones</h2>
+            <button id="registro-limpiar" class="btn btn-chico" type="button">Limpiar</button>
+          </div>
+          <p id="registro-vacio" class="vacio">Aquí aparece el resultado de cada acción.</p>
+          <ul id="registro-lista" class="registro"></ul>
+        </section>
+
+        <!-- 7. Exportar CSV -->
+        <section id="sec-exportar" class="tarjeta" aria-labelledby="tit-exportar">
+          <div class="tarjeta-cab"><h2 id="tit-exportar" class="tarjeta-titulo">Exportar CSV</h2></div>
+          <p class="tarjeta-desc">Descarga tres archivos para Excel: órdenes, velas de 15 s (el ticker <span class="mono">IPC</span> es el índice) y eventos. Horas en la Ciudad de México.</p>
+          <div class="acciones">
+            <button id="btn-exportar" class="btn btn-primario" type="button">Exportar CSV</button>
+          </div>
+          <div id="export-res" hidden>
+            <p class="pista" style="margin-top:10px">Si tu navegador bloqueó alguna descarga, usa estos enlaces:</p>
+            <ul id="export-links" class="enlaces"></ul>
+          </div>
+        </section>
+
+        <!-- 6. Parámetros del motor -->
+        <section id="sec-parametros" class="tarjeta" aria-labelledby="tit-parametros">
+          <div class="tarjeta-cab">
+            <h2 id="tit-parametros" class="tarjeta-titulo">Parámetros del motor</h2>
+            <button id="btn-recargar-config" class="btn btn-chico" type="button">Recargar</button>
+          </div>
+          <p class="tarjeta-desc" style="margin-bottom:10px">Cada cambio se guarda al soltar el control; el servidor lo acota a su rango.</p>
+          <div id="parametros"><p class="vacio">Cargando parámetros…</p></div>
+        </section>
+
+        <!-- 8. Calibración -->
+        <details id="sec-calibracion" class="plegable">
+          <summary>
+            <h2 class="tarjeta-titulo">Calibración (avanzado)</h2>
+            <span class="tarjeta-desc">Corre el motor real en simulación</span>
+          </summary>
+          <div class="plegable-cuerpo">
+            <p class="msg-aviso"><b>Solo sin ronda activa.</b> Congela el mercado mientras corre (los ticks se pausan) y no deja rastro: todo se revierte al terminar.</p>
+            <div class="cal-form">
+              <label class="campo campo-esc" for="cal-esc">
+                <span>Escenario</span>
+                <select id="cal-esc" class="entrada">
+                  <option value="impacto">Impacto de una orden de 5,000 acciones</option>
+                  <option value="crash">Crash general con manada</option>
+                  <option value="salto_ica">Salto propio de INGECO</option>
+                  <option value="libre">Mercado libre</option>
+                </select>
+              </label>
+              <label class="campo" for="cal-ticks">
+                <span>Ticks (2 s c/u)</span>
+                <input id="cal-ticks" class="entrada mono" type="number" inputmode="numeric" min="10" max="600" step="10" value="150">
+              </label>
+              <label class="campo" for="cal-trials">
+                <span>Corridas</span>
+                <input id="cal-trials" class="entrada mono" type="number" inputmode="numeric" min="1" max="20" step="1" value="5">
+              </label>
+            </div>
+            <p id="cal-desc" class="pista"></p>
+            <button id="btn-calibrar" class="btn btn-primario" type="button">Correr calibración</button>
+            <p id="cal-estado" class="pista mono" aria-live="polite"></p>
+            <div id="cal-res" class="cal-res" hidden></div>
+          </div>
+        </details>
+
+        <!-- 9. Cambiar PIN -->
+        <section id="sec-pin" class="tarjeta" aria-labelledby="tit-pin">
+          <div class="tarjeta-cab"><h2 id="tit-pin" class="tarjeta-titulo">Cambiar PIN</h2></div>
+          <form id="form-cambio-pin" class="fila" autocomplete="off" novalidate>
+            <label class="campo" for="pin-nuevo">
+              <span>PIN nuevo (mínimo 4)</span>
+              <input id="pin-nuevo" class="entrada mono" type="password" autocomplete="new-password" minlength="4" required>
+            </label>
+            <label class="campo" for="pin-conf">
+              <span>Confirma el PIN nuevo</span>
+              <input id="pin-conf" class="entrada mono" type="password" autocomplete="new-password" minlength="4" required>
+            </label>
+            <button id="btn-cambiar-pin" class="btn" type="submit">Cambiar PIN</button>
+          </form>
+          <p class="pista" style="margin-top:8px">El PIN actual se toma de esta sesión. Los demás dispositivos tendrán que entrar con el nuevo.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="pie">
+    <span>Simulador BVA 90s</span>
+    <span>Horas en America/Mexico_City</span>
+  </footer>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<dialog id="dlg" class="dlg" aria-labelledby="dlg-titulo">
+  <form method="dialog" class="dlg-caja">
+    <h2 id="dlg-titulo"></h2>
+    <div id="dlg-cuerpo"></div>
+    <label id="dlg-palabra" class="campo" for="dlg-campo" hidden>
+      <span>Escribe <b class="mono" id="dlg-palabra-txt"></b> para confirmar</span>
+      <input id="dlg-campo" class="entrada mono" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    </label>
+    <div class="dlg-botones">
+      <button id="dlg-ok" class="btn btn-peligro" value="ok" type="submit">Confirmar</button>
+      <button id="dlg-cancelar" class="btn" value="cancelar" type="submit">Cancelar</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* <csv-lib> — fechas CDMX y generación de CSV (funciones puras; se prueban en Node) */
+const TZ_CDMX = (typeof window !== 'undefined' && window.SIM_CONFIG && window.SIM_CONFIG.TZ) || 'America/Mexico_City';
+const FMT_PARTES = new Intl.DateTimeFormat('en-CA', {
+  timeZone: TZ_CDMX, year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+});
+
+/** ISO de Postgres (con microsegundos), Date o epoch-ms → epoch-ms (NaN si no se puede). */
+function parseTs(v) {
+  if (v === null || v === undefined || v === '') return NaN;
+  if (v instanceof Date) return v.getTime();
+  if (typeof v === 'number') return v;
+  let s = String(v).trim().replace(' ', 'T').replace(/(\.\d{3})\d+/, '$1');
+  if (/T\d{2}:\d{2}/.test(s)) s = s.replace(/([+-]\d{2})$/, '$1:00');
+  return Date.parse(s);
+}
+
+function partesCDMX(ms) {
+  const p = {};
+  for (const x of FMT_PARTES.formatToParts(new Date(ms))) p[x.type] = x.value;
+  if (p.hour === '24') p.hour = '00';
+  return p;
+}
+
+/** "YYYY-MM-DD HH:mm:ss" en hora de la Ciudad de México; '' si viene vacío. */
+function fechaCDMX(v) {
+  if (v === null || v === undefined || v === '') return '';
+  const ms = parseTs(v);
+  if (!Number.isFinite(ms)) return String(v);
+  const p = partesCDMX(ms);
+  return p.year + '-' + p.month + '-' + p.day + ' ' + p.hour + ':' + p.minute + ':' + p.second;
+}
+
+/** Sello para nombres de archivo: "YYYY-MM-DD_HHmm" (CDMX). */
+function selloArchivo(ms) {
+  const p = partesCDMX(ms);
+  return p.year + '-' + p.month + '-' + p.day + '_' + p.hour + p.minute;
+}
+
+/** Un campo CSV: null → vacío; objetos → JSON; comillas duplicadas; protege contra fórmulas. */
+function csvCampo(v) {
+  if (v === null || v === undefined) return '';
+  let s;
+  if (typeof v === 'number') s = Number.isFinite(v) ? String(v) : '';
+  else if (typeof v === 'boolean') s = v ? 'sí' : 'no';
+  else if (typeof v === 'object') s = JSON.stringify(v);
+  else {
+    s = String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // evita que Excel lo interprete como fórmula
+  }
+  if (/[",\r\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+/** CSV con BOM UTF-8 (Excel en español), separador coma y fin de línea CRLF. */
+function generarCSV(columnas, filas) {
+  const lineas = [columnas.map(c => csvCampo(c.titulo)).join(',')];
+  for (const f of (filas || [])) lineas.push(columnas.map(c => csvCampo(c.valor(f || {}))).join(','));
+  return '﻿' + lineas.join('\r\n') + '\r\n';
+}
+
+function redondear(n, d) {
+  return (typeof n === 'number' && Number.isFinite(n)) ? Number(n.toFixed(d)) : n;
+}
+
+const COLS_ORDENES = [
+  { titulo: 'folio', valor: o => o.folio },
+  { titulo: 'ronda', valor: o => o.ronda },
+  { titulo: 'fecha_hora_cdmx', valor: o => fechaCDMX(o.ts) },
+  { titulo: 'ejecucion_cdmx', valor: o => fechaCDMX(o.exec_ts) },
+  { titulo: 'agente', valor: o => o.agente },
+  { titulo: 'nombre', valor: o => o.nombre },
+  { titulo: 'casa', valor: o => o.casa },
+  { titulo: 'bot', valor: o => o.bot },
+  { titulo: 'emisora', valor: o => o.emisora },
+  { titulo: 'lado', valor: o => o.lado },
+  { titulo: 'cantidad', valor: o => o.cantidad },
+  { titulo: 'tipo', valor: o => o.tipo },
+  { titulo: 'limite', valor: o => o.limite },
+  { titulo: 'status', valor: o => o.status },
+  { titulo: 'precio', valor: o => o.precio },
+  { titulo: 'slippage', valor: o => o.slippage },
+  { titulo: 'comision', valor: o => o.comision },
+  { titulo: 'motivo', valor: o => o.motivo }
+];
+const COLS_VELAS = [
+  { titulo: 'ronda', valor: v => v.ronda },
+  { titulo: 'ticker', valor: v => v.ticker },
+  { titulo: 'inicio_cdmx', valor: v => fechaCDMX(v.bucket) },
+  { titulo: 'open', valor: v => redondear(v.open, 4) },
+  { titulo: 'high', valor: v => redondear(v.high, 4) },
+  { titulo: 'low', valor: v => redondear(v.low, 4) },
+  { titulo: 'close', valor: v => redondear(v.close, 4) },
+  { titulo: 'volume', valor: v => v.volume }
+];
+const COLS_EVENTOS = [
+  { titulo: 'id', valor: e => e.id },
+  { titulo: 'fecha_hora_cdmx', valor: e => fechaCDMX(e.ts) },
+  { titulo: 'tipo', valor: e => e.tipo },
+  { titulo: 'titulo', valor: e => e.titulo },
+  { titulo: 'ticker', valor: e => e.ticker },
+  { titulo: 'pct', valor: e => (e.data && typeof e.data === 'object') ? e.data.pct : null },
+  { titulo: 'origen', valor: e => (e.data && typeof e.data === 'object') ? e.data.origen : null },
+  { titulo: 'data', valor: e => e.data }
+];
+function csvOrdenes(filas) { return generarCSV(COLS_ORDENES, filas); }
+function csvVelas(filas) { return generarCSV(COLS_VELAS, filas); }
+function csvEventos(filas) { return generarCSV(COLS_EVENTOS, filas); }
+/* </csv-lib> */
+
+/* ===================================================================
+   Configuración y estado
+   =================================================================== */
+const CFG = window.SIM_CONFIG || {};
+const CANAL = CFG.CANAL || 'mercado';
+const CLAVE_PIN = 'bmv_admin_pin';
+const ORDEN_GRUPOS = ['Motor', 'Crashes', 'Suspensiones', 'Participantes', 'Bots', 'Juego'];
+const DESC_GRUPOS = {
+  Motor: 'Volatilidad, impacto de las órdenes, spread y valor justo.',
+  Crashes: 'Frecuencia y tamaño de crashes generales y saltos propios.',
+  Suspensiones: 'Umbrales y duración de suspensiones por emisora y general.',
+  Participantes: 'Modo entre participantes: cuánto mueve el precio cada operación y cuánto espera una orden en el piso. El modo se cambia en Controles rápidos.',
+  Bots: 'Actividad de las "otras casas": ruido, manada y valor.',
+  Juego: 'Reglas para los jugadores.'
+};
+const RAPIDOS = ['bot_intensity', 'crash_emisora_min', 'crash_general_ronda', 'rally_emisora_min', 'rally_general_ronda'];
+// Claves de config con control propio (no se pintan como slider).
+const SIN_SLIDER = new Set(['modo_p2p']);
+const NOMBRE_MODO = { bots: 'Con bots', participantes: 'Entre participantes' };
+const DESC_MODO = {
+  bots: 'Cada orden se ejecuta al momento contra el formador de mercado, y los bots de las otras casas también operan y mueven el precio.',
+  participantes: 'Los bots no operan con los jugadores: un jugador lanza su orden al piso y otro jugador tiene que aceptarla para que se ejecute. El precio se sigue moviendo como siempre (las otras casas siguen activas en el mercado) y cada operación cerrada lo empuja.'
+};
+const PRESETS = { bot_intensity: [0, 0.5, 1, 1.5, 2], crash_emisora_min: [0, 4, 6, 8, 10], crash_general_ronda: [0, 1], rally_emisora_min: [0, 4, 6, 8, 10], rally_general_ronda: [0, 1], crash_rate: [0, 0.2, 0.4, 0.6, 1] };
+const ESCENARIOS = {
+  impacto: { nombre: 'Impacto de una orden', desc: 'Compra 5,000 acciones de cada emisora. Meta: mover el precio ~1 %. (No usa ticks.)' },
+  crash: { nombre: 'Crash general con manada', desc: 'Crash del tamaño medio configurado y reacción de los bots. Meta: índice ~−10 % antes del rebote.' },
+  salto_ica: { nombre: 'Salto propio de INGECO', desc: 'Desplome propio de INGECO con bots. Meta: ~−15 % antes del rebote.' },
+  libre: { nombre: 'Mercado libre', desc: 'Corre el motor sin intervención y resume índice, eventos y variaciones.' }
+};
+const TIPOS = {
+  apertura: { txt: 'APERTURA', cls: 'chip-verde' },
+  cierre: { txt: 'CIERRE', cls: 'chip-ambar' },
+  crash: { txt: 'CRASH', cls: 'chip-rojo' },
+  rally: { txt: 'RALLY', cls: 'chip-verde' },
+  salto: { txt: 'SALTO', cls: 'chip-naranja' },
+  noticia: { txt: 'NOTICIA', cls: 'chip-azul' },
+  suspension: { txt: 'SUSPENSIÓN', cls: 'chip-rojo' },
+  reapertura: { txt: 'REAPERTURA', cls: 'chip-dim' },
+  suspension_general: { txt: 'SUSP. GENERAL', cls: 'chip-rojo' },
+  reapertura_general: { txt: 'REAPERTURA GRAL.', cls: 'chip-verde' },
+  reset: { txt: 'RESET', cls: 'chip-dim' }
+};
+
+const estado = {
+  pin: null,
+  panelActivo: false,
+  offset: 0,              // hora del servidor − hora local (ms)
+  ultimoMsg: 0,           // Date.now() del último snapshot/tick recibido
+  canalEstado: 'CONECTANDO',
+  canal: null,
+  tick: null,
+  mercado: null,
+  ronda: undefined,       // undefined = aún no se sabe; null = sin ronda
+  emisoras: [],
+  eventos: [],
+  maxEventoId: 0,
+  lb: null,
+  config: new Map(),      // key → fila de config
+  controles: new Map(),   // key → [controles de slider]
+  sucios: new Set(),      // keys con cambios sin confirmar
+  guardando: new Set(),   // keys con set_config en curso
+  firmaConfig: '',
+  noticias: [],
+  refsNoticias: new Map(),
+  firmaNoticias: '',
+  activos: new Map(),     // ticker → { beta, weight }
+  firmaActivas: '',       // tickers en juego según el snapshot (en orden)
+  modo: undefined,        // 'bots' | 'participantes' según el snapshot (undefined = el servidor no lo reporta)
+  modoFijadoEn: 0,        // Date.now() del último cambio de modo guardado desde aquí
+  guardandoModo: false,
+  modoPintado: undefined,
+  refModo: null,         // { botones, desc, nota } del control de modo
+  piso: null,             // órdenes esperando en el piso (modo entre participantes)
+  backendNuevo: false,    // el snapshot trae `modo`: existen get_catalogo / set_emisoras
+  catalogo: null,         // { modo, emisoras: [{ ticker, serie, nombre, perfil, orden, activa, precio }] }
+  catalogoEstado: 'esperando',   // esperando | sin-soporte | cargando | ok | falta | error
+  catalogoError: '',
+  firmaCatalogo: '',
+  refsCatalogo: new Map(),       // ticker → { label, input, precio, cambio }
+  seleccion: null,        // Set de tickers marcados sin aplicar (null = igual al servidor)
+  aplicandoEmisoras: false,
+  campeon: null,
+  campeonRonda: null,
+  urlsCSV: [],
+  timers: []
+};
+
+/* ===================================================================
+   Utilidades
+   =================================================================== */
+const $ = (sel, raiz) => (raiz || document).querySelector(sel);
+
+function h(tag, attrs, ...hijos) {
+  const e = document.createElement(tag);
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v === null || v === undefined || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, '');
+      else e.setAttribute(k, String(v));
+    }
+  }
+  for (const c of hijos.flat(Infinity)) {
+    if (c === null || c === undefined || c === false) continue;
+    e.append(c instanceof Node ? c : String(c));
+  }
+  return e;
+}
+
+const nfCache = new Map();
+function nf(d) {
+  let f = nfCache.get(d);
+  if (!f) { f = new Intl.NumberFormat('es-MX', { minimumFractionDigits: d, maximumFractionDigits: d }); nfCache.set(d, f); }
+  return f;
+}
+function esNum(v) { return v !== null && v !== undefined && v !== '' && Number.isFinite(Number(v)); }
+function num(v, d) { return esNum(v) ? nf(d === undefined ? 2 : d).format(Number(v)) : '—'; }
+function entero(v) { return num(v, 0); }
+function pct(v, d) {
+  if (!esNum(v)) return '—';
+  const n = Number(v);
+  const dd = d === undefined ? 2 : d;
+  const redo = Number(n.toFixed(dd));
+  const signo = redo > 0 ? '+' : redo < 0 ? '−' : '';
+  return signo + nf(dd).format(Math.abs(n)) + ' %';
+}
+function plural(n, singular, pluralTxt) { return entero(n) + ' ' + (Number(n) === 1 ? singular : pluralTxt); }
+function conSigno(v, d) { return !esNum(v) ? '—' : (Number(v) < 0 ? '−' : Number(v) > 0 ? '+' : '') + num(Math.abs(Number(v)), d); }
+function claseVar(v) { return !esNum(v) ? 'igual' : Number(v) > 0 ? 'sube' : Number(v) < 0 ? 'baja' : 'igual'; }
+function efectoPct(logShock) { return (Math.exp(Number(logShock)) - 1) * 100; }
+
+const FMT_HORA = new Intl.DateTimeFormat('es-MX', { timeZone: TZ_CDMX, hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+const FMT_HM = new Intl.DateTimeFormat('es-MX', { timeZone: TZ_CDMX, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+function horaCDMX(v) { const ms = parseTs(v); return Number.isFinite(ms) ? FMT_HORA.format(new Date(ms)) : '—'; }
+function hmCDMX(v) { const ms = parseTs(v); return Number.isFinite(ms) ? FMT_HM.format(new Date(ms)) : '—'; }
+function ahoraServidor() { return Date.now() + estado.offset; }
+function mmss(ms) {
+  if (!Number.isFinite(ms)) return '--:--';
+  const s = Math.ceil(Math.max(0, ms) / 1000);
+  const m = Math.floor(s / 60);
+  const r = String(s % 60).padStart(2, '0');
+  return m >= 60 ? Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') + ':' + r : String(m).padStart(2, '0') + ':' + r;
+}
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+
+function leerPin() { try { return window.sessionStorage.getItem(CLAVE_PIN); } catch (e) { return null; } }
+function guardarPin(p) { try { window.sessionStorage.setItem(CLAVE_PIN, p); } catch (e) { /* sin almacenamiento */ } }
+function borrarPin() { try { window.sessionStorage.removeItem(CLAVE_PIN); } catch (e) { /* sin almacenamiento */ } }
+
+/* ===================================================================
+   Supabase
+   =================================================================== */
+let sb = null;
+function cliente() {
+  if (sb) return sb;
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+    throw new Error('No se pudo cargar la librería de Supabase. Revisa la conexión y recarga la página.');
+  }
+  if (!CFG.SUPABASE_URL || !CFG.SUPABASE_KEY) throw new Error('Falta config.js (SUPABASE_URL / SUPABASE_KEY).');
+  sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  });
+  return sb;
+}
+
+function textoError(err) {
+  const m = (err && (err.message || err.details || err.hint)) || String(err || 'Error desconocido');
+  if (/statement timeout|canceling statement/i.test(m)) return 'El servidor cortó la operación por tiempo. Prueba con menos ticks o menos corridas.';
+  if (/Failed to fetch|NetworkError|Load failed|network/i.test(m)) return 'Sin conexión con el servidor. Revisa la red e inténtalo de nuevo.';
+  return m;
+}
+
+/** Llama una RPC de admin con el PIN de la sesión. Regresa { ok, data, error }. */
+async function adminRpc(fn, args) {
+  if (!estado.pin) return { ok: false, error: 'La sesión está cerrada' };
+  let res;
+  try {
+    res = await cliente().rpc(fn, Object.assign({ p_pin: estado.pin }, args || {}));
+  } catch (e) {
+    return { ok: false, error: textoError(e) };
+  }
+  if (res.error) return { ok: false, error: textoError(res.error) };
+  const data = res.data;
+  if (!data || typeof data !== 'object') return { ok: false, error: 'Respuesta inesperada del servidor' };
+  if (data.ok !== true) {
+    const msg = data.error || 'Error desconocido';
+    if (/PIN incorrecto/i.test(msg)) cerrarSesion(msg);
+    return { ok: false, error: msg, data };
+  }
+  return { ok: true, data };
+}
+
+/* ===================================================================
+   Avisos, registro, confirmaciones
+   =================================================================== */
+function toast(texto, tipo, ms, accion) {
+  tipo = tipo || 'ok';
+  const caja = $('#toasts');
+  const t = h('div', { class: 'toast toast-' + tipo, role: tipo === 'error' ? 'alert' : null },
+    h('span', { class: 'toast-ico', 'aria-hidden': 'true' }, tipo === 'error' ? '✕' : tipo === 'aviso' ? '!' : '✓'),
+    h('span', { class: 'toast-txt' }, texto),
+    accion ? h('button', { class: 'btn btn-chico toast-accion', type: 'button', onclick: () => { t.remove(); accion.fn(); } }, accion.texto) : h('span'),
+    h('button', { class: 'toast-x', type: 'button', 'aria-label': 'Cerrar aviso', onclick: () => t.remove() }, '×'));
+  caja.append(t);
+  while (caja.children.length > 4) caja.firstElementChild.remove();
+  setTimeout(() => t.remove(), ms || (tipo === 'error' ? 10000 : 5000));
+}
+
+function registrar(accion, ok, mensaje, opciones) {
+  const conToast = !(opciones && opciones.toast === false);
+  const lista = $('#registro-lista');
+  lista.prepend(h('li', { class: ok ? 'reg-ok' : 'reg-error' },
+    h('span', { class: 'reg-hora mono' }, horaCDMX(ahoraServidor())),
+    h('span', { class: 'reg-ico', 'aria-label': ok ? 'Éxito' : 'Error' }, ok ? '✓' : '✕'),
+    h('span', { class: 'reg-txt' }, h('b', null, accion), mensaje ? ' — ' + mensaje : '')));
+  while (lista.children.length > 100) lista.lastElementChild.remove();
+  $('#registro-vacio').hidden = true;
+  if (conToast || !ok) toast(accion + (mensaje ? ': ' + mensaje : ''), ok ? 'ok' : 'error');
+}
+
+/** Marca un botón como ocupado mientras corre fn (evita dobles envíos). */
+async function ocupado(btn, textoOcupado, fn) {
+  if (btn.dataset.ocupado === '1') return undefined;
+  if (btn._desarmar) btn._desarmar();
+  const etiqueta = btn.dataset.etiqueta || btn.textContent;
+  btn.dataset.ocupado = '1';
+  btn.disabled = true;
+  btn.setAttribute('aria-busy', 'true');
+  btn.textContent = textoOcupado;
+  try {
+    return await fn();
+  } finally {
+    btn.dataset.ocupado = '';
+    btn.removeAttribute('aria-busy');
+    btn.textContent = btn.dataset.etiqueta || etiqueta;
+    btn.disabled = false;
+    actualizarBotones();
+  }
+}
+
+/** Confirmación breve: el primer toque arma el botón (4 s); el segundo ejecuta. */
+function dobleToque(btn, textoConfirmar, fn) {
+  let timer = null;
+  let armadoEn = 0;
+  if (!btn.dataset.etiqueta) btn.dataset.etiqueta = btn.textContent;
+  function desarmar() {
+    clearTimeout(timer);
+    if (!btn.classList.contains('armado')) return;
+    btn.classList.remove('armado');
+    if (btn.dataset.ocupado !== '1') btn.textContent = btn.dataset.etiqueta;
+  }
+  btn._desarmar = desarmar;
+  btn.addEventListener('click', () => {
+    if (btn.dataset.ocupado === '1' || btn.disabled) return;
+    if (btn.classList.contains('armado')) {
+      if (Date.now() - armadoEn < 450) return;   // un doble clic accidental no confirma
+      desarmar();
+      fn();
+      return;
+    }
+    document.querySelectorAll('.btn.armado').forEach(b => { if (b !== btn && b._desarmar) b._desarmar(); });
+    armadoEn = Date.now();
+    btn.classList.add('armado');
+    btn.textContent = textoConfirmar();
+    timer = setTimeout(desarmar, 4000);
+  });
+}
+
+function ponerEtiqueta(btn, txt) {
+  btn.dataset.etiqueta = txt;
+  if (!btn.classList.contains('armado') && btn.dataset.ocupado !== '1') btn.textContent = txt;
+}
+
+/** Diálogo modal. Con `palabra`, exige escribirla exactamente para habilitar el botón. */
+function confirmar(op) {
+  const dlg = $('#dlg');
+  const cuerpoTxt = [].concat(op.cuerpo || []);
+  if (!dlg || typeof dlg.showModal !== 'function') {
+    const texto = op.titulo + '\n\n' + cuerpoTxt.filter(x => typeof x === 'string').join('\n');
+    if (op.palabra) return Promise.resolve(((window.prompt(texto + '\n\nEscribe ' + op.palabra + ' para confirmar:') || '').trim()) === op.palabra);
+    return Promise.resolve(window.confirm(texto));
+  }
+  dlg.classList.toggle('suave', !op.peligro);
+  $('#dlg-titulo').textContent = op.titulo;
+  $('#dlg-cuerpo').replaceChildren(...cuerpoTxt.map(x => typeof x === 'string' ? h('p', null, x) : x));
+  const ok = $('#dlg-ok');
+  ok.textContent = op.ok || 'Confirmar';
+  ok.className = 'btn ' + (op.peligro ? 'btn-peligro' : 'btn-primario');
+  const campo = $('#dlg-campo');
+  $('#dlg-palabra').hidden = !op.palabra;
+  $('#dlg-palabra-txt').textContent = op.palabra || '';
+  campo.value = '';
+  ok.disabled = !!op.palabra;
+  campo.oninput = () => { ok.disabled = campo.value.trim() !== op.palabra; };
+  dlg.returnValue = '';
+  return new Promise(resolve => {
+    dlg.addEventListener('close', () => {
+      resolve(dlg.returnValue === 'ok' && (!op.palabra || campo.value.trim() === op.palabra));
+    }, { once: true });
+    dlg.showModal();
+    (op.palabra ? campo : $('#dlg-cancelar')).focus();
+  });
+}
+
+/* ===================================================================
+   PIN y sesión
+   =================================================================== */
+function mostrarPin(mensaje, tipo) {
+  $('#panel').hidden = true;
+  $('#pantalla-pin').hidden = false;
+  const m = $('#pin-msg');
+  m.hidden = !mensaje;
+  m.textContent = mensaje || '';
+  m.className = tipo === 'aviso' ? 'msg-aviso' : 'msg-error';
+  const campo = $('#pin');
+  campo.value = '';
+  setTimeout(() => campo.focus(), 50);
+}
+
+function entrar(pin) {
+  estado.pin = pin;
+  $('#pantalla-pin').hidden = true;
+  $('#panel').hidden = false;
+  iniciarPanel();
+}
+
+function cerrarSesion(mensaje) {
+  borrarPin();
+  estado.pin = null;
+  detenerPanel();
+  if ($('#dlg').open) $('#dlg').close();
+  mostrarPin(mensaje ? 'Se cerró la sesión: ' + mensaje + '. Si alguien falló el PIN 5 veces, espera 60 s.' : '', 'error');
+}
+
+async function enviarPin(ev) {
+  ev.preventDefault();
+  const btn = $('#btn-entrar');
+  const pin = $('#pin').value;
+  const msg = $('#pin-msg');
+  if (!pin.trim()) { msg.hidden = false; msg.className = 'msg-error'; msg.textContent = 'Escribe el PIN.'; return; }
+  let exito = false;
+  await ocupado(btn, 'Verificando…', async () => {
+    try {
+      const { data, error } = await cliente().rpc('admin_check', { p_pin: pin });
+      if (error) { msg.hidden = false; msg.className = 'msg-error'; msg.textContent = 'No se pudo verificar: ' + textoError(error); return; }
+      if (data && data.ok === true) { exito = true; guardarPin(pin); entrar(pin); return; }
+      msg.hidden = false; msg.className = 'msg-error';
+      msg.textContent = (data && data.error) || 'PIN incorrecto';
+    } catch (e) {
+      msg.hidden = false; msg.className = 'msg-error'; msg.textContent = textoError(e);
+    }
+  });
+  if (!exito) {
+    // Pausa breve para evitar dobles envíos que consuman intentos
+    btn.disabled = true;
+    setTimeout(() => { btn.disabled = false; }, 1200);
+    $('#pin').select();
+  }
+}
+
+/* ===================================================================
+   Panel: arranque y ciclo de vida
+   =================================================================== */
+function iniciarPanel() {
+  detenerPanel();
+  estado.panelActivo = true;
+  estado.ultimoMsg = 0;
+  estado.canalEstado = 'CONECTANDO';
+  cargarConfig();
+  cargarNoticias();
+  cargarActivos();
+  // El catálogo solo se pide si el servidor ya lo soporta (el snapshot trae `modo`);
+  // así el backend anterior no genera llamadas fallidas.
+  if (estado.catalogo || estado.backendNuevo) cargarCatalogo();
+  else { estado.catalogoEstado = 'esperando'; pintarCatalogo(); }
+  refrescarSnapshot();
+  refrescarLeaderboard();
+  suscribir();
+  estado.timers.push(setInterval(tic, 250));
+  estado.timers.push(setInterval(() => { if (!document.hidden) refrescarLeaderboard(); }, 5000));
+  estado.timers.push(setInterval(vigia, 5000));
+  estado.timers.push(setInterval(() => { if (!document.hidden) { cargarConfig(); cargarNoticias(); refrescarCatalogoPeriodico(); } }, 30000));
+  tic();
+}
+
+function detenerPanel() {
+  estado.panelActivo = false;
+  for (const t of estado.timers) clearInterval(t);
+  estado.timers = [];
+  if (estado.canal && sb) { try { sb.removeChannel(estado.canal); } catch (e) { /* nada */ } }
+  estado.canal = null;
+}
+
+function suscribir() {
+  let c;
+  try { c = cliente(); } catch (e) { toast(e.message, 'error'); return; }
+  estado.canal = c.channel(CANAL, { config: { private: false } })
+    .on('broadcast', { event: 'tick' }, msg => aplicarSnapshot(msg && msg.payload, false))
+    .subscribe(status => {
+      estado.canalEstado = status;
+      if (status === 'SUBSCRIBED') refrescarSnapshot();   // al conectar y al reconectar
+      pintarConexion();
+    });
+}
+
+/** Si el tiempo real se calla, se consulta el snapshot por HTTP. */
+function vigia() {
+  if (!estado.panelActivo || document.hidden) return;
+  if (!estado.ultimoMsg || Date.now() - estado.ultimoMsg > 25000) refrescarSnapshot();
+}
+
+let pidiendoSnap = false;
+let snapPendiente = false;
+async function refrescarSnapshot() {
+  if (!estado.panelActivo) return;
+  if (pidiendoSnap) { snapPendiente = true; return; }
+  pidiendoSnap = true;
+  try {
+    const { data, error } = await cliente().rpc('get_snapshot');
+    if (!error && data) aplicarSnapshot(data, true);
+  } catch (e) { /* se reintenta en el vigía */ }
+  finally {
+    pidiendoSnap = false;
+    if (snapPendiente) { snapPendiente = false; refrescarSnapshot(); }
+  }
+}
+
+async function refrescarLeaderboard() {
+  if (!estado.panelActivo) return;
+  try {
+    const { data, error } = await cliente().rpc('get_leaderboard');
+    if (!error && data) { estado.lb = data; pintarJugadores(); }
+  } catch (e) { /* reintento en 5 s */ }
+}
+
+async function cargarActivos() {
+  try {
+    const { data, error } = await cliente().from('assets').select('ticker,beta,weight').order('orden');
+    if (!error && Array.isArray(data)) {
+      estado.activos = new Map(data.map(a => [a.ticker, { beta: Number(a.beta), weight: Number(a.weight) }]));
+      pintarEstimaciones();
+    }
+  } catch (e) { /* las estimaciones son opcionales */ }
+}
+
+/* ===================================================================
+   Snapshot / tick
+   =================================================================== */
+function aplicarSnapshot(s, completo) {
+  if (!estado.panelActivo || !s || typeof s !== 'object' || s.ok === false) return;
+  const t = parseTs(s.t);
+  if (Number.isFinite(t)) estado.offset = t - Date.now();
+  estado.ultimoMsg = Date.now();
+  if (s.tick !== undefined) estado.tick = s.tick;
+  if (s.mercado) estado.mercado = s.mercado;
+  if ('ronda' in s) {
+    const antes = estado.ronda;
+    estado.ronda = s.ronda || null;
+    if (estado.ronda && estado.ronda.estado === 'activa' && (!antes || antes.id !== estado.ronda.id || antes.estado !== 'activa')) {
+      estado.campeon = null; estado.campeonRonda = null;
+    }
+  }
+  if ('modo' in s) {
+    if (!estado.backendNuevo) {
+      estado.backendNuevo = true;
+      if (estado.catalogoEstado === 'esperando' || estado.catalogoEstado === 'sin-soporte') cargarCatalogo();
+    }
+    // Tras guardar el modo desde aquí se ignora unos segundos un tick que pudo salir antes del cambio.
+    if (Date.now() - estado.modoFijadoEn > 4000) estado.modo = modoValido(s.modo) ? s.modo : null;
+  } else if (estado.catalogoEstado === 'esperando') {
+    estado.catalogoEstado = 'sin-soporte';   // backend anterior: sin catálogo de emisoras
+    pintarCatalogo();
+  }
+  if (Array.isArray(s.piso)) estado.piso = s.piso;
+  if (Array.isArray(s.emisoras) && s.emisoras.length) {
+    estado.emisoras = s.emisoras;
+    const firma = s.emisoras.map(e => e.ticker).join(',');
+    if (firma !== estado.firmaActivas) {
+      const habia = estado.firmaActivas !== '';
+      estado.firmaActivas = firma;
+      alCambiarActivas(habia);
+    }
+  }
+  if (Array.isArray(s.eventos)) mezclarEventos(s.eventos, completo);
+  pintarEstado();
+}
+
+/** Cambió el conjunto de emisoras en juego (o llegó por primera vez). */
+function alCambiarActivas(cambio) {
+  repintarPistas();
+  pintarDescMercado();
+  if (!cambio) return;
+  cargarActivos();
+  // Otro dispositivo cambió las emisoras: se recarga el catálogo.
+  if (estado.catalogo && !estado.aplicandoEmisoras) {
+    const delCatalogo = estado.catalogo.emisoras.filter(e => e.activa).map(e => e.ticker).join(',');
+    if (delCatalogo !== estado.firmaActivas) cargarCatalogo();
+  }
+}
+
+/** Tickers en juego, en orden (snapshot; si aún no llega, el catálogo). */
+function tickersActivos() {
+  if (estado.emisoras.length) return estado.emisoras.map(e => e.ticker);
+  if (estado.catalogo) return estado.catalogo.emisoras.filter(e => e.activa).map(e => e.ticker);
+  return [];
+}
+function conjuntoActivas() { const t = tickersActivos(); return t.length ? new Set(t) : null; }
+function rondaActiva() { return !!(estado.ronda && estado.ronda.estado === 'activa'); }
+function modoValido(m) { return m === 'bots' || m === 'participantes'; }
+/** 'bots' | 'participantes' | null. El snapshot manda; si no lo trae, la config modo_p2p. */
+function modoActual() {
+  if (modoValido(estado.modo)) return estado.modo;
+  const row = estado.config.get('modo_p2p');
+  if (row && esNum(row.value)) return Number(row.value) >= 0.5 ? 'participantes' : 'bots';
+  return null;
+}
+
+function pintarDescMercado() {
+  const n = tickersActivos().length;
+  $('#mercado-desc').textContent = !n ? 'Mueven a todas las emisoras en juego según su beta.'
+    : n === 1 ? 'Mueven a la única emisora en juego según su beta.'
+    : 'Mueven a las ' + n + ' emisoras en juego según su beta.';
+}
+
+function mezclarEventos(lista, completo) {
+  const nuevos = [];
+  if (completo) {
+    estado.eventos = lista.slice().sort((a, b) => a.id - b.id);
+    estado.maxEventoId = estado.eventos.reduce((m, e) => Math.max(m, Number(e.id) || 0), 0);
+  } else {
+    for (const e of lista) {
+      if (e.tipo === 'reset') { estado.eventos = []; estado.maxEventoId = 0; }
+      if (Number(e.id) > estado.maxEventoId || e.tipo === 'reset') {
+        estado.eventos.push(e);
+        estado.maxEventoId = Math.max(estado.maxEventoId, Number(e.id) || 0);
+        nuevos.push(e);
+      }
+    }
+    if (estado.eventos.length > 40) estado.eventos = estado.eventos.slice(-40);
+  }
+  for (const e of nuevos) {
+    if (e.tipo === 'cierre' && e.data) { estado.campeon = e.data; estado.campeonRonda = estado.ronda ? estado.ronda.id : null; }
+  }
+  if (nuevos.some(e => ['noticia', 'crash', 'rally', 'reset'].includes(e.tipo))) programarNoticias();
+  if (nuevos.some(e => ['apertura', 'cierre', 'reset'].includes(e.tipo))) refrescarLeaderboard();
+}
+
+let tNoticias = null;
+function programarNoticias() { clearTimeout(tNoticias); tNoticias = setTimeout(cargarNoticias, 800); }
+
+/* ===================================================================
+   Pintado del estado
+   =================================================================== */
+function ponerCuenta(el, hastaMs, prefijo, fin) {
+  if (Number.isFinite(hastaMs)) {
+    el.dataset.hasta = String(hastaMs);
+    el.dataset.prefijo = prefijo || '';
+    el.dataset.fin = fin || '00:00';
+  } else {
+    delete el.dataset.hasta;
+  }
+}
+
+function pintarEstado() {
+  const m = estado.mercado;
+  $('#ipc-valor').textContent = m ? num(m.indice, 2) : '—';
+  const iv = $('#ipc-var');
+  iv.textContent = m ? pct(m.var) + ' vs base 1,000' : '—';
+  iv.className = 'kpi-sub mono ' + claseVar(m && m.var);
+  $('#estado-tick').textContent = estado.tick !== null && estado.tick !== undefined ? 'tick ' + entero(estado.tick) : '';
+
+  // Mercado
+  const susp = !!(m && m.estado === 'suspension_general');
+  $('#kpi-mercado').classList.toggle('kpi-alarma', susp);
+  const me = $('#mercado-estado');
+  me.textContent = !m ? '—' : susp ? 'SUSPENSIÓN GENERAL' : 'ABIERTO';
+  me.className = 'kpi-valor chico ' + (!m ? '' : susp ? 'txt-rojo' : 'txt-verde');
+  const mc = $('#mercado-cuenta');
+  if (susp && m.suspendido_hasta) ponerCuenta(mc, parseTs(m.suspendido_hasta), 'Reabre en ', 'Reabriendo…');
+  else { ponerCuenta(mc, NaN); mc.textContent = susp ? 'Reapertura pendiente' : (m ? 'Operación normal' : ''); }
+
+  // Ronda (KPI)
+  const r = estado.ronda;
+  const re = $('#ronda-estado-kpi'), rc = $('#ronda-cuenta-kpi'), rs = $('#ronda-sub-kpi');
+  ponerCuenta(rc, NaN); rc.textContent = '';
+  if (r === undefined) { re.textContent = '—'; re.className = 'kpi-valor chico'; rs.textContent = ''; }
+  else if (!r) { re.textContent = 'SIN RONDA'; re.className = 'kpi-valor chico txt-dim'; rs.textContent = 'Inicia una ronda para abrir operaciones.'; }
+  else if (r.estado === 'activa') {
+    re.textContent = '#' + r.id + ' ACTIVA'; re.className = 'kpi-valor chico txt-verde';
+    ponerCuenta(rc, parseTs(r.fin), '', 'Cerrando…');
+    rs.textContent = r.minutos + ' min · cierra ' + hmCDMX(r.fin);
+  } else {
+    re.textContent = '#' + r.id + ' CERRADA'; re.className = 'kpi-valor chico txt-ambar';
+    const c = r.campeon || (estado.campeonRonda === r.id ? estado.campeon : null);
+    rs.textContent = c && c.jugador ? 'Campeón: ' + c.jugador.nombre + ' ' + pct(c.jugador.pnl) : 'Ronda terminada';
+  }
+
+  pintarRondaCaja();
+  pintarModo();
+  pintarEmisoras();
+  pintarEventos();
+  pintarTira();
+  pintarCampeon();
+  pintarEstimaciones();
+  actualizarBotones();
+  tic();
+}
+
+function pintarRondaCaja() {
+  const caja = $('#ronda-estado');
+  const r = estado.ronda;
+  if (r === undefined) { caja.replaceChildren(h('span', { class: 'txt-dim' }, 'Cargando estado…')); return; }
+  if (!r) { caja.replaceChildren(h('b', { class: 'txt-dim' }, 'Sin ronda'), h('span', { class: 'pista' }, 'Los jugadores no pueden operar.')); return; }
+  if (r.estado === 'activa') {
+    const cuenta = h('b', { class: 'mono txt-verde' }, '');
+    ponerCuenta(cuenta, parseTs(r.fin), 'Quedan ', 'Cerrando…');
+    caja.replaceChildren(h('b', { class: 'txt-verde' }, 'Ronda #' + r.id + ' activa'), cuenta,
+      h('span', { class: 'pista' }, 'Inició ' + hmCDMX(r.inicio) + ' · ' + r.minutos + ' min · cierra ' + hmCDMX(r.fin)));
+  } else {
+    caja.replaceChildren(h('b', { class: 'txt-ambar' }, 'Ronda #' + r.id + ' cerrada'),
+      h('span', { class: 'pista' }, 'Puedes iniciar la siguiente. Los portafolios se conservan.'));
+  }
+}
+
+function pintarEmisoras() {
+  const cont = $('#emisoras');
+  if (!estado.emisoras.length) { cont.replaceChildren(h('p', { class: 'vacio' }, 'Cargando emisoras…')); return; }
+  const p2p = modoActual() === 'participantes';
+  cont.replaceChildren(...estado.emisoras.map(e => {
+    const piso = p2p && e.piso && typeof e.piso === 'object' ? e.piso : null;
+    const susp = !!e.suspendida_hasta;
+    let badge;
+    if (susp) {
+      const cuenta = h('span', { class: 'mono' }, '');
+      ponerCuenta(cuenta, parseTs(e.suspendida_hasta), '', 'reabriendo…');
+      badge = h('div', { class: 'emi-badge badge-rojo badge-parpadeo' }, 'SUSPENDIDA · ', cuenta);
+    } else {
+      badge = h('div', { class: 'emi-badge badge-dim' }, 'Operando');
+    }
+    return h('article', { class: 'emisora' + (susp ? ' emisora-susp' : ''), 'aria-label': e.nombre + ' ' + e.serie },
+      h('div', { class: 'emi-cab' },
+        h('span', { class: 'emi-ticker' }, e.ticker, ' ', h('span', { class: 'emi-serie' }, e.serie)),
+        h('span', { class: 'emi-var ' + claseVar(e.var) }, pct(e.var))),
+      h('div', { class: 'emi-posturas' },
+        h('div', null, h('span', { class: 'lbl' }, 'Compra'), h('b', null, num(e.bid))),
+        h('div', null, h('span', { class: 'lbl' }, 'Venta'), h('b', null, num(e.ask)))),
+      h('div', { class: 'emi-pie' },
+        h('span', null, 'Spread ', h('span', { class: 'mono' }, num(e.spread))),
+        h('span', null, 'Vol ', h('span', { class: 'mono' }, entero(e.vol)))),
+      piso ? h('div', { class: 'emi-pie' },
+        h('span', null, 'En el piso'),
+        h('span', { class: 'mono' }, entero(Number(piso.n_compra) || 0) + ' compra · ' + entero(Number(piso.n_venta) || 0) + ' venta')) : null,
+      badge);
+  }));
+}
+
+/** Modo de mercado: control segmentado, línea del estado en vivo y tira superior. */
+function pintarModo() {
+  const modo = modoActual();
+  if (modo !== estado.modoPintado) { estado.modoPintado = modo; repintarPistas(); }   // p. ej. la pista de bot_intensity
+  const ref = estado.refModo;
+  if (ref) {
+    for (const m of Object.keys(ref.botones)) {
+      const b = ref.botones[m];
+      b.setAttribute('aria-pressed', String(modo === m));
+      b.disabled = estado.guardandoModo;
+    }
+    ref.desc.textContent = modo ? DESC_MODO[modo] : '';
+  }
+  const linea = $('#estado-modo');
+  const tm = $('#t-modo');
+  if (!modo) { linea.hidden = true; tm.hidden = true; return; }
+  const p2p = modo === 'participantes';
+  const n = Array.isArray(estado.piso) ? estado.piso.length : null;
+  linea.hidden = false;
+  linea.replaceChildren(
+    h('span', { class: 'kpi-lbl' }, 'Modo de mercado'),
+    h('b', { class: 'txt-ambar' }, NOMBRE_MODO[modo]),
+    p2p
+      ? h('span', { class: 'chip ' + (n ? 'chip-ambar' : 'chip-dim') },
+        n === null ? 'piso: —' : plural(n, 'orden esperando en el piso', 'órdenes esperando en el piso'))
+      : h('span', { class: 'pista' }, 'Formador de mercado y bots operando'));
+  tm.hidden = false;
+  tm.replaceChildren(h('b', { class: p2p ? 'txt-ambar' : null }, p2p ? 'ENTRE PARTICIPANTES' : 'CON BOTS'),
+    p2p && n !== null ? ' · ' + entero(n) + ' en el piso' : '');
+}
+
+function origenTxt(o) { return o === 'auto' ? 'automático' : o === 'admin' ? 'admin' : o === 'noticia' ? 'noticia' : (o || ''); }
+
+function detalleEvento(e) {
+  const d = (e.data && typeof e.data === 'object') ? e.data : {};
+  switch (e.tipo) {
+    case 'apertura': return (d.ronda ? 'Ronda #' + d.ronda : '') + (d.minutos ? ' · ' + d.minutos + ' min' : '');
+    case 'cierre': return d.jugador ? 'Campeón: ' + d.jugador.nombre + ' ' + pct(d.jugador.pnl) : '';
+    case 'crash': case 'rally': return 'Índice ' + pct(d.pct) + (d.origen ? ' · ' + origenTxt(d.origen) : '');
+    case 'salto': return (e.ticker ? e.ticker + ' ' : '') + pct(d.pct);
+    case 'noticia': return (Array.isArray(d.emisoras) ? d.emisoras.join(', ') + ' ' : '') + pct(d.pct);
+    case 'suspension': return pct(d.pct) + (d.hasta ? ' · hasta ' + horaCDMX(d.hasta) : '');
+    case 'suspension_general': return 'Índice ' + pct(d.pct) + (d.hasta ? ' · hasta ' + horaCDMX(d.hasta) : '');
+    default: return '';
+  }
+}
+
+function pintarEventos() {
+  const ul = $('#eventos');
+  const lista = estado.eventos.slice(-12).reverse();
+  if (!lista.length) { ul.replaceChildren(h('li', { class: 'vacio' }, 'Sin eventos todavía.')); return; }
+  ul.replaceChildren(...lista.map(e => {
+    const meta = TIPOS[e.tipo] || { txt: String(e.tipo || '').toUpperCase(), cls: 'chip-dim' };
+    const det = detalleEvento(e);
+    return h('li', { class: 'evento' },
+      h('span', { class: 'ev-hora mono' }, horaCDMX(e.ts)),
+      h('div', { class: 'ev-cuerpo' },
+        h('span', { class: 'chip ' + meta.cls }, meta.txt),
+        h('span', { class: 'ev-titulo' }, e.titulo || ''),
+        det ? h('span', { class: 'ev-det mono' }, det) : null));
+  }));
+}
+
+function pintarTira() {
+  const m = estado.mercado;
+  $('#t-ipc').textContent = m ? num(m.indice) : '—';
+  const v = $('#t-ipc-var');
+  v.textContent = m ? pct(m.var) : '';
+  v.className = claseVar(m && m.var);
+  const tm = $('#t-mercado');
+  if (!m) tm.replaceChildren('—');
+  else if (m.estado === 'suspension_general') {
+    const c = h('b', { class: 'txt-rojo' }, '');
+    ponerCuenta(c, parseTs(m.suspendido_hasta), '', '…');
+    tm.replaceChildren(h('b', { class: 'txt-rojo' }, 'SUSP. GENERAL '), c);
+  } else tm.replaceChildren(h('b', { class: 'txt-verde' }, 'ABIERTO'));
+  const tr = $('#t-ronda');
+  const r = estado.ronda;
+  if (r === undefined) tr.replaceChildren('—');
+  else if (!r) tr.replaceChildren(h('b', { class: 'txt-dim' }, 'SIN RONDA'));
+  else if (r.estado === 'activa') {
+    const c = h('b', { class: 'txt-verde' }, '');
+    ponerCuenta(c, parseTs(r.fin), '', 'cerrando');
+    tr.replaceChildren('Ronda #' + r.id + ' ', c);
+  } else tr.replaceChildren('Ronda #' + r.id + ' ', h('b', { class: 'txt-ambar' }, 'CERRADA'));
+}
+
+function pintarJugadores() {
+  const lb = estado.lb;
+  $('#jug-total').textContent = lb ? entero(lb.total) : '—';
+  const cupo = estado.config.get('max_jugadores');
+  $('#jug-cupo').textContent = cupo ? ' / ' + entero(cupo.value) : '';
+  const lider = lb && Array.isArray(lb.individual) ? lb.individual[0] : null;
+  const casa = lb && Array.isArray(lb.casas) ? lb.casas[0] : null;
+  $('#jug-lider').textContent = lider ? 'Líder: ' + lider.nombre + ' (' + lider.casa + ') ' + pct(lider.pnl) : (lb ? 'Sin jugadores registrados' : '');
+  $('#jug-casa').textContent = casa ? 'Casa líder: ' + casa.casa + ' ' + pct(casa.pnl) : '';
+  $('#t-jug').textContent = lb ? entero(lb.total) : '—';
+}
+
+function textoCampeon(c) {
+  if (!c || !c.jugador) return 'sin jugadores registrados';
+  return c.jugador.nombre + ' ' + pct(c.jugador.pnl) + (c.casa ? ' · casa ganadora ' + c.casa.casa + ' ' + pct(c.casa.pnl) : '');
+}
+
+function pintarCampeon() {
+  const box = $('#campeon');
+  const r = estado.ronda;
+  let c = estado.campeon, rid = estado.campeonRonda;
+  if (r && r.estado === 'activa') { box.hidden = true; return; }
+  if (!c && r && r.estado === 'cerrada' && r.campeon) { c = r.campeon; rid = r.id; }
+  if (!c) { box.hidden = true; return; }
+  box.hidden = false;
+  const j = c.jugador, k = c.casa;
+  box.replaceChildren(
+    h('span', { class: 'campeon-tit' }, '★ Campeón' + (rid ? ' de la ronda #' + rid : '')),
+    j ? h('span', { class: 'campeon-nombre' }, j.nombre) : h('span', { class: 'campeon-nombre' }, 'Sin jugadores registrados'),
+    j ? h('span', { class: 'mono' }, 'Agente ' + j.agente + ' · ' + j.casa + ' · ' + pct(j.pnl) + ' · $' + num(j.valor, 2)) : null,
+    k ? h('span', null, 'Casa ganadora: ', h('b', null, k.casa), ' ', h('span', { class: 'mono' }, pct(k.pnl) + ' promedio · ' + k.agentes + ' agentes')) : null);
+}
+
+function actualizarBotones() {
+  const r = estado.ronda;
+  const conocido = r !== undefined;
+  const activa = !!(r && r.estado === 'activa');
+  const fijar = (id, deshabilitar) => {
+    const b = document.getElementById(id);
+    if (b && b.dataset.ocupado !== '1') b.disabled = deshabilitar;
+  };
+  fijar('btn-iniciar', conocido && activa);
+  fijar('btn-cerrar', conocido && !activa);
+  fijar('btn-calibrar', conocido && activa);
+  const pista = $('#ronda-pista');
+  pista.textContent = !conocido ? '' : activa
+    ? 'Para iniciar otra ronda primero cierra la actual (o espera a que termine).'
+    : 'Al iniciar, el índice vuelve a base 1,000 y los jugadores pueden operar.';
+  const ce = $('#cal-estado');
+  if (ce && !ce.dataset.corriendo) ce.textContent = conocido && activa ? 'Hay una ronda activa: ciérrala antes de calibrar.' : '';
+  pintarNoticiasActivas();
+  pintarCatalogoControles();
+}
+
+/** Cuentas regresivas, reloj y conexión. */
+function tic() {
+  if (!estado.panelActivo) return;
+  const ahora = ahoraServidor();
+  $('#reloj').textContent = horaCDMX(ahora);
+  for (const el of document.querySelectorAll('[data-hasta]')) {
+    const resta = Number(el.dataset.hasta) - ahora;
+    const txt = resta > 0 ? (el.dataset.prefijo || '') + mmss(resta) : (el.dataset.fin || '00:00');
+    if (el.textContent !== txt) el.textContent = txt;
+  }
+  pintarConexion();
+}
+
+function pintarConexion() {
+  const el = $('#conexion');
+  if (!el) return;
+  const edad = estado.ultimoMsg ? (Date.now() - estado.ultimoMsg) / 1000 : Infinity;
+  let txt, cls;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) { txt = 'SIN RED'; cls = 'con-rojo'; }
+  else if (estado.canalEstado === 'SUBSCRIBED' && edad < 25) { txt = 'EN VIVO'; cls = 'con-verde'; }
+  else if (estado.canalEstado === 'SUBSCRIBED') { txt = Number.isFinite(edad) ? 'SIN TICKS ' + Math.round(edad) + ' s' : 'ESPERANDO TICKS'; cls = 'con-ambar'; }
+  else if (estado.canalEstado === 'CHANNEL_ERROR' || estado.canalEstado === 'TIMED_OUT' || estado.canalEstado === 'CLOSED') { txt = 'RECONECTANDO'; cls = 'con-rojo'; }
+  else { txt = 'CONECTANDO'; cls = 'con-ambar'; }
+  if (el.textContent !== txt) el.textContent = txt;
+  el.className = 'conexion ' + cls;
+  el.title = Number.isFinite(edad) ? 'Último dato hace ' + Math.round(edad) + ' s' : 'Sin datos todavía';
+}
+
+/* ===================================================================
+   Estimación de impacto de saltos de mercado
+   Cada emisora: M × exp(beta·J). IPC = 1000·Σ w·mid/open_ref.
+   =================================================================== */
+function estimarSalto(J) {
+  if (!estado.activos.size || !estado.emisoras.length || !Number.isFinite(J)) return null;
+  let antes = 0, despues = 0;
+  const por = [];
+  for (const e of estado.emisoras) {
+    const a = estado.activos.get(e.ticker);
+    if (!a || !Number.isFinite(a.beta) || !Number.isFinite(a.weight)) return null;
+    const rel = 1 + (Number(e.var) || 0) / 100;
+    const x = Math.exp(a.beta * J);
+    antes += a.weight * rel;
+    despues += a.weight * rel * x;
+    por.push({ ticker: e.ticker, pct: (x - 1) * 100 });
+  }
+  if (!(antes > 0)) return null;
+  return { por, ipc: (despues / antes - 1) * 100 };
+}
+
+function textoEstim(est) {
+  return est.por.map(p => p.ticker + ' ' + pct(p.pct, 1)).join(' · ') + ' · Índice ≈ ' + pct(est.ipc, 1);
+}
+
+function alertaSuspension(est) {
+  const u = estado.config.get('susp_general_pct');
+  if (!est || !u || Math.abs(est.ipc) < Number(u.value) * 100) return '';
+  return 'Puede disparar SUSPENSIÓN GENERAL (umbral ' + num(Number(u.value) * 100, 0) + ' % del índice en la ventana).';
+}
+
+function pintarEstimaciones() {
+  for (const ref of estado.refsNoticias.values()) {
+    if (!ref.estim) continue;
+    const est = estimarSalto(Number(ref.n.shock_precio));
+    ref.estim.textContent = est ? 'Impacto aprox.: ' + textoEstim(est) : 'Impacto por emisora = salto × beta.';
+    // Las noticias de mercado no suspenden: el mercado se va cayendo (o subiendo) durante noticia_caida_s.
+    const seg = estado.config.get('noticia_caida_s');
+    const al = ref.n.alcance === 'mercado'
+      ? 'Sin suspensión: el mercado se ' + (Number(ref.n.shock_precio) < 0 ? 'desploma' : 'dispara') + ' poco a poco durante ' + num(seg ? Number(seg.value) : 24, 0) + ' s.'
+      : alertaSuspension(est);
+    ref.alerta.hidden = !al;
+    ref.alerta.textContent = al;
+  }
+  pintarCrash();
+}
+
+/* ===================================================================
+   Parámetros (tabla config)
+   =================================================================== */
+function decimalesDe(x) {
+  const s = String(x);
+  const m = /e-(\d+)$/i.exec(s);
+  if (m) return parseInt(m[1], 10);
+  const i = s.indexOf('.');
+  return i < 0 ? 0 : s.length - i - 1;
+}
+function esPct(key) { return /_pct$/.test(key) || key === 'comision' || key === 'p2p_impacto'; }
+function fmtParam(row, v) {
+  const d = decimalesDe(row.step);
+  if (esPct(row.key)) return num(Number(v) * 100, Math.max(0, d - 2)) + ' %';
+  return num(v, d);
+}
+function limpiarValor(row, v) {
+  const d = Math.min(10, Math.max(decimalesDe(row.step), decimalesDe(row.min)));
+  return Number(Number(v).toFixed(d));
+}
+/** Orden de rotación de crashes (y al revés, de rallies) entre las emisoras en juego. */
+function textoRotacion(inverso) {
+  const t = tickersActivos();
+  if (!t.length) return 'rotando entre las emisoras en juego';
+  if (t.length === 1) return 'siempre ' + t[0] + ' (es la única en juego)';
+  return 'rotando ' + (inverso ? t.slice().reverse() : t).join(' → ');
+}
+
+function pistaParam(key, v) {
+  v = Number(v);
+  switch (key) {
+    case 'bot_intensity': {
+      const base = v === 0 ? 'Bots apagados: solo operan los jugadores.' : num(v, 1) + '× la actividad normal de las otras casas.';
+      return modoActual() === 'participantes' ? base + ' (entre participantes no operan con los jugadores: solo mueven el precio)' : base;
+    }
+    case 'crash_emisora_min': return v === 0 ? 'Crash de emisora programado apagado.' : 'Una emisora se desploma cada ' + num(v, 0) + ' min de ronda, ' + textoRotacion(false) + '.';
+    case 'crash_general_ronda': return v === 0 ? 'Sin crash general programado.' : 'Un crash general por ronda en un momento al azar (entre el 20% y el 80% de la ronda).';
+    case 'rally_emisora_min': return v === 0 ? 'Rally de emisora programado apagado.' : 'Una emisora sube a la mitad de cada intervalo de ' + num(v, 0) + ' min (min ' + num(v / 2, 0) + ', ' + num(v * 1.5, 0) + '…), ' + textoRotacion(true) + '.';
+    case 'p2p_impacto': return v === 0 ? 'Las operaciones entre jugadores no mueven el precio: solo crashes, rallies y noticias.' : 'Cada 1,000 acciones operadas mueven el precio ≈ ' + num(v * 100, 2) + ' % (una operación de 5,000, ≈ ' + num(v * 500, 1) + ' %).';
+    case 'p2p_expira_s': return 'Si nadie la acepta en ' + (v >= 60 ? num(v / 60, v % 60 ? 1 : 0) + ' min' : num(v, 0) + ' s') + ', la orden se cancela sola.';
+    case 'rally_general_ronda': return v === 0 ? 'Sin rally general programado.' : 'Un rally general por ronda en un momento al azar, separado de los crashes.';
+    case 'crash_rate': return v === 0 ? 'Sin crashes al azar: solo los programados.' : 'Además de los programados, ≈ 1 crash al azar cada ' + num(1 / v, 1) + ' min.';
+    case 'crash_mu': return '≈ ' + pct(efectoPct(v), 1) + ' por crash promedio.';
+    case 'rally_mu': return '≈ ' + pct(efectoPct(v), 1) + ' por rally promedio.';
+    case 'herd_thr': case 'value_thr': return '= ' + num(v * 100, 1) + ' %';
+    case 'ronda_min': return 'Valor por defecto al iniciar ronda.';
+    default: return '';
+  }
+}
+
+/** Recalcula solo los textos de ayuda (sin tocar sliders que se estén moviendo). */
+function repintarPistas() {
+  for (const [key, ctls] of estado.controles) for (const c of ctls) c.pista.textContent = pistaParam(key, Number(c.input.value));
+}
+
+function rellenar(input) {
+  const min = Number(input.min), max = Number(input.max), v = Number(input.value);
+  const p = max > min ? ((v - min) / (max - min)) * 100 : 0;
+  input.style.setProperty('--p', Math.max(0, Math.min(100, p)) + '%');
+}
+
+function vistaParam(key, v, nota, clase) {
+  const row = estado.config.get(key);
+  const ctls = estado.controles.get(key);
+  if (!row || !ctls) return;
+  for (const c of ctls) {
+    if (String(c.input.value) !== String(v)) c.input.value = String(v);
+    rellenar(c.input);
+    c.salida.textContent = fmtParam(row, v);
+    if (nota !== undefined) { c.nota.textContent = nota || ''; c.nota.className = 'param-nota ' + (clase || ''); }
+    c.pista.textContent = pistaParam(key, v);
+    if (c.presets) for (const b of c.presets.children) b.setAttribute('aria-pressed', String(Number(b.dataset.valor) === Number(v)));
+  }
+}
+
+const tParam = new Map();
+const seqParam = new Map();
+
+function crearControl(row, grande) {
+  const id = 'cfg-' + row.key + (grande ? '-rapido' : '');
+  const input = h('input', { type: 'range', id, min: row.min, max: row.max, step: row.step, value: row.value });
+  const salida = h('output', { class: 'param-valor', for: id });
+  const nota = h('span', { class: 'param-nota' });
+  const pista = h('span', { class: 'param-pista' });
+  let presets = null;
+  if (grande && PRESETS[row.key]) {
+    presets = h('div', { class: 'presets', role: 'group', 'aria-label': 'Valores rápidos' },
+      PRESETS[row.key].filter(v => v >= row.min && v <= row.max).map(v =>
+        h('button', { type: 'button', class: 'chip-btn', 'data-valor': v, 'aria-pressed': 'false',
+          onclick: () => { vistaParam(row.key, v, 'guardando…', 'pendiente'); guardarParam(row.key, v); } },
+          fmtParam(row, v))));
+  }
+  const cont = h('div', { class: 'param' + (grande ? ' param-grande' : '') },
+    h('div', { class: 'param-cab' },
+      h('label', { for: id }, row.label, h('span', { class: 'param-clave' }, row.key)),
+      salida),
+    input,
+    h('div', { class: 'param-pie' }, h('span', null, fmtParam(row, row.min)), nota, h('span', null, fmtParam(row, row.max))),
+    pista,
+    presets);
+  const ctl = { input, salida, nota, pista, presets };
+  if (!estado.controles.has(row.key)) estado.controles.set(row.key, []);
+  estado.controles.get(row.key).push(ctl);
+
+  input.addEventListener('input', () => {
+    const v = Number(input.value);
+    const actual = estado.config.get(row.key);
+    if (actual && Math.abs(v - actual.value) < 1e-12 && !estado.guardando.has(row.key)) {
+      // regresó al valor guardado: no hay nada pendiente
+      estado.sucios.delete(row.key);
+      vistaParam(row.key, v, '');
+      return;
+    }
+    estado.sucios.add(row.key);
+    vistaParam(row.key, v, 'sin guardar', 'pendiente');
+  });
+  input.addEventListener('change', () => {
+    clearTimeout(tParam.get(row.key));
+    tParam.set(row.key, setTimeout(() => guardarParam(row.key, Number(input.value)), 200));
+  });
+  return cont;
+}
+
+async function guardarParam(key, valor, opciones) {
+  const deshacer = !!(opciones && opciones.deshacer);
+  const row = estado.config.get(key);
+  if (!row) return;
+  const v = limpiarValor(row, valor);
+  const anterior = Number(row.value);
+  const seq = (seqParam.get(key) || 0) + 1;
+  seqParam.set(key, seq);
+  estado.sucios.add(key);
+  estado.guardando.add(key);
+  vistaParam(key, v, 'guardando…', 'pendiente');
+  const r = await adminRpc('set_config', { p_key: key, p_value: v });
+  if (seqParam.get(key) !== seq) return;          // hubo un cambio más reciente
+  estado.guardando.delete(key);
+  estado.sucios.delete(key);
+  if (r.ok) {
+    const nv = Number(r.data.value);
+    row.value = nv;
+    const acotado = Math.abs(nv - v) > 1e-12;
+    vistaParam(key, nv, acotado ? 'acotado a ' + fmtParam(row, nv) : 'guardado ✓', 'ok');
+    registrar((deshacer ? 'Deshacer · ' : 'Parámetro · ') + row.label, true,
+      fmtParam(row, nv) + (acotado ? ' (acotado por el servidor)' : ''), { toast: false });
+    if (deshacer) toast('Restaurado: ' + row.label + ' = ' + fmtParam(row, nv), 'ok');
+    else if (Math.abs(nv - anterior) > 1e-12) {
+      toast(row.label + ': ' + fmtParam(row, nv) + (acotado ? ' (acotado)' : ''), 'ok', 8000,
+        { texto: 'Deshacer', fn: () => guardarParam(key, anterior, { deshacer: true }) });
+    }
+    alCambiarConfig(key);
+  } else {
+    vistaParam(key, row.value, 'no se guardó', 'error');
+    registrar('Parámetro · ' + row.label, false, r.error);
+  }
+}
+
+function alCambiarConfig(key) {
+  if (key === 'susp_general_pct') pintarEstimaciones();
+  if (key === 'max_jugadores') pintarJugadores();
+  if (key === 'ronda_min') ponerMinutosPorDefecto(true);
+}
+
+function ponerMinutosPorDefecto(forzar) {
+  const row = estado.config.get('ronda_min');
+  const campo = $('#ronda-min');
+  if (!row || (campo.dataset.tocado === '1' && !forzar)) return;
+  campo.value = String(Math.round(Number(row.value)));
+  marcarChipsMin();
+}
+
+function construirParametros() {
+  estado.controles.clear();
+  estado.refModo = null;
+  const grupos = new Map();
+  const filas = [...estado.config.values()].filter(r => !SIN_SLIDER.has(r.key)).sort((a, b) => a.orden - b.orden);
+  for (const row of filas) {
+    if (!grupos.has(row.grupo)) grupos.set(row.grupo, []);
+    grupos.get(row.grupo).push(row);
+  }
+  const nombres = ORDEN_GRUPOS.filter(g => grupos.has(g)).concat([...grupos.keys()].filter(g => !ORDEN_GRUPOS.includes(g)));
+  const cont = $('#parametros');
+  const abiertos = new Set([...cont.querySelectorAll('details[open]')].map(d => d.dataset.grupo));
+  cont.replaceChildren(...nombres.map(g => h('details', { class: 'grupo', 'data-grupo': g, open: abiertos.has(g) },
+    h('summary', null, h('span', { class: 'grupo-nombre' }, g), h('span', { class: 'grupo-n' }, grupos.get(g).length + ' parámetros')),
+    h('div', { class: 'grupo-cuerpo' },
+      DESC_GRUPOS[g] ? h('p', { class: 'grupo-desc' }, DESC_GRUPOS[g]) : null,
+      grupos.get(g).map(r => crearControl(r, false))))));
+  const rap = $('#rapidos');
+  const rapidos = RAPIDOS.filter(k => estado.config.has(k));
+  const nodos = (estado.config.has('modo_p2p') ? [crearControlModo()] : []).concat(rapidos.map(k => crearControl(estado.config.get(k), true)));
+  rap.replaceChildren(...(nodos.length ? nodos : [h('p', { class: 'vacio' }, 'Parámetros no disponibles.')]));
+  for (const key of estado.controles.keys()) vistaParam(key, estado.config.get(key).value, '');
+  pintarModo();
+}
+
+/* ===================================================================
+   Modo de mercado (config modo_p2p: 0 = con bots, 1 = entre participantes)
+   =================================================================== */
+function crearControlModo() {
+  const nota = h('span', { class: 'param-nota' });
+  const desc = h('p', { class: 'modo-desc' });
+  const botones = {};
+  const grupo = h('div', { class: 'segmento', role: 'group', 'aria-labelledby': 'modo-tit' },
+    ['bots', 'participantes'].map(m => (botones[m] = h('button', { type: 'button', 'aria-pressed': 'false', onclick: () => cambiarModo(m) }, NOMBRE_MODO[m]))));
+  estado.refModo = { botones, desc, nota };
+  return h('div', { class: 'param param-grande modo-ctl' },
+    h('div', { class: 'param-cab' },
+      h('span', { id: 'modo-tit', class: 'modo-tit' }, 'Modo de mercado', h('span', { class: 'param-clave' }, 'modo_p2p')),
+      nota),
+    grupo,
+    desc);
+}
+
+function notaModo(txt, clase) {
+  const ref = estado.refModo;
+  if (!ref) return;
+  ref.nota.textContent = txt || '';
+  ref.nota.className = 'param-nota ' + (clase || '');
+}
+
+async function cambiarModo(nuevo) {
+  if (!estado.config.has('modo_p2p') || estado.guardandoModo || !modoValido(nuevo)) return;
+  if (nuevo === modoActual()) return;
+  const r0 = estado.ronda;
+  if (r0 && r0.estado === 'activa') {
+    const aBots = nuevo === 'bots';
+    const n = Array.isArray(estado.piso) ? estado.piso.length : 0;
+    const ok = await confirmar({
+      titulo: aBots ? '¿Regresar al modo «Con bots»?' : '¿Cambiar al modo «Entre participantes»?',
+      cuerpo: aBots
+        ? ['La ronda #' + r0.id + ' sigue corriendo. Las órdenes que nadie ha aceptado se cancelan' + (n ? ' (ahora hay ' + plural(n, 'orden', 'órdenes') + ' en el piso).' : '.'),
+          'Los jugadores vuelven a operar al momento contra el formador de mercado y los bots.']
+        : ['La ronda #' + r0.id + ' sigue corriendo. Los bots dejan de operar con los jugadores (solo mueven el precio): cada orden espera en el piso hasta que otro jugador la acepte.',
+          'El precio se sigue moviendo como siempre; además, cada operación cerrada entre jugadores lo empuja.'],
+      ok: aBots ? 'Sí, regresar a bots' : 'Sí, cambiar de modo', peligro: false
+    });
+    if (!ok || nuevo === modoActual()) return;
+  }
+  await guardarModo(nuevo);
+}
+
+async function guardarModo(nuevo) {
+  const row = estado.config.get('modo_p2p');
+  if (!row || estado.guardandoModo) return;
+  estado.guardandoModo = true;
+  notaModo('guardando…', 'pendiente');
+  pintarModo();
+  let r;
+  try { r = await adminRpc('set_config', { p_key: 'modo_p2p', p_value: nuevo === 'participantes' ? 1 : 0 }); }
+  finally { estado.guardandoModo = false; }
+  if (r.ok) {
+    const nv = Number(r.data.value);
+    row.value = nv;
+    estado.modo = nv >= 0.5 ? 'participantes' : 'bots';
+    estado.modoFijadoEn = Date.now();
+    notaModo('guardado ✓', 'ok');
+    registrar('Modo de mercado', true, NOMBRE_MODO[estado.modo]);
+    refrescarSnapshot();
+  } else {
+    notaModo('no se guardó', 'error');
+    registrar('Modo de mercado', false, r.error);
+  }
+  pintarModo();
+  pintarEmisoras();
+  repintarPistas();
+}
+
+async function cargarConfig(manual) {
+  let res;
+  try {
+    res = await cliente().from('config').select('key,value,label,grupo,min,max,step,orden').order('orden');
+  } catch (e) { res = { error: e }; }
+  if (res.error || !Array.isArray(res.data)) {
+    if (manual || !estado.config.size) toast('No se pudieron leer los parámetros: ' + textoError(res.error), 'error');
+    return;
+  }
+  const filas = res.data.map(r => ({
+    key: r.key, label: r.label, grupo: r.grupo,
+    value: Number(r.value), min: Number(r.min), max: Number(r.max), step: Number(r.step), orden: Number(r.orden)
+  }));
+  const firmaNueva = filas.map(r => r.key + '|' + r.min + '|' + r.max + '|' + r.step + '|' + r.label + '|' + r.grupo).join(';');
+  const reconstruir = firmaNueva !== estado.firmaConfig;
+  estado.firmaConfig = firmaNueva;
+  for (const r of filas) {
+    const viejo = estado.config.get(r.key);
+    if (viejo && estado.sucios.has(r.key)) r.value = viejo.value;   // no pisar lo que se está editando
+    estado.config.set(r.key, r);
+  }
+  for (const k of [...estado.config.keys()]) if (!filas.some(r => r.key === k)) estado.config.delete(k);
+  if (reconstruir) construirParametros();
+  else for (const r of filas) if (!estado.sucios.has(r.key)) vistaParam(r.key, r.value);
+  pintarModo();
+  ponerMinutosPorDefecto(false);
+  pintarJugadores();
+  pintarEstimaciones();
+  if (manual) toast('Parámetros actualizados', 'ok', 2500);
+}
+
+/* ===================================================================
+   Noticias y eventos de mercado
+   =================================================================== */
+async function cargarNoticias() {
+  let res;
+  try {
+    res = await cliente().from('news')
+      .select('id,titulo,descripcion,alcance,emisoras,shock_precio,shock_fv,veces,last_applied_at').order('id');
+  } catch (e) { res = { error: e }; }
+  if (res.error || !Array.isArray(res.data)) {
+    if (!estado.noticias.length) {
+      const msg = 'No se pudieron leer las noticias: ' + textoError(res.error);
+      $('#noticias-emisora').replaceChildren(h('p', { class: 'msg-error' }, msg));
+      $('#noticias-mercado').replaceChildren(h('p', { class: 'msg-error' }, msg));
+    }
+    return;
+  }
+  estado.noticias = res.data;
+  const firma = res.data.map(n => [n.id, n.titulo, n.alcance, n.shock_precio, n.shock_fv, (n.emisoras || []).join('+')].join('|')).join(';');
+  if (firma !== estado.firmaNoticias) { estado.firmaNoticias = firma; construirNoticias(); }
+  else for (const n of res.data) { const ref = estado.refsNoticias.get(n.id); if (ref) { ref.n = n; pintarVeces(ref); } }
+  pintarEstimaciones();
+}
+
+function pintarVeces(ref) {
+  const n = ref.n;
+  const veces = Number(n.veces) || 0;
+  ref.veces.textContent = (veces === 1 ? '1 vez' : entero(veces) + ' veces') + (n.last_applied_at ? ' · última ' + horaCDMX(n.last_applied_at) : '');
+}
+
+function construirNoticias() {
+  estado.refsNoticias.clear();
+  const emi = estado.noticias.filter(n => n.alcance === 'emisora');
+  const mer = estado.noticias.filter(n => n.alcance === 'mercado');
+  $('#noticias-emisora').replaceChildren(...(emi.length ? emi.map(tarjetaNoticiaEmisora) : [h('p', { class: 'vacio' }, 'No hay noticias por emisora.')]));
+  $('#noticias-mercado').replaceChildren(...(mer.length ? mer.map(tarjetaEventoMercado) : [h('p', { class: 'vacio' }, 'No hay eventos de mercado.')]));
+  pintarNoticiasActivas();
+}
+
+function tarjetaNoticiaEmisora(n) {
+  const alza = Number(n.shock_precio) >= 0;
+  const veces = h('dd', { class: 'mono' });
+  const btn = h('button', { type: 'button', class: 'btn btn-ancho ' + (alza ? 'btn-verde' : 'btn-contorno-rojo') }, 'Publicar noticia');
+  const fuera = h('p', { class: 'alerta-susp', hidden: true });
+  const chips = new Map();
+  const ref = { n, veces, btn, fuera, chips };
+  estado.refsNoticias.set(n.id, ref);
+  pintarVeces(ref);
+  dobleToque(btn, () => '¿Publicar «' + n.titulo + '»? Toca otra vez', () => aplicarNoticia(ref, btn));
+  return h('article', { class: 'noticia' },
+    h('div', { class: 'not-cab' }, h('h3', null, n.titulo), h('span', { class: 'chip ' + (alza ? 'chip-verde' : 'chip-rojo') }, alza ? 'ALZA' : 'BAJA')),
+    h('p', { class: 'not-desc' }, n.descripcion),
+    h('dl', { class: 'datos' },
+      h('dt', null, 'Emisoras'), h('dd', { class: 'chips' }, (n.emisoras || []).map(t => {
+        const c = h('span', { class: 'chip chip-ambar' }, t);
+        chips.set(t, c);
+        return c;
+      })),
+      h('dt', null, 'Efecto'), h('dd', null,
+        h('span', { class: 'mono ' + claseVar(n.shock_precio) }, 'precio ' + pct(efectoPct(n.shock_precio))),
+        ' · ', h('span', { class: 'mono txt-dim' }, 'valor justo ' + pct(efectoPct(n.shock_fv)))),
+      h('dt', null, 'Aplicada'), veces),
+    fuera,
+    btn);
+}
+
+/** Noticias de emisora: si alguna de sus emisoras no está en juego, no se puede publicar. */
+function pintarNoticiasActivas() {
+  const activas = conjuntoActivas();
+  for (const ref of estado.refsNoticias.values()) {
+    if (ref.n.alcance !== 'emisora' || !ref.fuera) continue;
+    const fuera = activas ? (ref.n.emisoras || []).filter(t => !activas.has(t)) : [];
+    const bloquear = fuera.length > 0;
+    if (bloquear && ref.btn._desarmar) ref.btn._desarmar();
+    if (ref.btn.dataset.ocupado !== '1') ref.btn.disabled = bloquear;
+    ref.fuera.hidden = !bloquear;
+    ref.fuera.textContent = bloquear ? 'Emisora fuera de juego: ' + fuera.join(', ') : '';
+    for (const [t, chip] of ref.chips) {
+      const f = !!activas && !activas.has(t);
+      chip.className = 'chip ' + (f ? 'chip-dim chip-fuera' : 'chip-ambar');
+      if (f) chip.title = 'Fuera de juego'; else chip.removeAttribute('title');
+    }
+  }
+}
+
+function tarjetaEventoMercado(n) {
+  const crash = Number(n.shock_precio) < 0;
+  const veces = h('dd', { class: 'mono' });
+  const estim = h('p', { class: 'estim' });
+  const alerta = h('p', { class: 'alerta-susp', hidden: true });
+  const btn = h('button', { type: 'button', class: 'btn btn-grande btn-ancho ' + (crash ? 'btn-panico' : 'btn-verde') }, n.titulo);
+  const ref = { n, veces, btn, estim, alerta };
+  estado.refsNoticias.set(n.id, ref);
+  pintarVeces(ref);
+  dobleToque(btn, () => (crash ? '¿Lanzar ' : '¿Activar ') + n.titulo + '? Toca otra vez', () => aplicarNoticia(ref, btn));
+  return h('article', { class: 'noticia evento-mkt ' + (crash ? 'evento-crash' : 'evento-rally') },
+    btn,
+    h('p', { class: 'not-desc' }, n.descripcion),
+    h('dl', { class: 'datos' },
+      h('dt', null, 'Salto'), h('dd', null,
+        h('span', { class: 'mono ' + claseVar(n.shock_precio) }, pct(efectoPct(n.shock_precio))),
+        ' × beta · ', h('span', { class: 'mono txt-dim' }, 'valor justo ' + pct(efectoPct(n.shock_fv)))),
+      h('dt', null, 'Aplicado'), veces),
+    estim, alerta);
+}
+
+async function aplicarNoticia(ref, btn) {
+  const n = ref.n;
+  const nombre = n.alcance === 'mercado' ? 'Evento de mercado' : 'Noticia';
+  await ocupado(btn, 'Enviando…', async () => {
+    const r = await adminRpc('apply_news', { p_news_id: n.id });
+    if (r.ok) {
+      registrar(nombre, true, (r.data.noticia || n.titulo) + ' aplicada');
+      cargarNoticias();
+      refrescarSnapshot();
+    } else registrar(nombre + ' · ' + n.titulo, false, r.error);
+  });
+}
+
+/* ===================================================================
+   Crashes y rallies manuales: todo el mercado o una emisora
+   =================================================================== */
+function pintarCrash() {
+  const input = $('#crash-mag');
+  const mag = Number(input.value);
+  rellenar(input);
+  $('#crash-valor').textContent = num(mag, 1) + ' %';
+  ponerEtiqueta($('#btn-crash'), 'CRASH −' + num(mag, 1) + ' %');
+  ponerEtiqueta($('#btn-rally'), 'RALLY +' + num(mag, 1) + ' %');
+  const baja = estimarSalto(-mag / 100);
+  const sube = estimarSalto(mag / 100);
+  $('#crash-estim').textContent = baja && sube
+    ? 'Crash: ' + textoEstim(baja) + '. Rally: índice ≈ ' + pct(sube.ipc, 1) + '.'
+    : 'Salto de mercado de ±' + num(mag, 1) + ' % (log), multiplicado por la beta de cada emisora.';
+  const al = alertaSuspension(sube && baja && Math.abs(sube.ipc) > Math.abs(baja.ipc) ? sube : baja);
+  const el = $('#crash-alerta');
+  el.hidden = !al;
+  el.textContent = al;
+  pintarSaltoEmisora();
+}
+
+async function lanzarSaltoMercado(tipo) {
+  const crash = tipo === 'crash';
+  const btn = $(crash ? '#btn-crash' : '#btn-rally');
+  const mag = Number($('#crash-mag').value);
+  if (!(mag >= 1 && mag <= 15)) { toast('La magnitud debe estar entre 1 % y 15 %', 'error'); return; }
+  const nombre = crash ? 'Crash general' : 'Rally general';
+  await ocupado(btn, crash ? 'Lanzando crash…' : 'Lanzando rally…', async () => {
+    const r = await adminRpc(crash ? 'market_crash' : 'market_rally', { p_magnitud: mag });
+    if (r.ok) {
+      registrar(nombre, true, (crash ? '−' : '+') + num(mag, 1) + ' % · salto J = ' + conSigno(r.data.jm, 3) + ' (log)');
+      refrescarSnapshot();
+    } else registrar(nombre, false, r.error);
+  });
+}
+
+/** Emisora elegida para el crash/rally individual (una de las que están en juego). */
+function emisoraSalto() {
+  const t = tickersActivos();
+  if (!t.length) return null;
+  if (!estado.emSalto || !t.includes(estado.emSalto)) estado.emSalto = t[0];
+  return estado.emSalto;
+}
+/** Peso de la emisora en el índice (para estimar cuánto lo mueve). */
+function pesoIndice(t) {
+  let tot = 0, mio = 0;
+  for (const e of estado.emisoras) {
+    const a = estado.activos.get(e.ticker);
+    if (!a || !Number.isFinite(a.weight)) return null;
+    const v = a.weight * (1 + (Number(e.var) || 0) / 100);
+    tot += v;
+    if (e.ticker === t) mio = v;
+  }
+  return tot > 0 ? mio / tot : null;
+}
+function pintarSaltoEmisora() {
+  const caja = $('#em-chips');
+  const lista = tickersActivos();
+  if (caja.dataset.firma !== lista.join(',')) {
+    caja.dataset.firma = lista.join(',');
+    caja.replaceChildren(...lista.map(t => h('button', {
+      type: 'button', class: 'chip-btn', 'data-tk': t, 'aria-pressed': 'false',
+      onclick: () => { estado.emSalto = t; pintarSaltoEmisora(); },
+    }, t)));
+  }
+  const t = emisoraSalto();
+  for (const b of caja.children) b.setAttribute('aria-pressed', String(b.dataset.tk === t));
+
+  const input = $('#em-mag');
+  const mag = Number(input.value);
+  rellenar(input);
+  $('#em-valor').textContent = num(mag, 1) + ' %';
+  for (const [id, txt] of [['#btn-em-crash', 'DESPLOMAR'], ['#btn-em-rally', 'RALLY']]) {
+    const b = $(id);
+    ponerEtiqueta(b, t ? txt + ' ' + t + ' ' + (id === '#btn-em-crash' ? '−' : '+') + num(mag, 1) + ' %' : txt);
+    if (b.dataset.ocupado !== '1') b.disabled = !t;
+  }
+  const e = t ? estado.emisoras.find(x => x.ticker === t) : null;
+  const px = e ? Number(e.mid != null ? e.mid : e.bid) : NaN;
+  const w = t ? pesoIndice(t) : null;
+  $('#em-estim').textContent = !t ? 'No hay emisoras en juego.'
+    : (Number.isFinite(px)
+        ? t + ' pasa de $' + num(px, 2) + ' a $' + num(px * (1 - mag / 100), 2) + ' (desplome) o $' + num(px * (1 + mag / 100), 2) + ' (rally)'
+        : t + ' se mueve ±' + num(mag, 1) + ' %')
+      + (w !== null ? ' · índice ≈ ±' + num(w * mag, 1) + ' %.' : '.');
+  const u = estado.config.get('susp_asset_pct');
+  const al = t && u && mag + 1e-9 >= Math.round(Number(u.value) * 10000) / 100
+    ? 'Puede disparar la SUSPENSIÓN de ' + t + ' (umbral ' + num(Number(u.value) * 100, 0) + ' % en la ventana).' : '';
+  const el = $('#em-alerta');
+  el.hidden = !al;
+  el.textContent = al;
+}
+
+async function lanzarSaltoEmisora(tipo) {
+  const crash = tipo === 'crash';
+  const btn = $(crash ? '#btn-em-crash' : '#btn-em-rally');
+  const t = emisoraSalto();
+  const mag = Number($('#em-mag').value);
+  if (!t) { toast('No hay emisoras en juego', 'error'); return; }
+  if (!(mag >= 1 && mag <= 20)) { toast('La magnitud debe estar entre 1 % y 20 %', 'error'); return; }
+  const nombre = (crash ? 'Desplome de ' : 'Rally de ') + t;
+  await ocupado(btn, crash ? 'Desplomando…' : 'Lanzando rally…', async () => {
+    const r = await adminRpc('emisora_salto', { p_ticker: t, p_tipo: tipo, p_magnitud: mag });
+    if (r.ok) {
+      registrar(nombre, true, conSigno(r.data.pct, 2) + ' %');
+      refrescarSnapshot();
+    } else registrar(nombre, false, r.error);
+  });
+}
+
+/* ===================================================================
+   Ronda
+   =================================================================== */
+function marcarChipsMin() {
+  const v = Number($('#ronda-min').value);
+  for (const b of document.querySelectorAll('#chips-min .chip-btn')) b.setAttribute('aria-pressed', String(Number(b.dataset.min) === v));
+}
+
+async function iniciarRonda() {
+  const btn = $('#btn-iniciar');
+  const min = Number($('#ronda-min').value);
+  if (!Number.isInteger(min) || min < 1 || min > 120) { toast('La duración debe ser un número entero entre 1 y 120 minutos', 'error'); return; }
+  await ocupado(btn, 'Iniciando…', async () => {
+    const r = await adminRpc('start_round', { p_minutos: min });
+    if (r.ok) {
+      estado.campeon = null; estado.campeonRonda = null;
+      registrar('Iniciar ronda', true, 'Ronda #' + r.data.ronda + ' de ' + r.data.minutos + ' min en curso');
+      refrescarSnapshot();
+      refrescarLeaderboard();
+    } else registrar('Iniciar ronda', false, r.error);
+  });
+}
+
+async function cerrarRonda() {
+  const btn = $('#btn-cerrar');
+  const r0 = estado.ronda;
+  const ok = await confirmar({
+    titulo: '¿Cerrar la ronda' + (r0 && r0.id ? ' #' + r0.id : '') + ' ahora?',
+    cuerpo: ['Se detiene la operación, expiran las órdenes límite pendientes y la pizarra anuncia al campeón.',
+      'Los portafolios se conservan para la siguiente ronda.'],
+    ok: 'Sí, cerrar ronda', peligro: true
+  });
+  if (!ok) return;
+  await ocupado(btn, 'Cerrando…', async () => {
+    const r = await adminRpc('end_round');
+    if (r.ok) {
+      estado.campeon = r.data.campeon || null;
+      estado.campeonRonda = r.data.ronda;
+      pintarCampeon();
+      registrar('Cerrar ronda', true, 'Ronda #' + r.data.ronda + ' cerrada · campeón: ' + textoCampeon(r.data.campeon));
+      refrescarSnapshot();
+      refrescarLeaderboard();
+    } else registrar('Cerrar ronda', false, r.error);
+  });
+}
+
+async function resetJuego() {
+  const btn = $('#btn-reset');
+  const total = estado.lb && esNum(estado.lb.total) ? Number(estado.lb.total) : null;
+  const activa = !!(estado.ronda && estado.ronda.estado === 'activa');
+  const ok = await confirmar({
+    titulo: 'Reset de jugadores y precios',
+    cuerpo: [
+      'Se borran ' + (total !== null ? entero(total) + ' jugadores' : 'todos los jugadores') + ', sus fichas, las velas, las rondas y los eventos. Los precios regresan a su nivel inicial.',
+      activa ? 'Hay una ronda activa: también se borrará.' : 'Los jugadores tendrán que registrarse de nuevo.',
+      'Esta acción no se puede deshacer. Exporta el CSV antes si necesitas los datos.'
+    ],
+    ok: 'Borrar todo y reiniciar', peligro: true, palabra: 'RESET'
+  });
+  if (!ok) return;
+  await ocupado(btn, 'Reiniciando…', async () => {
+    const r = await adminRpc('reset_game');
+    if (r.ok) {
+      estado.campeon = null; estado.campeonRonda = null;
+      estado.eventos = []; estado.maxEventoId = 0;
+      registrar('Reset de jugadores y precios', true, 'Juego reiniciado: sin jugadores y con precios iniciales');
+      refrescarSnapshot();
+      refrescarLeaderboard();
+      cargarNoticias();
+      if (estado.catalogo) cargarCatalogo();
+    } else registrar('Reset de jugadores y precios', false, r.error);
+  });
+}
+
+/* ===================================================================
+   Empresas en juego (catálogo: get_catalogo / set_emisoras)
+   =================================================================== */
+function esFuncionFaltante(err) {
+  if (!err) return false;
+  const m = String(err.message || err.details || err.hint || err);
+  return err.code === 'PGRST202' || err.code === '42883' || /Could not find the function|function .* does not exist|schema cache/i.test(m);
+}
+
+function refrescarCatalogoPeriodico() {
+  const e = estado.catalogoEstado;
+  if (e === 'ok' || e === 'error' || (e === 'falta' && estado.backendNuevo)) cargarCatalogo();
+}
+
+let pidiendoCat = false;
+let catPendiente = false;
+async function cargarCatalogo(manual) {
+  if (!estado.panelActivo) return;
+  if (pidiendoCat) { catPendiente = true; return; }
+  pidiendoCat = true;
+  if (!estado.catalogo) { estado.catalogoEstado = 'cargando'; pintarCatalogo(); }
+  let res;
+  try { res = await cliente().rpc('get_catalogo'); }
+  catch (e) { res = { data: null, error: e }; }
+  pidiendoCat = false;
+  if (!estado.panelActivo) return;
+  const d = res && res.data;
+  if (!res || res.error || !d || typeof d !== 'object' || d.ok !== true || !Array.isArray(d.emisoras)) {
+    const err = res && res.error;
+    const falta = esFuncionFaltante(err);
+    if (falta) estado.catalogo = null;
+    // Con un error pasajero se conserva el último catálogo bueno.
+    estado.catalogoEstado = falta ? 'falta' : estado.catalogo ? 'ok' : 'error';
+    estado.catalogoError = err ? textoError(err) : ((d && d.error) || 'Respuesta inesperada del servidor');
+    if (manual) {
+      toast(falta ? 'Este servidor todavía no permite elegir las empresas en juego' : 'No se pudo cargar el catálogo: ' + estado.catalogoError,
+        falta ? 'aviso' : 'error');
+    }
+  } else {
+    estado.backendNuevo = true;
+    estado.catalogo = {
+      modo: d.modo,
+      emisoras: d.emisoras.filter(e => e && e.ticker).slice().sort((a, b) => (Number(a.orden) || 0) - (Number(b.orden) || 0))
+    };
+    estado.catalogoEstado = 'ok';
+    estado.catalogoError = '';
+    if (!modoValido(estado.modo) && modoValido(d.modo)) { estado.modo = d.modo; pintarModo(); }
+    if (manual) toast('Catálogo de emisoras actualizado', 'ok', 2500);
+  }
+  pintarCatalogo();
+  if (catPendiente) { catPendiente = false; cargarCatalogo(); }
+}
+
+function activasServidor() {
+  return new Set(estado.catalogo ? estado.catalogo.emisoras.filter(e => !!e.activa).map(e => e.ticker) : []);
+}
+function mismoConjunto(a, b) {
+  if (a.size !== b.size) return false;
+  for (const x of a) if (!b.has(x)) return false;
+  return true;
+}
+function firmaDeCatalogo(cat) {
+  return cat.emisoras.map(e => [e.ticker, e.serie, e.nombre, e.perfil].join('|')).join(';');
+}
+
+/** Estado general de la tarjeta (cargando / no disponible / lista de casillas). */
+function pintarCatalogo() {
+  const cat = estado.catalogo;
+  const msg = $('#emp-msg');
+  const lista = $('#emp-lista');
+  if (!cat) {
+    estado.firmaCatalogo = '';
+    estado.refsCatalogo.clear();
+    lista.hidden = true;
+    lista.replaceChildren();
+    $('#emp-cuenta').hidden = true;
+    $('#emp-acciones').hidden = true;
+    $('#emp-bloqueo').hidden = true;
+    $('#emp-pista').textContent = '';
+    const est = estado.catalogoEstado;
+    const reintentar = () => h('button', { class: 'btn btn-chico', type: 'button', onclick: () => cargarCatalogo(true) }, 'Reintentar');
+    if (est === 'sin-soporte' || est === 'falta') {
+      msg.replaceChildren(h('p', { class: 'vacio' }, 'No disponible: este servidor todavía no permite elegir las empresas en juego.'), reintentar());
+    } else if (est === 'error') {
+      msg.replaceChildren(h('p', { class: 'msg-error' }, 'No se pudo cargar el catálogo: ' + estado.catalogoError), reintentar());
+    } else {
+      msg.replaceChildren(h('p', { class: 'vacio' }, 'Cargando emisoras…'));
+    }
+    return;
+  }
+  msg.replaceChildren();
+  if (firmaDeCatalogo(cat) !== estado.firmaCatalogo) construirCatalogo();
+  lista.hidden = false;
+  $('#emp-cuenta').hidden = false;
+  $('#emp-acciones').hidden = false;
+  pintarCatalogoControles();
+}
+
+function construirCatalogo() {
+  const cat = estado.catalogo;
+  estado.refsCatalogo.clear();
+  estado.firmaCatalogo = firmaDeCatalogo(cat);
+  $('#emp-lista').replaceChildren(...cat.emisoras.map(e => {
+    const id = 'emp-' + e.ticker;
+    const input = h('input', { type: 'checkbox', id, value: e.ticker });
+    input.addEventListener('change', () => alMarcarEmpresa(e.ticker, input.checked));
+    const precio = h('span', { class: 'emp-precio' });
+    const cambio = h('span', { class: 'chip emp-cambio', hidden: true });
+    const label = h('label', { class: 'empresa', for: id },
+      input,
+      h('span', { class: 'emp-ticker' }, e.ticker, e.serie ? h('span', { class: 'emi-serie' }, ' ' + e.serie) : null),
+      precio,
+      h('span', { class: 'emp-nombre' }, e.nombre || ''),
+      cambio,
+      e.perfil ? h('span', { class: 'emp-perfil' }, e.perfil) : null);
+    estado.refsCatalogo.set(e.ticker, { label, input, precio, cambio });
+    return label;
+  }));
+}
+
+function alMarcarEmpresa(ticker, marcado) {
+  if (!estado.catalogo || rondaActiva()) { pintarCatalogoControles(); return; }
+  const servidor = activasServidor();
+  const sel = new Set(estado.seleccion || servidor);
+  if (marcado) sel.add(ticker); else sel.delete(ticker);
+  estado.seleccion = mismoConjunto(sel, servidor) ? null : sel;
+  pintarCatalogoControles();
+}
+
+/** Casillas, contador, precios y botones (se llama en cada tick vía actualizarBotones). */
+function pintarCatalogoControles() {
+  const cat = estado.catalogo;
+  if (!cat || !estado.refsCatalogo.size) return;
+  const activa = rondaActiva();
+  const conocido = estado.ronda !== undefined;
+  const bloqueada = activa || !conocido || estado.aplicandoEmisoras;
+  if (activa) estado.seleccion = null;   // entre rondas solamente: se descarta lo no aplicado
+  const servidor = activasServidor();
+  const sel = estado.seleccion || servidor;
+  const vivos = new Map(estado.emisoras.map(e => [e.ticker, e]));
+  let cambios = 0;
+  for (const e of cat.emisoras) {
+    const ref = estado.refsCatalogo.get(e.ticker);
+    if (!ref) continue;
+    const marcado = sel.has(e.ticker);
+    const enServidor = servidor.has(e.ticker);
+    if (ref.input.checked !== marcado) ref.input.checked = marcado;
+    ref.input.disabled = bloqueada;
+    ref.label.classList.toggle('sel', marcado);
+    ref.label.classList.toggle('bloq', bloqueada);
+    const v = enServidor ? vivos.get(e.ticker) : null;
+    const precio = v && esNum(v.last) ? v.last : e.precio;
+    const txt = esNum(precio) ? '$' + num(precio, 2) : '—';
+    if (ref.precio.textContent !== txt) ref.precio.textContent = txt;
+    if (marcado !== enServidor) cambios++;
+    ref.cambio.hidden = marcado === enServidor;
+    ref.cambio.textContent = marcado ? 'ENTRA' : 'SALE';
+    ref.cambio.className = 'chip emp-cambio ' + (marcado ? 'chip-verde' : 'chip-rojo');
+  }
+  const cuenta = $('#emp-cuenta');
+  const txtCuenta = sel.size + ' de ' + cat.emisoras.length;
+  if (cuenta.textContent !== txtCuenta) cuenta.textContent = txtCuenta;   // aria-live: solo si cambia
+  $('#emp-bloqueo').hidden = !activa;
+  const ap = $('#btn-emp-aplicar');
+  if (ap.dataset.ocupado !== '1') ap.disabled = bloqueada || sel.size < 1 || cambios === 0;
+  $('#btn-emp-descartar').disabled = bloqueada || cambios === 0;
+  const pista = $('#emp-pista');
+  const txtPista = activa || !conocido ? ''
+    : sel.size < 1 ? 'Elige al menos una emisora.'
+    : cambios ? plural(cambios, 'cambio sin aplicar', 'cambios sin aplicar') + '.'
+    : 'Marca o desmarca empresas y toca Aplicar.';
+  if (pista.textContent !== txtPista) pista.textContent = txtPista;
+}
+
+async function aplicarEmisoras() {
+  const cat = estado.catalogo;
+  const btn = $('#btn-emp-aplicar');
+  if (!cat) return;
+  if (rondaActiva()) { toast('Se cambia entre rondas: cierra la ronda primero', 'aviso'); return; }
+  const servidor = activasServidor();
+  const sel = estado.seleccion || servidor;
+  const tickers = cat.emisoras.filter(e => sel.has(e.ticker)).map(e => e.ticker);
+  if (!tickers.length) { toast('Elige al menos una emisora', 'error'); return; }
+  const entran = tickers.filter(t => !servidor.has(t));
+  const salen = cat.emisoras.filter(e => servidor.has(e.ticker) && !sel.has(e.ticker)).map(e => e.ticker);
+  if (!entran.length && !salen.length) { toast('No hay cambios por aplicar', 'aviso'); return; }
+  const efectos = [];
+  if (salen.length) efectos.push('Las acciones de ' + salen.join(', ') + ' se pagan en efectivo a cada jugador al último precio.');
+  if (entran.length) efectos.push('De ' + entran.join(', ') + ', cada jugador recibe una dotación inicial pagada con su efectivo, para que haya vendedores desde el inicio.');
+  const ok = await confirmar({
+    titulo: '¿Cambiar las empresas en juego?',
+    cuerpo: [
+      'Quedan en juego ' + tickers.length + ' de ' + cat.emisoras.length + ': ' + tickers.join(', ') + '.',
+      efectos.join(' ') + ' Nadie gana ni pierde valor con el cambio.'
+    ],
+    ok: 'Aplicar cambio', peligro: false
+  });
+  if (!ok) return;
+  if (rondaActiva()) { toast('Se cambia entre rondas: cierra la ronda primero', 'aviso'); return; }
+  estado.aplicandoEmisoras = true;
+  try {
+    await ocupado(btn, 'Aplicando…', async () => {
+      const r = await adminRpc('set_emisoras', { p_tickers: tickers });
+      if (r.ok) {
+        const activas = Array.isArray(r.data.activas) ? r.data.activas : tickers;
+        for (const e of cat.emisoras) e.activa = activas.includes(e.ticker);
+        estado.seleccion = null;
+        const extra = [];
+        if (esNum(r.data.liquidadas)) extra.push('liquidadas ' + entero(r.data.liquidadas));
+        if (esNum(r.data.dotadas)) extra.push('dotadas ' + entero(r.data.dotadas));
+        registrar('Emisoras en juego', true, activas.join(', ') + (extra.length ? ' · ' + extra.join(' · ') : ''), { toast: false });
+        toast('Emisoras en juego: ' + activas.join(', '), 'ok');
+        cargarCatalogo();
+        refrescarSnapshot();
+        refrescarLeaderboard();
+      } else registrar('Emisoras en juego', false, r.error);
+    });
+  } finally {
+    estado.aplicandoEmisoras = false;
+    pintarCatalogoControles();
+  }
+}
+
+/* ===================================================================
+   Exportar CSV
+   =================================================================== */
+function descargar(url, nombre) {
+  const a = h('a', { href: url, download: nombre, style: 'display:none' });
+  document.body.append(a);
+  a.click();
+  a.remove();
+}
+
+async function exportar() {
+  const btn = $('#btn-exportar');
+  await ocupado(btn, 'Generando…', async () => {
+    const r = await adminRpc('export_orders');
+    if (!r.ok) { registrar('Exportar CSV', false, r.error); return; }
+    const ordenes = Array.isArray(r.data.ordenes) ? r.data.ordenes : [];
+    const velas = Array.isArray(r.data.velas) ? r.data.velas : [];
+    const eventos = Array.isArray(r.data.eventos) ? r.data.eventos : [];
+    const sello = selloArchivo(ahoraServidor());
+    const archivos = [
+      { nombre: 'ordenes_' + sello + '.csv', contenido: csvOrdenes(ordenes), filas: ordenes.length, desc: 'órdenes' },
+      { nombre: 'velas_' + sello + '.csv', contenido: csvVelas(velas), filas: velas.length, desc: 'velas (incluye el índice, ticker IPC)' },
+      { nombre: 'eventos_' + sello + '.csv', contenido: csvEventos(eventos), filas: eventos.length, desc: 'eventos' }
+    ];
+    for (const u of estado.urlsCSV) URL.revokeObjectURL(u);
+    estado.urlsCSV = [];
+    const lista = $('#export-links');
+    lista.replaceChildren();
+    for (const a of archivos) {
+      a.url = URL.createObjectURL(new Blob([a.contenido], { type: 'text/csv;charset=utf-8' }));
+      estado.urlsCSV.push(a.url);
+      lista.append(h('li', null, h('a', { href: a.url, download: a.nombre }, a.nombre), h('span', null, plural(a.filas, 'fila', 'filas') + ' · ' + a.desc)));
+    }
+    $('#export-res').hidden = false;
+    for (const a of archivos) { descargar(a.url, a.nombre); await esperar(700); }
+    registrar('Exportar CSV', true, plural(ordenes.length, 'orden', 'órdenes') + ' · ' + plural(velas.length, 'vela', 'velas') + ' · ' + plural(eventos.length, 'evento', 'eventos'));
+  });
+}
+
+/* ===================================================================
+   Calibración
+   =================================================================== */
+function pintarDescCalibracion() {
+  const esc = $('#cal-esc').value;
+  const ticks = Number($('#cal-ticks').value) || 0;
+  const info = ESCENARIOS[esc];
+  $('#cal-desc').textContent = (info ? info.desc : '') + (esc !== 'impacto' && ticks ? ' Simula ' + num(ticks * 2 / 60, 1) + ' min por corrida.' : '');
+}
+
+function fmtObjeto(o, fmtValor) {
+  if (!o || typeof o !== 'object') return 'ninguno';
+  const partes = Object.entries(o).map(([k, v]) => k + ' ' + (fmtValor ? fmtValor(v) : v));
+  return partes.length ? partes.join(', ') : 'ninguno';
+}
+function promedio(xs) { const v = xs.filter(esNum).map(Number); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : NaN; }
+
+function resumenCorrida(esc, t) {
+  if (esc === 'impacto') {
+    return Object.keys(t).filter(k => k !== 'trial' && t[k] && typeof t[k] === 'object').map(k =>
+      k + ': precio ' + pct(t[k].mid_pct) + ', venta ' + pct(t[k].ask_pct) + ', slippage ' + pct(t[k].slip_pct)).join(' · ');
+  }
+  if (esc === 'crash' || esc === 'salto_ica') {
+    return 'mínimo ' + pct(t.minimo_pct) + ' a los ' + (esNum(t.segundos_al_minimo) ? entero(t.segundos_al_minimo) : '—') + ' s · final ' + pct(t.final_pct) +
+      ' · rebote ' + pct(t.rebote_pct) + ' · suspensión: ' + (t.hubo_suspension ? 'sí' : 'no');
+  }
+  if (esc === 'libre') {
+    return num(t.minutos, 1) + ' min · Índice mín ' + num(t.indice_min, 1) + ', máx ' + num(t.indice_max, 1) + ', final ' + num(t.indice_final, 1) +
+      ' · eventos: ' + fmtObjeto(t.eventos) + ' · variación: ' + fmtObjeto(t.var_emisoras, v => pct(v));
+  }
+  return fmtObjeto(Object.fromEntries(Object.entries(t).filter(([k]) => k !== 'trial')), v => typeof v === 'object' ? JSON.stringify(v) : v);
+}
+
+function resumenPromedio(esc, trials) {
+  if (!trials.length) return [];
+  if (esc === 'impacto') {
+    const tickers = Object.keys(trials[0]).filter(k => k !== 'trial' && trials[0][k] && typeof trials[0][k] === 'object');
+    return tickers.map(k => k + ': precio ' + pct(promedio(trials.map(t => t[k] && t[k].mid_pct))) +
+      ', slippage ' + pct(promedio(trials.map(t => t[k] && t[k].slip_pct))) + ' (meta ≈ +1 %)');
+  }
+  if (esc === 'crash' || esc === 'salto_ica') {
+    const meta = esc === 'crash' ? '≈ −10 %' : '≈ −15 %';
+    const susp = trials.filter(t => t.hubo_suspension).length;
+    return [
+      'Mínimo promedio ' + pct(promedio(trials.map(t => t.minimo_pct))) + ' (meta ' + meta + ')',
+      'Llega al mínimo en ' + num(promedio(trials.map(t => t.segundos_al_minimo)), 0) + ' s en promedio',
+      'Final ' + pct(promedio(trials.map(t => t.final_pct))) + ' · rebote ' + pct(promedio(trials.map(t => t.rebote_pct))),
+      'Hubo suspensión en ' + susp + ' de ' + plural(trials.length, 'corrida', 'corridas')
+    ];
+  }
+  if (esc === 'libre') {
+    const totales = {};
+    for (const t of trials) if (t.eventos && typeof t.eventos === 'object') for (const [k, v] of Object.entries(t.eventos)) totales[k] = (totales[k] || 0) + Number(v || 0);
+    return [
+      'Índice mínimo promedio ' + num(promedio(trials.map(t => t.indice_min)), 1) + ' · máximo ' + num(promedio(trials.map(t => t.indice_max)), 1) + ' · final ' + num(promedio(trials.map(t => t.indice_final)), 1),
+      'Eventos en total: ' + fmtObjeto(totales)
+    ];
+  }
+  return [];
+}
+
+function pintarCalibracion(res, segundos) {
+  const cont = $('#cal-res');
+  const esc = res.escenario;
+  const trials = Array.isArray(res.trials) ? res.trials : [];
+  const prom = resumenPromedio(esc, trials);
+  cont.hidden = false;
+  cont.replaceChildren(
+    h('div', { class: 'cal-bloque' },
+      h('h4', null, (ESCENARIOS[esc] ? ESCENARIOS[esc].nombre : esc) + ' · ' + plural(trials.length, 'corrida', 'corridas') + ' · ' + num(segundos, 1) + ' s'),
+      prom.length ? h('ul', { class: 'cal-lista' }, prom.map(p => h('li', null, p))) : h('p', { class: 'vacio' }, 'Sin datos.')),
+    h('div', { class: 'cal-bloque' },
+      h('h4', null, 'Por corrida'),
+      h('ol', { class: 'cal-lista' }, trials.map((t, i) => h('li', null, h('b', null, 'Corrida ' + (t.trial || i + 1) + ': '), resumenCorrida(esc, t))))),
+    h('details', { class: 'crudo' }, h('summary', null, 'Ver JSON crudo'), h('pre', null, JSON.stringify(res, null, 2))));
+}
+
+async function calibrar() {
+  const btn = $('#btn-calibrar');
+  const esc = $('#cal-esc').value;
+  const ticks = Number($('#cal-ticks').value);
+  const trials = Number($('#cal-trials').value);
+  if (!ESCENARIOS[esc]) { toast('Escenario inválido', 'error'); return; }
+  if (!Number.isInteger(ticks) || ticks < 10 || ticks > 600) { toast('Ticks: un entero entre 10 y 600', 'error'); return; }
+  if (!Number.isInteger(trials) || trials < 1 || trials > 20) { toast('Corridas: un entero entre 1 y 20', 'error'); return; }
+  const ce = $('#cal-estado');
+  await ocupado(btn, 'Calibrando…', async () => {
+    const t0 = Date.now();
+    ce.dataset.corriendo = '1';
+    const reloj = setInterval(() => { ce.textContent = 'Corriendo… ' + Math.round((Date.now() - t0) / 1000) + ' s (el mercado está congelado)'; }, 500);
+    let r;
+    try { r = await adminRpc('admin_calibrate', { p_escenario: esc, p_ticks: ticks, p_trials: trials }); }
+    finally { clearInterval(reloj); delete ce.dataset.corriendo; }
+    const seg = (Date.now() - t0) / 1000;
+    ce.textContent = r.ok ? 'Listo en ' + num(seg, 1) + ' s.' : '';
+    if (r.ok) {
+      pintarCalibracion(r.data, seg);
+      registrar('Calibración', true, ESCENARIOS[esc].nombre + ': ' + plural((r.data.trials || []).length, 'corrida', 'corridas') + ' en ' + num(seg, 1) + ' s');
+    } else registrar('Calibración', false, r.error);
+    refrescarSnapshot();
+  });
+}
+
+/* ===================================================================
+   Cambiar PIN
+   =================================================================== */
+async function cambiarPin(ev) {
+  ev.preventDefault();
+  const btn = $('#btn-cambiar-pin');
+  const n1 = $('#pin-nuevo').value;
+  const n2 = $('#pin-conf').value;
+  if (n1.length < 4) { toast('El PIN nuevo debe tener al menos 4 caracteres', 'error'); return; }
+  if (n1 !== n2) { toast('La confirmación no coincide con el PIN nuevo', 'error'); return; }
+  if (n1 === estado.pin) { toast('El PIN nuevo es igual al actual', 'aviso'); return; }
+  const ok = await confirmar({
+    titulo: '¿Cambiar el PIN de administración?',
+    cuerpo: ['Esta sesión seguirá abierta con el PIN nuevo. Los demás dispositivos tendrán que entrar con el nuevo PIN.'],
+    ok: 'Cambiar PIN', peligro: false
+  });
+  if (!ok) return;
+  await ocupado(btn, 'Guardando…', async () => {
+    const r = await adminRpc('set_admin_pin', { p_nuevo: n1 });
+    if (r.ok) {
+      estado.pin = n1;
+      guardarPin(n1);
+      $('#pin-nuevo').value = '';
+      $('#pin-conf').value = '';
+      registrar('Cambiar PIN', true, 'PIN actualizado');
+    } else registrar('Cambiar PIN', false, r.error);
+  });
+}
+
+/* ===================================================================
+   Arranque
+   =================================================================== */
+function cablear() {
+  $('#form-pin').addEventListener('submit', enviarPin);
+  $('#pin-ver').addEventListener('change', ev => { $('#pin').type = ev.target.checked ? 'text' : 'password'; });
+  $('#btn-salir').addEventListener('click', () => {
+    borrarPin();
+    estado.pin = null;
+    detenerPanel();
+    mostrarPin('Sesión cerrada.', 'aviso');
+  });
+
+  $('#btn-iniciar').addEventListener('click', iniciarRonda);
+  $('#btn-cerrar').addEventListener('click', cerrarRonda);
+  $('#btn-reset').addEventListener('click', resetJuego);
+  $('#btn-emp-aplicar').addEventListener('click', aplicarEmisoras);
+  $('#btn-emp-descartar').addEventListener('click', () => { estado.seleccion = null; pintarCatalogoControles(); });
+  $('#ronda-min').addEventListener('input', ev => { ev.target.dataset.tocado = '1'; marcarChipsMin(); });
+  for (const b of document.querySelectorAll('#chips-min .chip-btn')) {
+    b.addEventListener('click', () => { const c = $('#ronda-min'); c.value = b.dataset.min; c.dataset.tocado = '1'; marcarChipsMin(); });
+  }
+
+  $('#crash-mag').addEventListener('input', pintarCrash);
+  dobleToque($('#btn-crash'), () => '¿Crash de −' + num(Number($('#crash-mag').value), 1) + ' %? Toca otra vez', () => lanzarSaltoMercado('crash'));
+  dobleToque($('#btn-rally'), () => '¿Rally de +' + num(Number($('#crash-mag').value), 1) + ' %? Toca otra vez', () => lanzarSaltoMercado('rally'));
+  $('#em-mag').addEventListener('input', pintarSaltoEmisora);
+  dobleToque($('#btn-em-crash'), () => '¿Desplomar ' + emisoraSalto() + ' −' + num(Number($('#em-mag').value), 1) + ' %? Toca otra vez', () => lanzarSaltoEmisora('crash'));
+  dobleToque($('#btn-em-rally'), () => '¿Rally de ' + emisoraSalto() + ' +' + num(Number($('#em-mag').value), 1) + ' %? Toca otra vez', () => lanzarSaltoEmisora('rally'));
+
+  $('#btn-exportar').addEventListener('click', exportar);
+  $('#btn-recargar-config').addEventListener('click', () => cargarConfig(true));
+  $('#registro-limpiar').addEventListener('click', () => { $('#registro-lista').replaceChildren(); $('#registro-vacio').hidden = false; });
+
+  $('#cal-esc').addEventListener('change', pintarDescCalibracion);
+  $('#cal-ticks').addEventListener('input', pintarDescCalibracion);
+  dobleToque($('#btn-calibrar'), () => '¿Congelar el mercado y calibrar? Toca otra vez', calibrar);
+
+  $('#form-cambio-pin').addEventListener('submit', cambiarPin);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden || !estado.panelActivo) return;
+    refrescarSnapshot(); refrescarLeaderboard(); cargarConfig(); cargarNoticias(); refrescarCatalogoPeriodico();
+  });
+  window.addEventListener('online', () => { if (estado.panelActivo) { toast('Conexión recuperada', 'ok', 3000); refrescarSnapshot(); } });
+  window.addEventListener('offline', () => { if (estado.panelActivo) toast('Sin conexión a internet', 'error'); });
+
+  marcarChipsMin();
+  pintarDescCalibracion();
+  pintarCrash();
+}
+
+async function arrancar() {
+  cablear();
+  try { cliente(); } catch (e) {
+    const f = $('#pin-fatal');
+    f.hidden = false;
+    f.textContent = e.message;
+    $('#btn-entrar').disabled = true;
+    mostrarPin();
+    return;
+  }
+  const guardado = leerPin();
+  if (!guardado) { mostrarPin(); return; }
+  // Sesión previa en esta pestaña: se confirma el PIN una vez.
+  try {
+    const { data, error } = await cliente().rpc('admin_check', { p_pin: guardado });
+    if (error) { entrar(guardado); toast('No se pudo verificar el PIN: ' + textoError(error), 'aviso'); return; }
+    if (data && data.ok === true) { entrar(guardado); return; }
+    borrarPin();
+    mostrarPin((data && data.error) || 'PIN incorrecto', 'error');
+  } catch (e) {
+    entrar(guardado);
+    toast('No se pudo verificar el PIN: ' + textoError(e), 'aviso');
+  }
+}
+
+arrancar();
+})();
+</script>
+<script>
+/* Botón ⓘ: muestra "Datos simulados" solo al tocarlo (5 s). */
+document.querySelectorAll('.info-sim').forEach(function (b) {
+  b.addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    var abrir = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(abrir));
+    clearTimeout(b._t);
+    if (abrir) b._t = setTimeout(function () { b.setAttribute('aria-expanded', 'false'); }, 5000);
+  });
+});
+</script>
+</body>
+</html>

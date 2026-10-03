@@ -1,0 +1,2490 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b23f07">
+<meta name="color-scheme" content="light">
+<meta name="format-detection" content="telephone=no">
+<title>Piso de Remates · Agente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@500;600;700&family=Special+Elite&display=swap">
+<style>
+:root{
+  --paper:#fde5d2;
+  --paper-hi:#fff2e8;
+  --paper-2:#f9d2b3;
+  --paper-3:#f2bb91;
+  --desk:#3a1606;
+  --ink:#b23f07;
+  --ink-2:#8f3a10;
+  --typed:#3a1a08;
+  --muted:#7d5a44;
+  --form-line:rgba(178,63,7,.5);
+  --rule:rgba(178,63,7,.15);
+  --green:#1d6b3a;
+  --green-bg:#e1ecdb;
+  --red:#b3261e;
+  --red-bg:#f5ddd5;
+  --amber:#E9550E;--amber-ink:#b4430b;
+  --gray:#5f5b55;
+  --flash-up:rgba(29,107,58,.30);
+  --flash-dn:rgba(179,38,30,.26);
+  --strip-h:calc(30px + env(safe-area-inset-top, 0px));
+  --sb:env(safe-area-inset-bottom, 0px);
+  --f-label:'Special Elite','Courier New',Courier,monospace;
+  --f-num:'Courier Prime','Courier New',Courier,monospace;
+  --f-head:'Oswald','Arial Narrow','Helvetica Neue',Arial,sans-serif;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .33 0 0 0 0 .25 0 0 0 0 .12 .15 0 0 0 -.03'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --speck:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 8 0 0 0 -5'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23s)'/%3E%3C/svg%3E");
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--desk);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:var(--f-num);font-size:16px;color:var(--ink);-webkit-tap-highlight-color:transparent;overscroll-behavior:none;
+}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;appearance:none;-webkit-user-select:none;user-select:none}
+button:disabled{cursor:not-allowed}
+input{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid #E9550E;outline-offset:2px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:700}
+.lbl{font-family:var(--f-label);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.up{color:var(--green)}
+.dn{color:var(--red)}
+
+/* ---------- columna de la app ---------- */
+.app{position:relative;margin:0 auto;max-width:480px;width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden;
+  background-color:var(--paper);
+  background-image:var(--noise),radial-gradient(120% 60% at 15% 0%,rgba(255,255,255,.45),transparent 60%),radial-gradient(90% 50% at 100% 100%,rgba(140,100,40,.10),transparent 60%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.25),0 0 60px rgba(0,0,0,.45)}
+@supports (height:100dvh){.app{height:100dvh}}
+
+.strip{flex:none;height:var(--strip-h);padding:env(safe-area-inset-top,0px) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--ink);color:var(--paper);
+  font:400 12px/1 var(--f-label);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.strip-l{display:flex;align-items:center;gap:7px;min-width:0;overflow:hidden}
+.strip-l b{font-family:var(--f-head);font-weight:700;letter-spacing:.12em}
+.dot{width:10px;height:10px;border-radius:50%;background:#c9a48a;flex:none;border:1.5px solid rgba(255,255,255,.3)}
+.dot.ok{background:#4cc27a}
+.dot.warn{background:#f08a29}
+.dot.bad{background:#ff6a5c}
+@media (max-width:374px){.strip-l span{display:none}}
+.info-sim{flex:none;display:inline-flex;align-items:center;gap:6px;height:28px;min-width:28px;padding:0 9px;border-radius:14px;border:1.5px solid currentColor;background:transparent;color:inherit;font:italic 700 15px/1 Georgia,serif;cursor:pointer;justify-content:center}
+.info-sim-t{display:none;font:400 11px/1 var(--f-label);letter-spacing:.1em;text-transform:uppercase;font-style:normal}
+.info-sim[aria-expanded="true"] .info-sim-t{display:inline}
+
+.stage{position:relative;flex:1;min-height:0}
+.tabview{position:absolute;inset:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.pad{padding:14px max(14px,env(safe-area-inset-right,0px)) 22px max(14px,env(safe-area-inset-left,0px))}
+
+/* ---------- barra de pestañas ---------- */
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(3,1fr);background:var(--paper-2);border-top:2px solid var(--ink);padding-bottom:var(--sb)}
+.tab{position:relative;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;background:none;
+  font:600 14px/1 var(--f-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.tab+.tab{border-left:1px solid var(--rule)}
+.tab svg{width:24px;height:24px}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.badge{position:absolute;top:7px;left:calc(50% + 8px);min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--amber);color:#fff;
+  font:700 12px/20px var(--f-num);text-align:center}
+
+/* ---------- botones ---------- */
+.btn-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;padding:10px 16px;border:0;border-radius:6px;
+  font:700 22px/1 var(--f-head);letter-spacing:.12em;text-transform:uppercase;color:var(--paper-hi);background:var(--ink);
+  box-shadow:0 3px 0 rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.15)}
+.btn-big:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.btn-big:disabled{opacity:.42;box-shadow:none}
+.btn-compra{background:var(--green)}
+.btn-venta{background:var(--red)}
+.btn-sec{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:8px 14px;border:2px solid var(--ink);border-radius:6px;
+  background:var(--paper-hi);color:var(--ink);font:600 17px/1.1 var(--f-head);letter-spacing:.1em;text-transform:uppercase}
+.btn-sec:active{background:var(--paper-2)}
+.btn-link{display:block;width:100%;min-height:52px;border:0;background:none;color:var(--ink-2);font:400 15px/1 var(--f-label);letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- aparición de números ---------- */
+.fl{display:inline-block;border-radius:4px;padding:0 3px;margin:0 -3px}
+.fl-up{animation:flUp 1.1s ease-out}
+.fl-dn{animation:flDn 1.1s ease-out}
+@keyframes flUp{0%{background:var(--flash-up)}100%{background:transparent}}
+@keyframes flDn{0%{background:var(--flash-dn)}100%{background:transparent}}
+
+/* ---------- arranque / registro ---------- */
+.fullview{position:absolute;left:0;right:0;bottom:0;top:var(--strip-h);z-index:20;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background-color:var(--paper);background-image:var(--noise)}
+.boot{display:flex;align-items:center;justify-content:center;padding:24px}
+.boot-card{text-align:center;max-width:320px}
+.boot-logo{display:inline-block;font:700 44px/1 var(--f-head);letter-spacing:.14em;color:var(--ink);border:4px double var(--ink);padding:10px 16px 8px}
+.boot-title{margin-top:10px;font:400 18px/1.2 var(--f-label);letter-spacing:.1em;text-transform:uppercase}
+.boot-msg{margin:22px 0 16px;font:400 17px/1.4 var(--f-num);color:var(--muted)}
+.boot-msg::after{content:'';display:inline-block;width:1ch;animation:dots 1.4s steps(4) infinite;text-align:left}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+.reg-wrap{padding:18px max(14px,env(safe-area-inset-right,0px)) calc(24px + var(--sb)) max(14px,env(safe-area-inset-left,0px))}
+.formato{position:relative;background-color:var(--paper-hi);background-image:var(--noise);border:1.5px solid var(--form-line);
+  box-shadow:0 1px 0 rgba(0,0,0,.05),0 8px 22px rgba(0,0,0,.13);padding:18px 16px 16px}
+.formato::before{content:'';position:absolute;left:0;right:0;top:-1px;height:6px;
+  background:radial-gradient(circle at 6px 0,var(--paper) 3.2px,transparent 3.6px) 0 0/12px 6px repeat-x}
+.reg-org{font:700 13px/1.2 var(--f-head);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
+.reg-h1{margin:6px 0 4px;font:700 28px/1.05 var(--f-head);letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.reg-folio{font:400 13px/1.3 var(--f-label);color:var(--muted);letter-spacing:.06em}
+.reg-notice{margin:14px 0 0;padding:10px 12px;border:2px solid var(--red);border-radius:4px;color:var(--red);font:700 15px/1.35 var(--f-num);background:var(--red-bg)}
+.reg-form{margin-top:18px}
+.renglon-lbl{display:block;font:400 13px/1 var(--f-label);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.renglon{display:block;width:100%;min-height:56px;padding:8px 4px 6px;border:0;border-bottom:2px solid var(--ink);border-radius:0;background:rgba(255,255,255,.5);
+  font:700 26px/1.2 var(--f-num);color:var(--typed);outline:none;-webkit-appearance:none;appearance:none}
+.renglon::placeholder{color:rgba(58,26,8,.55);font-weight:400}
+.renglon:focus{border-bottom-color:#E9550E;background-color:rgba(233,85,14,.07)}
+.err{margin:8px 0 0;color:var(--red);font:700 15px/1.35 var(--f-num)}
+.reg-form .btn-big{margin-top:18px}
+.reg-info{margin:20px 0 0;padding:12px 0 0;border-top:1px dashed var(--form-line);list-style:none;
+  font:400 15px/1.45 var(--f-num);color:var(--muted)}
+.reg-info li{padding-left:18px;position:relative;margin:4px 0}
+.reg-info li::before{content:'—';position:absolute;left:0}
+.sim-note{margin-top:14px;text-align:right;font:400 12px/1 var(--f-label);letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+
+/* ---------- corros ---------- */
+.ipc{position:relative;padding:12px 14px;border:2px solid var(--ink);border-radius:4px;background:var(--paper-hi);background-image:var(--noise);
+  box-shadow:3px 3px 0 var(--ink)}
+.ipc-top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.ipc-val{font-size:clamp(32px,10vw,42px);line-height:1.05;color:var(--ink)}
+.ipc-var{font-size:20px;white-space:nowrap;padding-bottom:4px}
+.ipc-bot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--form-line)}
+.mkt{display:inline-flex;align-items:center;gap:6px;font:600 13px/1.1 var(--f-head);letter-spacing:.1em;text-transform:uppercase}
+.mkt i{width:10px;height:10px;border-radius:50%;background:var(--gray)}
+.mkt.abierto{color:var(--green)}.mkt.abierto i{background:var(--green)}
+.mkt.suspendido{color:var(--red)}.mkt.suspendido i{background:var(--red)}
+.ronda{text-align:right;line-height:1.1}
+.ronda .lbl{display:block;font-size:11px}
+.ronda b{font-size:22px}
+.ronda .wait{font:400 14px/1.2 var(--f-label);color:var(--muted);letter-spacing:.04em}
+
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:20px 2px 10px;font:700 20px/1 var(--f-head);letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.sec-h small{font:400 12px/1.2 var(--f-label);letter-spacing:.04em;text-transform:none;color:var(--muted);text-align:right}
+
+.corros{display:grid;gap:12px}
+.corro{position:relative;display:block;width:100%;text-align:left;padding:12px 12px 12px;border:2px solid var(--ink);border-radius:4px;
+  background-color:var(--paper-hi);background-image:var(--noise);box-shadow:0 2px 0 rgba(178,63,7,.25),0 6px 14px rgba(0,0,0,.08)}
+.corro:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(178,63,7,.25)}
+.corro-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.corro-id{display:flex;align-items:baseline;gap:8px;min-width:0}
+.tk{font:700 26px/1 var(--f-head);letter-spacing:.06em;color:var(--ink)}
+.serie{font:700 15px/1 var(--f-num);color:var(--paper-hi);background:var(--ink);padding:3px 6px 2px;border-radius:3px}
+.corro-var{font-size:18px;white-space:nowrap}
+.corro-sub{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font:400 13px/1.2 var(--f-label);color:var(--muted);letter-spacing:.04em}
+.corro-mine{color:var(--ink-2)}
+.corro-q{display:grid;grid-template-columns:repeat(3,1fr);margin-top:10px;border-top:1px solid var(--form-line)}
+.q{display:flex;flex-direction:column;gap:3px;padding:8px 6px 0}
+.q+.q{border-left:1px dashed var(--form-line)}
+.q .lbl{font-size:11px}
+.qv{font-size:clamp(19px,5.8vw,24px);line-height:1.1;color:var(--ink)}
+.corro-susp{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:rgba(243,234,214,.72);border-radius:2px;pointer-events:none}
+.cs-stamp{position:relative;color:var(--red);font:400 26px/1 var(--f-label);letter-spacing:.08em;padding:6px 12px 4px;border:4px solid var(--red);
+  border-radius:9px 6px 10px 5px/6px 10px 5px 9px;transform:rotate(-7deg);mix-blend-mode:multiply}
+.cs-cd{color:var(--red);font-size:16px}
+
+/* ---------- pantallas apiladas ---------- */
+.stackview{position:absolute;left:0;right:0;bottom:0;top:var(--strip-h);z-index:10;display:flex;flex-direction:column;
+  background-color:var(--paper);background-image:var(--noise),radial-gradient(120% 60% at 15% 0%,rgba(255,255,255,.4),transparent 60%)}
+#sFicha{z-index:11}
+.stackview.enter{animation:slideIn .22s ease-out}
+@keyframes slideIn{from{transform:translateX(26px);opacity:0}to{transform:none;opacity:1}}
+.sv-head{flex:none;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;min-height:58px;padding:0 max(10px,env(safe-area-inset-right,0px)) 0 max(6px,env(safe-area-inset-left,0px));
+  border-bottom:2px solid var(--ink);background:var(--paper-2)}
+.back{display:flex;align-items:center;gap:4px;min-height:52px;min-width:52px;padding:0 10px 0 6px;border:0;background:none;color:var(--ink);
+  font:600 17px/1 var(--f-head);letter-spacing:.08em;text-transform:uppercase}
+.back svg{width:22px;height:22px}
+.sv-title{min-width:0;text-align:center;font:700 20px/1.1 var(--f-head);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-title span{color:var(--ink-2);font-weight:500}
+.sv-clock{text-align:right;line-height:1.05;min-width:58px}
+.sv-clock .lbl{display:block;font-size:10px}
+.sv-clock b{font-size:17px}
+.sv-body{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding:14px max(14px,env(safe-area-inset-right,0px)) 18px max(14px,env(safe-area-inset-left,0px))}
+.sv-foot{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + var(--sb)) max(14px,env(safe-area-inset-left,0px));
+  border-top:2px solid var(--ink);background:var(--paper-2)}
+.sv-foot.one{grid-template-columns:1fr}
+.sv-foot .btn-big{min-height:66px;font-size:26px}
+
+/* ---------- vista de emisora ---------- */
+.e-name{display:flex;justify-content:space-between;gap:8px;font:400 14px/1.2 var(--f-label);color:var(--muted);letter-spacing:.05em;margin:0 2px 10px}
+.susp-sign{margin:0 0 12px;padding:12px 10px;text-align:center;color:var(--paper-hi);background:var(--red);border-radius:4px;
+  font:700 18px/1.2 var(--f-head);letter-spacing:.08em;text-transform:uppercase;box-shadow:inset 0 0 0 3px var(--red),inset 0 0 0 5px rgba(255,255,255,.6)}
+.susp-sign .num{display:block;margin-top:6px;font-size:30px;letter-spacing:.04em}
+.susp-sign small{display:block;font:400 13px/1.2 var(--f-label);letter-spacing:.05em;text-transform:none;margin-top:2px}
+.posturas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.postura{padding:10px 10px 12px;border:2px solid currentColor;border-radius:4px;background:var(--paper-hi);text-align:center}
+.postura.compra{color:var(--green)}
+.postura.venta{color:var(--red)}
+.postura .lbl{display:block;color:inherit;font-size:12px}
+.postura .xl{display:inline-block;margin-top:6px;font-size:clamp(30px,9.4vw,42px);line-height:1}
+.postura small{display:block;margin-top:5px;font:400 12px/1.2 var(--f-label);color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;border:1.5px solid var(--form-line);border-radius:4px;background:var(--paper-hi)}
+.stats>div{padding:8px 6px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.stats>div+div{border-left:1px dashed var(--form-line)}
+.stats .lbl{font-size:11px}
+.stats .num{font-size:clamp(13px,3.9vw,17px);white-space:nowrap}
+.libro{margin-top:14px;border:2px solid var(--ink);border-radius:4px;background:var(--paper-hi);overflow:hidden}
+.libro-t{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px;background:var(--ink);color:var(--paper-hi);
+  font:600 14px/1 var(--f-head);letter-spacing:.14em;text-transform:uppercase}
+.libro-t small{font:400 12px/1 var(--f-label);letter-spacing:.04em;text-transform:none;opacity:.85}
+.dp-h,.dp-row{display:grid;grid-template-columns:1fr auto auto 1fr}
+.dp-h{font:400 11px/1 var(--f-label);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--form-line)}
+.dp-h span{padding:7px 8px}
+.dp-h span:nth-child(1),.dp-h span:nth-child(2){text-align:right}
+.dp-h span:nth-child(2){color:var(--green)}
+.dp-h span:nth-child(3){color:var(--red)}
+.dp-row{min-height:38px;border-bottom:1px solid var(--rule)}
+.dp-row:last-child{border-bottom:0}
+.dp-q{position:relative;display:flex;align-items:center;padding:0 8px;font:700 15px/1 var(--f-num);font-variant-numeric:tabular-nums}
+.dp-q i{position:absolute;top:5px;bottom:5px;width:0}
+.dp-q span{position:relative}
+.dp-q.b{justify-content:flex-end}
+.dp-q.b i{right:0;background:rgba(29,107,58,.22)}
+.dp-q.a i{left:0;background:rgba(179,38,30,.2)}
+.dp-p{display:flex;align-items:center;padding:0 8px;font:700 17px/1 var(--f-num);font-variant-numeric:tabular-nums}
+.dp-p.b{color:var(--green);border-right:2px solid var(--ink)}
+.dp-p.a{color:var(--red)}
+.dp-row:first-of-type .dp-p{font-size:19px}
+.mine-line{margin-top:12px;padding:10px 12px;border:1px dashed var(--form-line);border-radius:4px;font:400 15px/1.4 var(--f-num);color:var(--ink-2)}
+.mine-line b{color:var(--ink)}
+.no-round{margin-top:12px;padding:10px 12px;border:1.5px dashed var(--amber);border-radius:3px;background:rgba(233,85,14,.08);font:400 15px/1.35 var(--f-num);color:var(--amber-ink)}
+
+/* ---------- papeleta (ficha de compra-venta) ---------- */
+.papeleta{position:relative;background-color:#fbf6ea;background-image:var(--noise);border:1.5px solid var(--form-line);
+  box-shadow:0 1px 0 rgba(0,0,0,.06),0 10px 24px rgba(0,0,0,.15)}
+.papeleta::before{content:'';position:absolute;left:0;right:0;top:-1px;height:6px;z-index:2;
+  background:radial-gradient(circle at 6px 0,var(--paper) 3.2px,transparent 3.6px) 0 0/12px 6px repeat-x}
+.pap-head{display:flex;align-items:stretch;justify-content:space-between;gap:8px;padding:12px 12px 10px;border-bottom:2px solid var(--ink)}
+.pap-org b{display:block;font:700 15px/1.1 var(--f-head);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.pap-org span{display:block;margin-top:3px;font:400 12px/1.2 var(--f-label);color:var(--ink-2);letter-spacing:.04em}
+.pap-lado{display:flex;align-items:center;padding:6px 12px 4px;border:3px solid currentColor;border-radius:3px;font:700 24px/1 var(--f-head);letter-spacing:.14em}
+.is-compra .pap-lado{color:var(--paper-hi);background:var(--green);border-color:var(--green)}
+.is-venta .pap-lado{color:var(--paper-hi);background:var(--red);border-color:var(--red)}
+.is-compra{--lado:var(--green)}
+.is-venta{--lado:var(--red)}
+.pap-grid{display:grid;grid-template-columns:repeat(6,1fr)}
+.cell{position:relative;min-width:0;padding:6px 8px 7px;border-right:1px solid var(--form-line);border-bottom:1px solid var(--form-line)}
+.cell.r{border-right:0}
+.clbl{display:block;font:400 11px/1.1 var(--f-label);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.cval{display:block;margin-top:4px;font:700 18px/1.15 var(--f-num);color:var(--typed);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.typed{text-shadow:.35px .35px 0 rgba(58,26,8,.35)}
+.cval-sub{display:block;margin-top:1px;font:400 12px/1.15 var(--f-num);color:var(--typed);overflow-wrap:anywhere;letter-spacing:-.02em}
+.cval.big{font-size:24px}
+.c-plazo{grid-column:span 2}.c-folio{grid-column:span 2}.c-agente{grid-column:span 2}
+.c-fecha{grid-column:span 4}.c-tvalor{grid-column:span 2}
+.c-emisora{grid-column:span 3}.c-serie{grid-column:span 3}
+.c-cant,.c-precio,.c-firma,.c-lado{grid-column:span 6}
+/* Compra o venta: se cambia con un toque mientras se llena la ficha */
+.lado-sw{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.lado-sw button{min-height:50px;border:3px solid currentColor;border-radius:4px;background:#fff0e4;font:700 20px/1 var(--f-head);letter-spacing:.12em;text-transform:uppercase}
+.lado-sw [data-lado="compra"]{color:var(--green)}
+.lado-sw [data-lado="venta"]{color:var(--red)}
+.lado-sw [data-lado="compra"][aria-checked="true"]{color:var(--paper-hi);background:var(--green);border-color:var(--green)}
+.lado-sw [data-lado="venta"][aria-checked="true"]{color:var(--paper-hi);background:var(--red);border-color:var(--red)}
+.papeleta.locked .c-lado{display:none}
+.sig-reuse{margin:8px 2px 0;font:400 13px/1.35 var(--f-num);color:var(--ink-2)}
+.sv-foot .btn-big.chico{font-size:20px;letter-spacing:.06em}
+.c-plazo .cval{font-size:15px}
+.c-fecha .cval{font-size:16px}
+.qty-row{display:grid;grid-template-columns:76px 1fr 76px;gap:8px;margin-top:6px;align-items:stretch}
+.qty-in{width:100%;min-width:0;min-height:56px;padding:4px 6px;border:0;border-bottom:2px solid var(--ink);border-radius:0;background:rgba(255,255,255,.55);
+  text-align:center;font:700 30px/1 var(--f-num);color:var(--typed);-webkit-appearance:none;appearance:none;outline:none}
+.qty-in:focus{border-bottom-color:#E9550E;background:rgba(233,85,14,.08)}
+.qty-in:disabled{background:transparent;opacity:1;-webkit-text-fill-color:var(--typed)}
+.nudge{min-height:56px;padding:0 4px;border:1.5px solid var(--ink);border-radius:4px;background:var(--paper-hi);font:700 17px/1 var(--f-num);color:var(--ink)}
+.nudge:active:not(:disabled){background:var(--paper-2)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.quick button{min-height:52px;border:1.5px solid var(--ink);border-radius:4px;background:var(--paper-hi);font:700 18px/1 var(--f-num);color:var(--ink)}
+.quick button[aria-pressed="true"]{background:var(--ink);color:var(--paper-hi)}
+.quick button:active:not(:disabled){background:var(--paper-2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;margin-top:6px;border:2px solid var(--ink);border-radius:5px;overflow:hidden}
+.seg button{min-height:52px;border:0;background:var(--paper-hi);font:600 17px/1 var(--f-head);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button[aria-checked="true"]{background:var(--ink);color:var(--paper-hi)}
+.px-mkt{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:10px}
+.px-mkt .cval{margin:0;font-size:20px}
+.px-est{font-size:24px;color:var(--typed)}
+.px-hint{margin-top:6px;font:400 13px/1.35 var(--f-label);color:var(--muted);letter-spacing:.02em}
+.firma-box{position:relative;height:74px;margin-top:4px;border-bottom:1.5px dashed var(--form-line)}
+.firma-box img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:left center}
+.firma-ph{position:absolute;left:4px;bottom:8px;font:400 13px/1 var(--f-label);color:var(--muted);letter-spacing:.05em}
+.pap-foot{display:flex;justify-content:space-between;padding:7px 10px 9px;font:400 11px/1.2 var(--f-label);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.pap-foot .sim{color:var(--red)}
+.papeleta.locked .quick,.papeleta.locked .nudge,.papeleta.locked .seg{opacity:.5}
+.estim{margin-top:14px;padding:10px 12px;border:1.5px solid var(--form-line);border-radius:4px;background:
+  repeating-linear-gradient(to bottom,transparent 0 33px,var(--rule) 33px 34px),var(--paper-hi)}
+.er{display:flex;justify-content:space-between;align-items:baseline;gap:10px;min-height:34px;padding:6px 0 5px;font:400 15px/1.2 var(--f-num);color:var(--ink-2)}
+.er b{font:700 17px/1.2 var(--f-num);color:var(--typed);font-variant-numeric:tabular-nums;white-space:nowrap}
+.er.tot{border-top:2px solid var(--ink);margin-top:2px}
+.er.tot span{font:700 16px/1.2 var(--f-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.er.tot b{font-size:22px}
+.er.disp b{color:var(--ink-2);font-weight:400}
+.valid{min-height:24px;margin:10px 2px 0;font:700 16px/1.35 var(--f-num);color:var(--red)}
+.valid.okmsg{color:var(--green);font-weight:400}
+.res{margin-top:12px;padding:12px;border:2px solid currentColor;border-radius:4px;background:var(--paper-hi)}
+.res.ok{color:var(--green)}.res.pend{color:var(--amber-ink)}.res.rej{color:var(--red)}
+.res h3{margin:0 0 6px;font:700 18px/1.1 var(--f-head);letter-spacing:.12em;text-transform:uppercase}
+.res p{margin:4px 0 6px;font:400 15px/1.4 var(--f-num);color:var(--ink)}
+.rr{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--rule);font:400 15px/1.2 var(--f-num);color:var(--ink-2)}
+.rr b{font:700 17px/1.2 var(--f-num);color:var(--typed);white-space:nowrap}
+.rr.tot{border-bottom:0;border-top:2px solid var(--ink);margin-top:4px;padding-top:8px}
+.rr.tot span{font:700 15px/1.2 var(--f-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.rr.tot b{font-size:22px}
+.res-links{margin-top:8px}
+
+/* ---------- sellos de hule ---------- */
+.stamp{position:absolute;left:50%;top:50%;z-index:5;padding:5px;border:5px solid currentColor;border-radius:14px 10px 16px 9px/10px 15px 9px 14px;
+  color:var(--green);transform:translate(-50%,-50%) rotate(-12deg);mix-blend-mode:multiply;opacity:.9;pointer-events:none;text-align:center;white-space:nowrap}
+.stamp::after,.cs-stamp::after,.mini-stamp::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:var(--speck);background-size:120px 120px;pointer-events:none}
+.stamp-in{border:2px solid currentColor;border-radius:8px 6px 9px 5px;padding:8px 16px 6px}
+.stamp-main{font:400 clamp(34px,11vw,44px)/1 var(--f-label);letter-spacing:.04em}
+.stamp-sub{margin-top:5px;font:700 15px/1.2 var(--f-num);letter-spacing:.14em}
+.stamp.st-pend{color:var(--amber)}
+.stamp.st-rej{color:var(--red)}
+.stamp.drop{animation:stampDrop .42s cubic-bezier(.16,1,.3,1) both}
+@keyframes stampDrop{0%{opacity:0;transform:translate(-50%,-50%) rotate(-20deg) scale(2.3)}
+  62%{opacity:.95;transform:translate(-50%,-50%) rotate(-12deg) scale(.93)}
+  100%{opacity:.9;transform:translate(-50%,-50%) rotate(-12deg) scale(1)}}
+.papeleta.thud{animation:thud .32s .26s ease-out}
+@keyframes thud{0%{transform:none}30%{transform:translateY(3px) scale(.995)}60%{transform:translateY(-1px)}100%{transform:none}}
+
+/* ---------- hoja de firma ---------- */
+.sheet{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;justify-content:flex-end}
+.sheet-back{position:absolute;inset:0;background:rgba(40,14,2,.55)}
+.sheet-panel{position:relative;padding:16px max(14px,env(safe-area-inset-right,0px)) calc(14px + var(--sb)) max(14px,env(safe-area-inset-left,0px));
+  background-color:var(--paper);background-image:var(--noise);border-top:1px solid rgba(0,0,0,.25);border-radius:12px 12px 0 0;
+  box-shadow:0 -10px 30px rgba(0,0,0,.3);animation:sheetUp .22s ease-out}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-title{font:700 22px/1.1 var(--f-head);letter-spacing:.12em;text-transform:uppercase}
+.sheet-sum{margin:6px 0 10px;font:400 15px/1.4 var(--f-num);color:var(--ink-2)}
+.sheet-sum b{color:var(--ink)}
+.sig-wrap{position:relative;height:190px;border:2px solid var(--ink);border-radius:4px;background:#fffdf6;overflow:hidden}
+.sig-wrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;z-index:2}
+.sig-line{position:absolute;left:34px;right:16px;bottom:42px;border-bottom:1.5px solid var(--form-line)}
+.sig-x{position:absolute;left:12px;bottom:44px;font:700 24px/1 var(--f-num);color:var(--ink-2)}
+.sig-ph{position:absolute;left:0;right:0;bottom:16px;text-align:center;font:400 13px/1 var(--f-label);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sheet-btns{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin-top:12px}
+.sheet-btns .btn-big{font-size:18px;letter-spacing:.06em;padding:8px 10px}
+
+/* ---------- mis fichas ---------- */
+.pila{padding:4px 2px 10px}
+.slip{position:relative;margin-top:-10px;padding:0 0 18px;background-color:#fbf6ea;background-image:var(--noise);border:1.5px solid var(--form-line);
+  box-shadow:0 2px 0 rgba(0,0,0,.05),0 8px 16px rgba(0,0,0,.13);transform:rotate(var(--r,0deg)) translateX(var(--x,0px))}
+.slip:first-child{margin-top:0}
+.slip-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-bottom:1.5px solid var(--form-line)}
+.slip-lado{padding:4px 8px 3px;border-radius:2px;color:var(--paper-hi);font:700 15px/1 var(--f-head);letter-spacing:.14em}
+.slip.compra .slip-lado{background:var(--green)}
+.slip.venta .slip-lado{background:var(--red)}
+.slip-folio{font:400 12px/1 var(--f-label);letter-spacing:.08em;color:var(--ink-2);text-transform:uppercase}
+.slip-folio b{font:700 16px/1 var(--f-num);color:var(--typed);letter-spacing:0}
+.slip-body{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;padding:8px 10px 0}
+.slip-em{grid-column:span 2;font:700 22px/1.1 var(--f-head);letter-spacing:.06em;color:var(--ink)}
+.slip-em span{font:700 15px/1 var(--f-num);color:var(--ink-2);margin-left:6px}
+.sf{display:flex;flex-direction:column;gap:2px;padding:4px 0}
+.sf .clbl{font-size:11px}
+.sf b{font:700 17px/1.15 var(--f-num);color:var(--typed);font-variant-numeric:tabular-nums}
+.slip-extra{grid-column:span 2;padding:4px 0 0;font:400 13px/1.35 var(--f-num);color:var(--ink-2)}
+.slip-motivo{grid-column:span 2;margin-top:4px;padding:6px 8px;border:1.5px solid var(--red);border-radius:3px;background:rgba(179,38,30,.07);font:700 14px/1.35 var(--f-num);color:var(--red)}
+.mini-stamp{position:absolute;right:12px;top:46px;padding:4px 9px 3px;border:3px solid currentColor;border-radius:7px 5px 8px 4px/5px 8px 4px 7px;
+  font:400 17px/1 var(--f-label);letter-spacing:.06em;transform:rotate(-9deg);mix-blend-mode:multiply;opacity:.9;overflow:hidden}
+.mini-stamp.ejecutada{color:var(--green)}.mini-stamp.pendiente{color:var(--amber)}.mini-stamp.rechazada{color:var(--red)}.mini-stamp.expirada{color:var(--gray)}
+.empty{margin:30px 8px;padding:22px 16px;text-align:center;border:2px dashed var(--form-line);border-radius:6px;font:400 16px/1.45 var(--f-num);color:var(--muted)}
+
+/* ---------- portafolio ---------- */
+.port-head{position:relative;padding:14px;border:2px solid var(--ink);border-radius:4px;background-color:var(--paper-hi);background-image:var(--noise);box-shadow:3px 3px 0 var(--ink)}
+.port-total{display:block;margin-top:4px;font-size:clamp(30px,9.4vw,40px);line-height:1.05;color:var(--ink)}
+.port-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--form-line)}
+.port-pnl{font-size:24px}
+.port-pnl-l{font:400 13px/1.2 var(--f-label);color:var(--muted)}
+.lugar{font:600 15px/1.1 var(--f-head);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);text-align:right}
+.lugar b{font:700 24px/1 var(--f-num);color:var(--ink);letter-spacing:0}
+.cash{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:12px;padding:12px 14px;border:1.5px solid var(--form-line);border-radius:4px;background:var(--paper-hi)}
+.cash .num{font-size:22px}
+.pos{width:100%;margin-top:12px;border-collapse:collapse;background:var(--paper-hi);border:1.5px solid var(--form-line)}
+.pos th{padding:8px 6px;font:400 11px/1.1 var(--f-label);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);text-align:right;border-bottom:1.5px solid var(--ink)}
+.pos th:first-child,.pos td:first-child{text-align:left;padding-left:10px}
+.pos th:last-child,.pos td:last-child{padding-right:10px}
+.pos{table-layout:auto}
+.pos td{padding:10px 6px;font:700 clamp(14px,4.1vw,16px)/1.15 var(--f-num);font-variant-numeric:tabular-nums;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+.pos td .acc{display:block;margin-top:4px;font:400 13px/1.1 var(--f-num);color:var(--ink-2)}
+.pos tr.go{cursor:pointer}
+.pos tr.go:active td{background:var(--paper-2)}
+.pos td .tkc{font:700 17px/1 var(--f-head);letter-spacing:.06em;color:var(--ink)}
+.pos td .sr{font:700 12px/1 var(--f-num);color:var(--ink-2);margin-left:4px}
+.pos tfoot td{font-size:14px;color:var(--ink-2);border-bottom:0}
+.note{margin:10px 2px 16px;font:400 13px/1.4 var(--f-label);color:var(--muted);letter-spacing:.02em}
+
+/* ---------- credencial (gafete) ---------- */
+.modal{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(var(--strip-h) + 16px) 16px calc(18px + var(--sb));background:rgba(40,14,2,.86)}
+.gafete{position:relative;flex:none;width:100%;max-width:330px;margin-top:6px;padding:0 0 14px;border-radius:14px;background:#fbf8f0;color:var(--ink);overflow:hidden;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.15);animation:gafIn .45s cubic-bezier(.16,1,.3,1)}
+@keyframes gafIn{from{transform:translateY(-40px) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.gafete::after{content:'';position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.25) 100%);pointer-events:none}
+.gaf-slot{width:64px;height:12px;margin:12px auto 0;border-radius:6px;background:var(--desk);box-shadow:inset 0 2px 3px rgba(0,0,0,.6)}
+.gaf-band{margin-top:12px;padding:10px 14px 8px;background:var(--casa,var(--ink));color:#fffaf0;text-align:center}
+.gaf-band b{display:block;font:700 15px/1.1 var(--f-head);letter-spacing:.16em;text-transform:uppercase}
+.gaf-band span{display:block;margin-top:3px;font:400 12px/1.2 var(--f-label);letter-spacing:.12em;text-transform:uppercase;opacity:.92}
+.gaf-main{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;padding:16px 16px 6px}
+.gaf-foto{display:flex;align-items:center;justify-content:center;width:96px;height:116px;border:2px solid var(--ink);border-radius:4px;
+  background:repeating-linear-gradient(135deg,#e8e0cc 0 6px,#efe8d6 6px 12px);font:700 38px/1 var(--f-head);color:var(--ink-2);letter-spacing:.04em}
+.gaf-lbl{font:400 13px/1 var(--f-label);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.gaf-num{font:700 64px/1 var(--f-num);color:var(--ink);letter-spacing:-.02em;margin-top:2px}
+.gaf-field{padding:6px 16px 0}
+.gaf-field span{display:block;font:400 11px/1 var(--f-label);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.gaf-field b{display:block;margin-top:3px;padding-bottom:5px;border-bottom:1px solid var(--form-line);font:700 21px/1.15 var(--f-num);color:var(--typed);overflow-wrap:anywhere}
+.gaf-bar{height:34px;margin:14px 16px 0;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px,var(--ink) 8px 11px,transparent 11px 12px,var(--ink) 12px 13px,transparent 13px 17px)}
+.gaf-foot{display:flex;justify-content:space-between;margin:6px 16px 0;font:400 11px/1 var(--f-label);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.gaf-foot .sim{color:var(--red)}
+.cred-msg{max-width:330px;margin:16px 0 0;text-align:center;font:400 16px/1.45 var(--f-num);color:#f3ead6}
+.cred-msg b{color:#fff}
+.modal .btn-big{max-width:330px;margin-top:14px;background:#f3ead6;color:var(--ink)}
+
+/* ---------- avisos ---------- */
+.banner{position:absolute;left:0;right:0;top:var(--strip-h);z-index:40;padding:12px 16px 14px;background:var(--red);color:#fffaf0;text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.35);border-bottom:4px solid #7d1712;cursor:pointer}
+.banner.in{animation:bnIn .35s cubic-bezier(.16,1,.3,1)}
+@keyframes bnIn{from{transform:translateY(-100%)}to{transform:none}}
+.bn-main{font:700 28px/1 var(--f-head);letter-spacing:.1em;animation:bnPulse 1s ease-in-out 3}
+@keyframes bnPulse{50%{opacity:.55}}
+.bn-title{margin-top:6px;font:700 17px/1.25 var(--f-num)}
+.bn-sub{margin-top:3px;font:400 14px/1.3 var(--f-num);opacity:.95}
+.net-pill{position:absolute;left:50%;top:calc(var(--strip-h) + 8px);z-index:45;transform:translateX(-50%);max-width:calc(100% - 24px);padding:7px 14px;border-radius:18px;
+  background:rgba(178,63,7,.93);color:#fffaf0;font:400 13px/1.2 var(--f-label);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none}
+.toast{position:absolute;left:50%;bottom:calc(98px + var(--sb));pointer-events:none;z-index:45;transform:translateX(-50%);width:max-content;max-width:calc(100% - 28px);padding:11px 16px;border-radius:6px;
+  background:var(--ink);color:#fffaf0;font:700 15px/1.35 var(--f-num);text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:toastIn .25s ease-out}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ---------- suspensión general ---------- */
+.susp-gen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(20px + var(--sb));background:#9e1f18;color:#fffaf0;text-align:center;animation:sgPulse 2.4s ease-in-out infinite}
+@keyframes sgPulse{50%{background:#7f1611}}
+.sg-in{max-width:420px}
+.sg-sim{display:inline-block;padding:4px 8px 3px;border:1.5px solid currentColor;border-radius:3px;font:400 12px/1 var(--f-label);letter-spacing:.12em;text-transform:uppercase}
+.sg-stamp{margin:22px auto 0;padding:12px 18px 10px;border:6px solid #fffaf0;border-radius:12px 8px 14px 7px/8px 13px 7px 12px;transform:rotate(-4deg);
+  font:700 clamp(38px,12vw,56px)/1 var(--f-head);letter-spacing:.06em}
+.sg-txt{margin:20px 0 0;font:400 17px/1.45 var(--f-num)}
+.sg-lbl{margin-top:22px;font:400 14px/1 var(--f-label);letter-spacing:.14em;text-transform:uppercase}
+.sg-cd{margin-top:6px;font-size:clamp(64px,22vw,96px);line-height:1}
+.sg-mira{margin-top:16px;font:700 22px/1.1 var(--f-head);letter-spacing:.1em}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media (min-width:481px){.app{border-left:1px solid rgba(0,0,0,.3);border-right:1px solid rgba(0,0,0,.3)}}
+
+/* ---------- entre participantes: órdenes en el piso ---------- */
+.piso-help{margin:-4px 2px 10px;font:400 14px/1.4 var(--f-num);color:var(--ink-2)}
+.piso-list{display:flex;flex-direction:column;gap:8px}
+.pr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px;padding:10px 10px 10px 12px;
+  border:2px solid var(--ink);border-radius:4px;background:var(--paper-hi)}
+.pr.mia{border-style:dashed;background:var(--paper)}
+.pr-main{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;min-width:0;font:700 17px/1.2 var(--f-num);color:var(--ink)}
+.pr-lado{padding:3px 6px 2px;border-radius:3px;font:400 13px/1 var(--f-label);letter-spacing:.1em;color:var(--paper-hi)}
+.pr.venta .pr-lado{background:var(--red)}
+.pr.compra .pr-lado{background:var(--green)}
+.pr-px{font-weight:400;color:var(--ink-2)}
+.pr-sub{grid-column:1;font:400 13px/1.3 var(--f-label);letter-spacing:.03em;color:var(--muted)}
+.pr-tag{font:400 12px/1 var(--f-label);letter-spacing:.1em;text-transform:uppercase;color:var(--amber-ink)}
+.pr .btn-big,.pr .btn-sec{grid-column:2;grid-row:1 / span 2;width:auto;min-width:108px;min-height:50px;padding:6px 12px;font-size:17px}
+.pr .btn-sec{font:400 15px/1 var(--f-label);letter-spacing:.06em}
+.piso-empty{padding:14px 12px;border:2px dashed var(--form-line);border-radius:4px;text-align:center;font:400 15px/1.4 var(--f-num);color:var(--muted)}
+.piso-more{padding:2px;text-align:center;font:400 13px/1 var(--f-label);color:var(--muted)}
+#ePiso{padding:10px}
+.precio-p2p{padding:10px 10px 12px;border:2px solid var(--ink);border-radius:4px;background:var(--paper-hi);text-align:center;color:var(--ink)}
+.precio-p2p .lbl{display:block;font-size:12px}
+.precio-p2p .xl{display:inline-block;margin-top:6px;font-size:clamp(34px,10vw,46px);line-height:1}
+.precio-p2p small{display:block;margin-top:5px;font:400 12px/1.2 var(--f-label);color:var(--muted)}
+.mini-stamp.cancelada{color:var(--gray)}
+.mini-stamp.piso{color:var(--amber)}
+.slip-btn{grid-column:span 2;margin-top:8px;min-height:46px}
+#accSheet{z-index:50}
+/* Fichas en papel naranja (como las papeletas de color de los 90): renglones y etiquetas
+   impresos en naranja Anáhuac; lo escrito, en tinta oscura para que se lea bien. */
+.papeleta,.slip,.estim{--form-line:rgba(170,62,10,.55);--rule:rgba(170,62,10,.18);--ink-2:#93400f;--pap-ink:#a7420c}
+.papeleta,.slip{background-color:#fbd5b8}
+.estim{background:repeating-linear-gradient(to bottom,transparent 0 33px,var(--rule) 33px 34px),#fde6d4}
+.papeleta .pap-head{border-bottom-color:var(--amber)}
+.papeleta .pap-org b,.slip .slip-em{color:var(--pap-ink)}
+.papeleta .nudge,.papeleta .quick button,.papeleta .seg button{color:var(--pap-ink);background:#fff0e4}
+.papeleta .nudge,.papeleta .quick button,.papeleta .seg{border-color:var(--pap-ink)}
+.papeleta .seg button+button{border-left-color:var(--pap-ink)}
+.papeleta .quick button[aria-pressed="true"],.papeleta .seg button[aria-checked="true"]{background:var(--pap-ink);color:#fff8f2}
+.papeleta .qty-in{border-bottom-color:var(--pap-ink)}
+.estim .er.tot{border-top-color:var(--pap-ink)}
+.estim .er.tot span{color:var(--pap-ink)}
+</style>
+</head>
+<body>
+<div id="app" class="app">
+  <div class="strip" role="banner">
+    <span class="strip-l"><i id="connDot" class="dot" title="Conexión"></i><b>B.V.A.</b><span>Piso de remates</span></span>
+    <button type="button" class="info-sim" aria-expanded="false" aria-label="Información sobre los datos">i<span class="info-sim-t">Datos simulados</span></button>
+  </div>
+
+  <main class="stage">
+    <!-- Corros -->
+    <section id="vCorros" class="tabview" aria-label="Corros">
+      <div class="pad">
+        <div class="ipc">
+          <div class="ipc-top">
+            <div>
+              <div class="lbl">Índice BVA</div>
+              <div class="ipc-val"><span class="num fl" id="ipcVal">—</span></div>
+            </div>
+            <span class="ipc-var num fl" id="ipcVar">—</span>
+          </div>
+          <div class="ipc-bot">
+            <span class="mkt" id="mktState"><i></i><span>Conectando…</span></span>
+            <span class="ronda" id="rondaBox"><span class="wait">Esperando apertura</span></span>
+          </div>
+        </div>
+        <div id="pisoBox" hidden>
+          <h2 class="sec-h">En el piso <small id="pisoSum"></small></h2>
+          <p class="piso-help">Entre participantes: lanza tu orden desde un corro y espera a que otro agente la acepte, o acepta aquí la de alguien más.</p>
+          <div id="pisoList" class="piso-list"></div>
+        </div>
+        <h2 class="sec-h">Corros <small>Toca una emisora para operar</small></h2>
+        <div id="corrosList" class="corros"></div>
+      </div>
+    </section>
+
+    <!-- Mis fichas -->
+    <section id="vFichas" class="tabview" aria-label="Mis fichas" hidden>
+      <div class="pad">
+        <h2 class="sec-h" style="margin-top:4px">Mis fichas <small id="fichasSum"></small></h2>
+        <div id="fichasList" class="pila"></div>
+      </div>
+    </section>
+
+    <!-- Portafolio -->
+    <section id="vPort" class="tabview" aria-label="Portafolio" hidden>
+      <div class="pad">
+        <div class="port-head">
+          <div class="lbl">Valor del portafolio</div>
+          <span class="port-total num"><span class="fl" id="pTotal">—</span></span>
+          <div class="port-row">
+            <div><span class="port-pnl num fl" id="pPnl">—</span><div class="port-pnl-l">P&amp;L contra $1,000,000</div></div>
+            <div class="lugar" id="pLugar">Lugar <b>—</b></div>
+          </div>
+        </div>
+        <div class="cash"><span class="lbl">Efectivo</span><span class="num fl" id="pCash">—</span></div>
+        <table class="pos" aria-label="Posiciones">
+          <thead><tr><th>Emisora · acciones</th><th>P. compra</th><th>Valor</th></tr></thead>
+          <tbody id="pRows"></tbody>
+        </table>
+        <p class="note" id="pNote">Valuado a postura de compra.</p>
+        <button type="button" class="btn-sec" id="pCred">Ver mi credencial</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" id="tabbar" role="tablist" aria-label="Secciones">
+    <button type="button" class="tab" role="tab" data-tab="corros" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v5.5M12 15.5V21M3 12h5.5M15.5 12H21"/></svg>
+      Corros
+    </button>
+    <button type="button" class="tab" role="tab" data-tab="fichas" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="13" height="15" rx="1"/><path d="M4 7v12a1 1 0 0 0 1 1h11"/><path d="M10 8h7M10 11.5h7M10 15h4"/></svg>
+      Mis fichas
+      <span class="badge" id="tabBadge" hidden>0</span>
+    </button>
+    <button type="button" class="tab" role="tab" data-tab="portafolio" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2M3 13h18"/></svg>
+      Portafolio
+    </button>
+  </nav>
+
+  <!-- Vista de emisora -->
+  <section id="sEmisora" class="stackview" aria-label="Corro de la emisora" hidden>
+    <header class="sv-head">
+      <button type="button" class="back" data-back aria-label="Atrás"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Atrás</button>
+      <div class="sv-title" id="eTitle">—</div>
+      <div class="sv-clock" data-clock></div>
+    </header>
+    <div class="sv-body">
+      <div class="e-name"><span id="eName">—</span><span id="ePerfil"></span></div>
+      <div class="susp-sign" id="eSusp" hidden>Suspendida — subasta por volatilidad<small>Reanuda en</small><span class="num" id="eSuspCd">—</span></div>
+      <div class="posturas" id="ePost">
+        <div class="postura compra"><span class="lbl">Postura de compra</span><span class="xl num fl" id="eBid">—</span><small>Aquí vendes</small></div>
+        <div class="postura venta"><span class="lbl">Postura de venta</span><span class="xl num fl" id="eAsk">—</span><small>Aquí compras</small></div>
+      </div>
+      <div class="precio-p2p" id="ePxBox" hidden><span class="lbl">Precio</span><span class="xl num fl" id="ePx">—</span><small>Se mueve con el mercado y con cada operación entre agentes</small></div>
+      <div class="stats">
+        <div><span class="lbl">Último</span><span class="num fl" id="eLast">—</span></div>
+        <div><span class="lbl">Var.</span><span class="num fl" id="eVar">—</span></div>
+        <div><span class="lbl" id="eSpreadL">Spread</span><span class="num fl" id="eSpread">—</span></div>
+        <div><span class="lbl">Volumen</span><span class="num fl" id="eVol">—</span></div>
+      </div>
+      <div class="libro" id="ePisoBox" hidden>
+        <div class="libro-t">Órdenes en el piso <small id="ePisoN"></small></div>
+        <div id="ePiso" class="piso-list"></div>
+      </div>
+      <div class="libro" id="eLibro">
+        <div class="libro-t">Profundidad del corro <small>5 niveles</small></div>
+        <div class="dp-h"><span>Acciones</span><span>Compra</span><span>Venta</span><span>Acciones</span></div>
+        <div id="eDepth"></div>
+      </div>
+      <div class="mine-line" id="eMine"></div>
+      <div class="no-round" id="eNoRound" hidden></div>
+    </div>
+    <footer class="sv-foot">
+      <button type="button" class="btn-big btn-compra" id="eBuy">Compra</button>
+      <button type="button" class="btn-big btn-venta" id="eSell">Venta</button>
+    </footer>
+  </section>
+
+  <!-- Ficha de compra-venta -->
+  <section id="sFicha" class="stackview" aria-label="Ficha de compra-venta" hidden>
+    <header class="sv-head">
+      <button type="button" class="back" data-back aria-label="Atrás"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Atrás</button>
+      <div class="sv-title">Ficha</div>
+      <div class="sv-clock" data-clock></div>
+    </header>
+    <div class="sv-body" id="fBody"></div>
+    <footer class="sv-foot one" id="fFoot"></footer>
+
+    <div class="sheet" id="sigSheet" hidden>
+      <div class="sheet-back" id="sigBack"></div>
+      <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sigTitle">
+        <div class="sheet-title" id="sigTitle">Firma del agente</div>
+        <p class="sheet-sum" id="sigSum"></p>
+        <div class="sig-wrap">
+          <span class="sig-x">X</span><span class="sig-line"></span><span class="sig-ph" id="sigPh">Firma aquí con el dedo</span>
+          <canvas id="sigCanvas" aria-label="Área de firma"></canvas>
+        </div>
+        <p class="sig-reuse" id="sigReuse" hidden>Es tu firma de la ficha anterior. Toca <b>Borrar</b> si quieres firmar de nuevo.</p>
+        <div class="sheet-btns">
+          <button type="button" class="btn-sec" id="sigClear">Borrar</button>
+          <button type="button" class="btn-big" id="sigOk" disabled>Cerrar operación</button>
+        </div>
+        <button type="button" class="btn-link" id="sigCancel">Cancelar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Registro -->
+  <section id="vReg" class="fullview" aria-label="Registro" hidden>
+    <div class="reg-wrap">
+      <div class="formato">
+        <div class="reg-org">Bolsa de Valores Anáhuac</div>
+        <h1 class="reg-h1">Solicitud de credencial de agente</h1>
+        <div class="reg-folio">Piso de remates · Forma A-1</div>
+        <p class="reg-notice" id="regNotice" hidden></p>
+        <form id="regForm" class="reg-form" novalidate autocomplete="off">
+          <label class="renglon-lbl" for="regName">Nombre del agente</label>
+          <input id="regName" class="renglon" type="text" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Tu nombre">
+          <p class="err" id="regErr" role="alert" hidden></p>
+          <button type="submit" class="btn-big" id="regBtn">Solicitar credencial</button>
+        </form>
+        <ul class="reg-info">
+          <li>Recibes $1,000,000 (sim): mitad en efectivo y mitad en acciones.</li>
+          <li id="regCorros">Opera en los corros de TELVAL, BANALTA, CALIZA e INGECO.</li>
+          <li>Gana quien termine con más valor. Mira la pizarra del salón.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Arranque -->
+  <section id="vBoot" class="fullview boot" aria-live="polite">
+    <div class="boot-card">
+      <div class="boot-logo">B.V.A.</div>
+      <div class="boot-title">Piso de remates</div>
+      <p class="boot-msg" id="bootMsg">Abriendo el piso</p>
+      <button type="button" class="btn-sec" id="bootRetry" hidden>Reintentar</button>
+    </div>
+  </section>
+
+  <!-- Credencial -->
+  <div id="credModal" class="modal" role="dialog" aria-modal="true" aria-label="Credencial de agente" hidden>
+    <div class="gafete" id="credCard"></div>
+    <p class="cred-msg" id="credMsg"></p>
+    <button type="button" class="btn-big" id="credGo">Entrar al piso</button>
+  </div>
+
+  <div id="banner" class="banner" role="alert" hidden>
+    <div class="bn-main">¡MIRA LA PIZARRA!</div>
+    <div class="bn-title" id="bnTitle"></div>
+    <div class="bn-sub" id="bnSub" hidden></div>
+  </div>
+  <div id="netPill" class="net-pill" role="status" hidden></div>
+
+  <!-- Aceptar una orden del piso (modo entre participantes) -->
+  <div class="sheet" id="accSheet" hidden>
+    <div class="sheet-back" id="accBack"></div>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="accTitle">
+      <div class="sheet-title" id="accTitle">Aceptar orden</div>
+      <p class="sheet-sum" id="accSum"></p>
+      <div class="estim">
+        <div class="er"><span>Precio estimado</span><b id="accPx">—</b></div>
+        <div class="er"><span id="accComL">Comisión</span><b id="accCom">—</b></div>
+        <div class="er tot"><span id="accTotL">Costo estimado</span><b id="accTot">—</b></div>
+        <div class="er disp"><span id="accDispL">Efectivo disponible</span><b id="accDisp">—</b></div>
+      </div>
+      <p class="valid" id="accValid" role="status" aria-live="polite"></p>
+      <div class="sheet-btns">
+        <button type="button" class="btn-sec" id="accNo">Cancelar</button>
+        <button type="button" class="btn-big" id="accOk">Aceptar y cerrar</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" hidden></div>
+</div>
+
+<div id="suspGen" class="susp-gen" role="alertdialog" aria-live="assertive" aria-label="Suspensión general" hidden>
+  <div class="sg-in">
+    <div class="sg-stamp">SUSPENSIÓN<br>GENERAL</div>
+    <p class="sg-txt">Mercado detenido por volatilidad. Todas las órdenes se rechazan hasta la reapertura.</p>
+    <div class="sg-lbl" id="sgLbl">Reapertura en</div>
+    <div class="sg-cd num" id="sgCd">—</div>
+    <div class="sg-mira">¡MIRA LA PIZARRA!</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     Constantes y estado
+     ========================================================= */
+  var SIM = window.SIM_CONFIG || null;
+  var TZ = (SIM && SIM.TZ) || 'America/Mexico_City';
+  var TOKEN_KEY = 'bmv_device_token';
+  // Emisoras en juego: las elige el admin; se toman del snapshot (esta lista es solo el arranque)
+  var TICKERS = ['TELVAL', 'BANALTA', 'CALIZA', 'INGECO'];
+  var SERIES = { TELVAL: 'L', BANALTA: 'O', CALIZA: 'CPO', INGECO: '*', MALTERA: 'B', ACERNOR: 'A', AERONAL: 'L', COMSUR: 'UBC' };
+  var NOMBRES = { TELVAL: 'Telval', BANALTA: 'Banalta', CALIZA: 'Caliza', INGECO: 'Ingeco', MALTERA: 'Maltera', ACERNOR: 'Acernor', AERONAL: 'Aeronal', COMSUR: 'Comsur' };
+  var ALERTA = { salto: 1, noticia: 1, crash: 1, rally: 1, suspension: 1, suspension_general: 1, modo: 1 };
+  var DOTACION = 1000000;
+  var CASA_COLOR = {
+    'Bursátil del Golfo': '#b23f07', 'Valores Tenoch': '#8a2c0a',
+    'Capitales del Bajío': '#c8560f', 'Pacífico Bursátil': '#6e2a07'
+  };
+  var STATUS_TXT = { ejecutada: 'CERRADO', pendiente: 'PENDIENTE', rechazada: 'RECHAZADA', expirada: 'EXPIRADA', cancelada: 'CANCELADA' };
+
+  var S = {
+    sb: null, ch: null, token: null, me: null, histOK: false,
+    cfg: { gamma_slip: 0.004, depth_d: 5000, comision: 0.0025, max_qty: 20000, max_pendientes: 5, p2p_impacto: 0.002 },
+    // Modo de mercado: 'bots' (se opera contra el formador de mercado) o 'participantes'
+    // (una orden se lanza al piso y otro agente la tiene que aceptar)
+    modo: 'bots', piso: [], pisoSig: '', ePisoSig: '', myOpen: {}, gone: {}, avisados: {}, acc: null,
+    offset: 0, tick: -1, mercado: null, ronda: null, em: {}, lastSugEv: null,
+    lastSeq: 0, seen: {}, seenList: [],
+    tab: 'corros', stack: [], sel: null, ficha: null, inApp: false,
+    rtStatus: 'INIT', rtHadError: false, rtCreatedAt: 0, lastRtAt: 0, rtRetryT: null,
+    httpDown: false, lastPollAt: 0, sgOn: false,
+    fichasSig: '', portKeys: '', bootT: null, periodicN: 0
+  };
+
+  /* =========================================================
+     Utilidades
+     ========================================================= */
+  function $(id) { return document.getElementById(id); }
+  function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toNum(v) { if (typeof v === 'string' && v !== '') v = Number(v); return (typeof v === 'number' && isFinite(v)) ? v : null; }
+  function r2(v) { return Math.round(v * 100) / 100; }
+  function pad3(n) { var s = String(n == null ? '' : n); while (s.length < 3) s = '0' + s; return s; }
+
+  var NF2 = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var NF0 = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
+  function money(v) { v = toNum(v); if (v === null) return '—'; var x = r2(v); return (x < 0 ? '-$' : '$') + NF2.format(Math.abs(x)); }
+  function dec2(v) { v = toNum(v); return v === null ? '—' : NF2.format(v); }
+  function ent(v) { v = toNum(v); return v === null ? '—' : NF0.format(v); }
+  function vol(v) { v = toNum(v); if (v === null) return '—'; return v >= 1000000 ? NF2.format(v / 1000000) + ' M' : NF0.format(v); }
+  function pct(v) {
+    v = toNum(v); if (v === null) return '—';
+    var x = r2(v); return (x > 0 ? '+' : x < 0 ? '-' : '') + NF2.format(Math.abs(x)) + ' %';
+  }
+  function signCls(v) { v = toNum(v); return v === null ? '' : (r2(v) > 0 ? 'up' : r2(v) < 0 ? 'dn' : ''); }
+  function arrow(v) { v = toNum(v); if (v === null) return ''; var x = r2(v); return x > 0 ? '▲ ' : x < 0 ? '▼ ' : '= '; }
+
+  function mkDTF(opts) {
+    var o = {}; for (var k in opts) o[k] = opts[k];
+    o.timeZone = TZ;
+    try { return new Intl.DateTimeFormat('es-MX', o); } catch (e) { delete o.timeZone; return new Intl.DateTimeFormat('es-MX', o); }
+  }
+  var DTF_FULL = mkDTF({ year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+  var DTF_HORA = mkDTF({ hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+  function fechaHora(ms) {
+    var o = {};
+    try { DTF_FULL.formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = p.value; }); } catch (e) { return '—'; }
+    if (!o.year) return '—';
+    return o.day + '/' + o.month + '/' + o.year + '  ' + o.hour + ':' + o.minute + ':' + o.second;
+  }
+  function hora(iso) { var t = Date.parse(iso); return isNaN(t) ? '—' : DTF_HORA.format(new Date(t)); }
+  function nowSrv() { return Date.now() + S.offset; }
+  function mmss(ms) {
+    if (!isFinite(ms)) return '—';
+    var s = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(s / 60); s = s % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function lsGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { window.localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  function uuid() {
+    try { if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID(); } catch (e) { /* sigue */ }
+    var b = new Uint8Array(16), i;
+    try { window.crypto.getRandomValues(b); } catch (e) { for (i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256); }
+    b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+    var h = ''; for (i = 0; i < 16; i++) h += (b[i] + 256).toString(16).slice(1);
+    return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
+  }
+  function vib(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* sin vibración */ } }
+
+  /* Escribe un número y lo hace parpadear verde/rojo si cambió. */
+  function setVal(node, v, txt, cls) {
+    if (!node) return;
+    if (node._t !== txt) { node.textContent = txt; node._t = txt; }
+    if (cls !== undefined && node._c !== cls) {
+      if (node._c) node.classList.remove(node._c);
+      if (cls) node.classList.add(cls);
+      node._c = cls;
+    }
+    v = toNum(v);
+    if (v !== null && typeof node._v === 'number' && v !== node._v) {
+      node.classList.remove('fl-up', 'fl-dn');
+      void node.offsetWidth;
+      node.classList.add(v > node._v ? 'fl-up' : 'fl-dn');
+    }
+    if (v !== null) node._v = v;
+  }
+
+  /* =========================================================
+     Red: RPC con tiempo límite
+     ========================================================= */
+  function rpc(fn, args, ms) {
+    return new Promise(function (resolve) {
+      var done = false, timer = null, ctl = null;
+      function end(r) { if (done) return; done = true; if (timer) clearTimeout(timer); resolve(r); }
+      try {
+        var q = S.sb.rpc(fn, args || {});
+        if (typeof AbortController !== 'undefined' && q && typeof q.abortSignal === 'function') {
+          ctl = new AbortController(); q = q.abortSignal(ctl.signal);
+        }
+        timer = setTimeout(function () {
+          try { if (ctl) ctl.abort(); } catch (e) { /* nada */ }
+          markHttp(false); end({ netErr: true, error: { message: 'timeout' } });
+        }, ms || 15000);
+        q.then(function (res) {
+          if (res && res.error) {
+            var isNet = !res.status;
+            if (isNet) markHttp(false); else markHttp(true);
+            end({ netErr: true, server: !isNet, error: res.error });
+          } else {
+            markHttp(true); end({ data: res ? res.data : null });
+          }
+        }, function (err) { markHttp(false); end({ netErr: true, error: err }); });
+      } catch (e) { markHttp(false); end({ netErr: true, error: e }); }
+    });
+  }
+  function markHttp(ok) { if (S.httpDown === !ok) return; S.httpDown = !ok; updateConn(); }
+
+  function updateConn() {
+    var rtOk = S.rtStatus === 'SUBSCRIBED' && (Date.now() - S.lastRtAt) < 25000;
+    var dot = $('connDot');
+    dot.className = 'dot ' + (S.httpDown ? 'bad' : rtOk ? 'ok' : 'warn');
+    dot.title = S.httpDown ? 'Sin conexión' : rtOk ? 'En línea' : 'Reconectando';
+    var pill = $('netPill'), msg = '';
+    if (S.httpDown) msg = 'Sin conexión · reintentando…';
+    else if (!rtOk && S.rtCreatedAt && Date.now() - S.rtCreatedAt > 8000) msg = 'Reconectando con el piso…';
+    if (msg && S.inApp) { pill.textContent = msg; pill.hidden = false; } else pill.hidden = true;
+  }
+
+  /* =========================================================
+     Configuración, snapshot y tiempo real
+     ========================================================= */
+  var cfgBusy = false;
+  function loadConfig() {
+    if (cfgBusy || !S.sb) return; cfgBusy = true;
+    var keys = ['gamma_slip', 'depth_d', 'comision', 'max_qty', 'max_pendientes', 'p2p_impacto'];
+    Promise.resolve(S.sb.from('config').select('key,value').in('key', keys)).then(function (res) {
+      cfgBusy = false;
+      if (!res || res.error || !Array.isArray(res.data)) { setTimeout(loadConfig, 6000); return; }
+      res.data.forEach(function (row) { var v = toNum(row.value); if (v !== null) S.cfg[row.key] = v; });
+      if (S.ficha && S.ficha.phase === 'captura') recalcFicha();
+    }, function () { cfgBusy = false; setTimeout(loadConfig, 6000); });
+  }
+
+  var snapBusy = false, snapAgain = false;
+  function loadSnapshot() {
+    if (!S.sb) return;
+    if (snapBusy) { snapAgain = true; return; }
+    snapBusy = true; S.lastPollAt = Date.now();
+    rpc('get_snapshot', {}).then(function (r) {
+      snapBusy = false;
+      if (!r.netErr && r.data) applySnap(r.data, true);
+      if (snapAgain) { snapAgain = false; loadSnapshot(); }
+    });
+  }
+
+  function connectRT() {
+    if (!S.sb) return;
+    if (S.rtRetryT) { clearTimeout(S.rtRetryT); S.rtRetryT = null; }
+    var old = S.ch; S.ch = null;
+    if (old) {
+      try { var pr = S.sb.removeChannel(old); if (pr && typeof pr.catch === 'function') pr.catch(function () { /* nada */ }); } catch (e) { /* nada */ }
+    }
+    S.rtStatus = 'CONNECTING'; S.rtCreatedAt = Date.now();
+    var ch;
+    try {
+      ch = S.sb.channel((SIM && SIM.CANAL) || 'mercado', { config: { private: false } });
+    } catch (e) { scheduleRT(5000); return; }
+    S.ch = ch;
+    ch.on('broadcast', { event: 'tick' }, function (msg) {
+      if (ch !== S.ch) return;
+      S.lastRtAt = Date.now();
+      applySnap(msg && msg.payload, false);
+    });
+    ch.subscribe(function (status) {
+      if (ch !== S.ch) return;
+      var prev = S.rtStatus; S.rtStatus = status;
+      if (status === 'SUBSCRIBED') {
+        S.lastRtAt = Date.now();
+        if (S.rtHadError || prev === 'CONNECTING') loadSnapshot();
+        S.rtHadError = false;
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        S.rtHadError = true;
+      } else if (status === 'CLOSED') {
+        S.rtHadError = true; scheduleRT(3000);
+      }
+      updateConn();
+    });
+  }
+  function scheduleRT(ms) {
+    if (S.rtRetryT) return;
+    S.rtRetryT = setTimeout(function () { S.rtRetryT = null; connectRT(); }, ms);
+  }
+
+  function markSeen(id) {
+    S.seen[id] = 1; S.seenList.push(id);
+    if (S.seenList.length > 400) delete S.seen[S.seenList.shift()];
+  }
+
+  function applySnap(p, full) {
+    if (!p || typeof p !== 'object') return;
+    var tk = toNum(p.tick);
+    var stale = tk !== null && S.tick >= 0 && tk < S.tick && (S.tick - tk) < 60;
+    if (!stale) {
+      var srvT = Date.parse(p.t);
+      if (!isNaN(srvT)) S.offset = srvT - Date.now();
+      if (tk !== null) S.tick = tk;
+      if (p.mercado) S.mercado = p.mercado;
+      if ('ronda' in p) S.ronda = p.ronda;
+      if (p.modo === 'bots' || p.modo === 'participantes') setModo(p.modo);
+      if (Array.isArray(p.emisoras) && p.emisoras.length) syncTickers(p.emisoras);
+      if (Array.isArray(p.emisoras)) p.emisoras.forEach(function (e) { if (e && e.ticker) S.em[e.ticker] = e; });
+      if (Array.isArray(p.piso)) { S.piso = p.piso; trackMine(); }
+    }
+    // Tape: solo interesa saber si se ejecutó algo mío (incluye que otro agente aceptó mi orden)
+    var first = S.lastSeq === 0, maxSeq = S.lastSeq, mine = false, aceptaron = [];
+    var ag = S.me && S.me.jugador ? S.me.jugador.agente : null;
+    (Array.isArray(p.tape) ? p.tape : []).forEach(function (row) {
+      var sq = row ? toNum(row.seq) : null;
+      if (sq === null || sq <= S.lastSeq) return;
+      if (sq > maxSeq) maxSeq = sq;
+      if (ag !== null && !row.bot && row.agente === ag) mine = true;
+      if (ag !== null && row.contra && row.contra.agente === ag) {
+        mine = true;
+        if (!S.avisados[sq]) { S.avisados[sq] = 1; aceptaron.push(row); }
+      }
+    });
+    S.lastSeq = maxSeq;
+    if (mine && !first) refreshMeSoon();
+    if (!first) aceptaron.forEach(function (row) {
+      // row.lado es el lado de quien aceptó: yo hice lo contrario
+      toast('¡Te aceptaron! AG ' + pad3(row.agente) + (row.lado === 'compra' ? ' te compró ' : ' te vendió ') +
+        ent(row.qty) + ' ' + row.ticker + ' a ' + money(row.precio));
+      vib([60, 40, 120]);
+    });
+    // Eventos
+    (Array.isArray(p.eventos) ? p.eventos : []).forEach(function (ev) {
+      if (!ev || ev.id == null || S.seen[ev.id]) return;
+      markSeen(ev.id);
+      handleEvent(ev, full);
+    });
+    renderLive();
+  }
+
+  function handleEvent(ev, full) {
+    var age = nowSrv() - Date.parse(ev.ts);
+    var fresh = !full || (isFinite(age) && age < 8000);
+    if (ev.tipo === 'suspension_general') S.lastSugEv = ev;
+    switch (ev.tipo) {
+      case 'reset':
+        S.lastSeq = 0; S.tick = -1;
+        if (fresh) refreshMe();
+        break;
+      case 'apertura':
+        if (fresh) { toast('¡Abre la ronda! Suena la campana.'); vib([80, 60, 80]); }
+        refreshMeSoon(); loadConfig();
+        break;
+      case 'cierre':
+        if (fresh) { toast('Cierra la ronda. ¡Mira la pizarra!'); vib([80, 60, 80]); }
+        refreshMeSoon();
+        break;
+      case 'reapertura':
+        if (fresh) toast(ev.titulo || 'La emisora reanuda operaciones');
+        break;
+      case 'reapertura_general':
+        if (fresh) toast('Reapertura del mercado');
+        break;
+      case 'emisoras':
+        if (fresh) toast(ev.titulo || 'Cambiaron las emisoras en juego');
+        refreshMeSoon();
+        break;
+      case 'modo':
+        if (fresh) { showBanner(ev); vib([300, 120, 300]); }
+        refreshMeSoon();
+        break;
+      default:
+        if (ALERTA[ev.tipo] && fresh) { showBanner(ev); vib([300, 120, 300]); }
+    }
+  }
+
+  /* =========================================================
+     Estado del jugador
+     ========================================================= */
+  var meBusy = null, meAgain = false, meSoonT = null;
+  function refreshMe() {
+    if (!S.sb || !S.token) return Promise.resolve();
+    if (meBusy) { meAgain = true; return meBusy; }
+    meBusy = rpc('get_my_state', { p_token: S.token }).then(function (r) {
+      if (!r.netErr && r.data) {
+        if (r.data.ok) setMe(r.data);
+        else if (r.data.error === 'no_registrado') onUnregistered();
+      }
+    }).then(function () {
+      meBusy = null;
+      if (meAgain) { meAgain = false; setTimeout(refreshMe, 250); }
+    });
+    return meBusy;
+  }
+  function refreshMeSoon() {
+    if (meSoonT) return;
+    meSoonT = setTimeout(function () { meSoonT = null; refreshMe(); }, 400);
+  }
+  function setMe(d) {
+    S.me = d;
+    avisaSalidas();
+    syncFichaResult();
+    renderMeBits();
+  }
+  /* La ficha que quedó "en el piso" se actualiza sola cuando alguien la acepta o expira. */
+  function syncFichaResult() {
+    var f = S.ficha;
+    if (!f || f.phase !== 'resultado' || !f.result || !f.result.piso || f.result.status !== 'pendiente') return;
+    var x = null;
+    ((S.me && S.me.fichas) || []).forEach(function (y) { if (y && String(y.folio) === String(f.result.folio)) x = y; });
+    if (!x || x.status === 'pendiente') return;
+    if (S.ficha === f && S.stack.indexOf('ficha') >= 0) finishOrder(f, fromFicha(x));
+    else f.result = fromFicha(x);
+  }
+  function onUnregistered() {
+    var wasIn = S.inApp;
+    S.me = null; S.inApp = false;
+    popAll();
+    closeCred();
+    showRegistro(wasIn ? 'El juego se reinició o tu credencial ya no existe. Solicita una nueva para seguir operando.' : null);
+  }
+  function posQty(t) {
+    var ps = (S.me && S.me.posiciones) || [];
+    for (var i = 0; i < ps.length; i++) if (ps[i] && ps[i].ticker === t) return toNum(ps[i].qty) || 0;
+    return 0;
+  }
+  function maxFolio() {
+    var fs = (S.me && S.me.fichas) || [], m = 0;
+    fs.forEach(function (f) { var n = toNum(f && f.folio); if (n !== null && n > m) m = n; });
+    return m;
+  }
+
+  /* =========================================================
+     Emisoras en juego y modo de mercado
+     ========================================================= */
+  function p2p() { return S.modo === 'participantes'; }
+
+  function syncTickers(list) {
+    var tk = [];
+    list.forEach(function (e) {
+      if (!e || !e.ticker) return;
+      tk.push(e.ticker);
+      if (e.serie) SERIES[e.ticker] = e.serie;
+      if (e.nombre) NOMBRES[e.ticker] = e.nombre;
+    });
+    if (!tk.length || tk.join(',') === TICKERS.join(',')) return;
+    TICKERS = tk;
+    Object.keys(S.em).forEach(function (t) { if (tk.indexOf(t) < 0) delete S.em[t]; });
+    buildCorros();
+    renderRegInfo();
+    if (S.sel && tk.indexOf(S.sel) < 0 && S.stack.length) popAll();
+  }
+  function renderRegInfo() {
+    var n = $('regCorros'); if (!n) return;
+    var l = TICKERS.slice();
+    var txt = l.length === 1 ? l[0] : l.slice(0, -1).join(', ') + (/^I/.test(l[l.length - 1]) ? ' e ' : ' y ') + l[l.length - 1];
+    n.textContent = 'Opera en ' + (l.length === 1 ? 'el corro de ' : 'los corros de ') + txt + '.';
+  }
+
+  function setModo(m) {
+    if (m === S.modo) return;
+    S.modo = m;
+    S.pisoSig = ''; S.ePisoSig = '';
+    if (m !== 'participantes') { S.piso = []; closeAccept(); }
+    $('pisoBox').hidden = m !== 'participantes';
+    $('eBuy').textContent = m === 'participantes' ? 'Lanzar compra' : 'Compra';
+    $('eSell').textContent = m === 'participantes' ? 'Lanzar venta' : 'Venta';
+    $('eSpreadL').textContent = m === 'participantes' ? 'En el piso' : 'Spread';
+    qsa('[data-f="l1"]').forEach(function (n) { n.textContent = m === 'participantes' ? 'Precio' : 'Compra'; });
+    qsa('[data-f="l2"]').forEach(function (n) { n.textContent = m === 'participantes' ? 'Compran' : 'Venta'; });
+    qsa('[data-f="l3"]').forEach(function (n) { n.textContent = m === 'participantes' ? 'Venden' : 'Último'; });
+    qsa('.corro [data-f="bid"], .corro [data-f="ask"], .corro [data-f="last"]').forEach(function (n) { n._t = undefined; n._v = undefined; });
+    if (S.ficha && S.ficha.phase === 'captura') { renderFichaFoot(); recalcFicha(); }
+    S.fichasSig = '';
+    renderMeBits();
+  }
+
+  /* Mis órdenes abiertas en el piso: si una desaparece sin que nadie la aceptara, avisar. */
+  function miAgente() { return S.me && S.me.jugador ? S.me.jugador.agente : null; }
+  function trackMine() {
+    var ag = miAgente(); if (ag === null) return;
+    var now = {}, gone = false;
+    S.piso.forEach(function (o) { if (o && o.agente === ag) now[o.folio] = o; });
+    Object.keys(S.myOpen).forEach(function (f) { if (!now[f]) { S.gone[f] = S.myOpen[f]; gone = true; } });
+    S.myOpen = now;
+    if (gone) refreshMeSoon();
+  }
+  function avisaSalidas() {
+    var fs = (S.me && S.me.fichas) || [];
+    Object.keys(S.gone).forEach(function (f) {
+      var x = null;
+      fs.forEach(function (y) { if (y && String(y.folio) === String(f)) x = y; });
+      delete S.gone[f];
+      if (!x) return;
+      var desc = (x.lado === 'compra' ? 'COMPRA ' : 'VENTA ') + ent(x.qty) + ' ' + x.ticker;
+      if (x.status === 'expirada' && x.motivo === 'Nadie la aceptó a tiempo') toast('Nadie aceptó tu orden (' + desc + '): expiró');
+      else if (x.status === 'expirada' || x.status === 'rechazada') toast('Tu orden (' + desc + ') salió del piso: ' + (x.motivo || x.status));
+    });
+  }
+
+  function misAbiertas(t, lado) {
+    var ag = miAgente(), q = 0, n = 0;
+    S.piso.forEach(function (o) {
+      if (!o || o.agente !== ag) return;
+      n++;
+      if ((!t || o.ticker === t) && (!lado || o.lado === lado)) q += toNum(o.qty) || 0;
+    });
+    // Recién lanzadas que todavía no llegan en el piso del snapshot
+    ((S.me && S.me.fichas) || []).forEach(function (x) {
+      if (!x || x.status !== 'pendiente' || x.rol !== 'lanza' || S.myOpen[x.folio]) return;
+      n++;
+      if ((!t || x.ticker === t) && (!lado || x.lado === lado)) q += toNum(x.qty) || 0;
+    });
+    return { qty: q, n: n };
+  }
+  function reservado() {
+    var c = S.cfg, tot = 0;
+    S.piso.forEach(function (o) {
+      if (!o || o.agente !== miAgente() || o.lado !== 'compra') return;
+      var e = S.em[o.ticker], px = e ? toNum(e.bid) : null;
+      if (px !== null) tot += px * (toNum(o.qty) || 0) * (1 + (c.comision || 0));
+    });
+    return tot;
+  }
+  /* Precio al que se cerraría: el actual movido por el impacto de la orden lanzada
+     (una venta lo baja, una compra lo sube). */
+  function pxPiso(t, ladoLanzado, q) {
+    var e = S.em[t], ref = e ? toNum(e.bid) : null;
+    if (ref === null) return null;
+    var k = (S.cfg.p2p_impacto || 0) * q / 1000 * (ladoLanzado === 'compra' ? 1 : -1);
+    return Math.max(0.01, r2(ref * Math.exp(k)));
+  }
+
+  /* =========================================================
+     El piso: lista de órdenes y aceptar
+     ========================================================= */
+  function pisoRow(o) {
+    var mia = o.agente === miAgente(), q = toNum(o.qty) || 0, venta = o.lado === 'venta';
+    var px = pxPiso(o.ticker, o.lado, q);
+    var e = S.em[o.ticker];
+    var bloq = !rondaActiva() || generalSusp() || isSusp(e);
+    var btn = mia
+      ? '<button type="button" class="btn-sec" data-cancel="' + esc(o.folio) + '">Cancelar</button>'
+      : '<button type="button" class="btn-big ' + (venta ? 'btn-compra' : 'btn-venta') + '" data-acc="' + esc(o.folio) + '"' + (bloq ? ' disabled' : '') + '>' +
+        (venta ? 'Comprar' : 'Vender') + '</button>';
+    return '<div class="pr ' + (venta ? 'venta' : 'compra') + (mia ? ' mia' : '') + '">' +
+      '<div class="pr-main"><span class="pr-lado">' + (venta ? 'VENDE' : 'COMPRA') + '</span><b>' + ent(q) + '</b><span>' + esc(o.ticker) + '</span>' +
+      '<span class="pr-px num">≈ ' + money(px) + '</span></div>' +
+      '<div class="pr-sub">' + (mia ? '<span class="pr-tag">Tuya</span> · ' : 'AG ' + esc(pad3(o.agente)) + ' · ' + esc(o.casa || '') + ' · ') +
+      '<span data-exp="' + esc(o.expira || '') + '">—</span></div>' + btn + '</div>';
+  }
+  function renderPisoList(box, items, max, vacio) {
+    var h = '';
+    items.slice(0, max).forEach(function (o) { h += pisoRow(o); });
+    if (items.length > max) h += '<div class="piso-more">y ' + ent(items.length - max) + ' más</div>';
+    box.innerHTML = h || '<div class="piso-empty">' + vacio + '</div>';
+  }
+  function pisoSig(items) {
+    var px = items.map(function (o) { var e = S.em[o.ticker]; return o.folio + ':' + (e ? e.bid : '') + ':' + (isSusp(e) ? 1 : 0); }).join(',');
+    return px + '|' + miAgente() + '|' + rondaActiva() + '|' + generalSusp();
+  }
+  function renderPiso() {
+    if (!p2p()) return;
+    var items = S.piso.filter(function (o) { return o && TICKERS.indexOf(o.ticker) >= 0; });
+    var sig = pisoSig(items);
+    if (sig !== S.pisoSig) {
+      S.pisoSig = sig;
+      var otros = items.filter(function (o) { return o.agente !== miAgente(); }).length;
+      $('pisoSum').textContent = items.length ? ent(otros) + (otros === 1 ? ' para aceptar' : ' para aceptar') : '';
+      renderPisoList($('pisoList'), items, 25, 'Nadie ha lanzado órdenes todavía. Abre un corro y lanza la tuya.');
+    }
+    if (S.stack.indexOf('emisora') >= 0 && S.sel) {
+      var mine = items.filter(function (o) { return o.ticker === S.sel; });
+      var sig2 = S.sel + '#' + pisoSig(mine);
+      if (sig2 !== S.ePisoSig) {
+        S.ePisoSig = sig2;
+        $('ePisoN').textContent = mine.length ? ent(mine.length) + (mine.length === 1 ? ' orden' : ' órdenes') : '';
+        renderPisoList($('ePiso'), mine, 40, 'Nadie ha lanzado órdenes de ' + esc(S.sel) + '. Lanza la tuya con los botones de abajo.');
+      }
+    }
+  }
+  function findPiso(folio) {
+    for (var i = 0; i < S.piso.length; i++) if (S.piso[i] && String(S.piso[i].folio) === String(folio)) return S.piso[i];
+    return null;
+  }
+
+  function openAccept(folio) {
+    var o = findPiso(folio); if (!o || !S.me) return;
+    S.acc = { o: o, busy: false };
+    var compro = o.lado === 'venta';
+    $('accTitle').textContent = compro ? 'Comprar' : 'Vender';
+    $('accSum').innerHTML = (compro ? 'Le <b>compras</b> ' : 'Le <b>vendes</b> ') + '<b>' + ent(o.qty) + ' ' + esc(o.ticker) + ' ' + esc(SERIES[o.ticker] || '') +
+      '</b> a AG ' + esc(pad3(o.agente)) + ' · ' + esc(o.casa || '') + '. Se cierra completa al precio del momento.';
+    $('accOk').className = 'btn-big ' + (compro ? 'btn-compra' : 'btn-venta');
+    $('accOk').textContent = 'Aceptar y cerrar';
+    $('accTotL').textContent = compro ? 'Costo estimado' : 'Ingreso estimado';
+    $('accDispL').textContent = compro ? 'Efectivo disponible' : 'Acciones disponibles';
+    $('accSheet').hidden = false;
+    renderAccept();
+  }
+  function closeAccept() { $('accSheet').hidden = true; S.acc = null; }
+  function renderAccept() {
+    var a = S.acc; if (!a || a.busy) return;
+    var o = a.o, q = toNum(o.qty) || 0, compro = o.lado === 'venta', c = S.cfg;
+    var px = pxPiso(o.ticker, o.lado, q), imp = px !== null ? px * q : null;
+    var com = imp !== null ? imp * (c.comision || 0) : null;
+    var tot = imp !== null ? (compro ? imp + com : imp - com) : null;
+    $('accPx').textContent = px !== null ? money(px) + ' × ' + ent(q) : '—';
+    $('accComL').textContent = 'Comisión (' + dec2((c.comision || 0) * 100) + ' %)';
+    $('accCom').textContent = money(com);
+    $('accTot').textContent = money(tot);
+    var disp = compro ? toNum(S.me && S.me.cash) : posQty(o.ticker) - misAbiertas(o.ticker, 'venta').qty;
+    $('accDisp').textContent = compro ? money(disp) : ent(disp) + ' acc.';
+    var e = S.em[o.ticker], msg = null;
+    if (!findPiso(o.folio)) msg = 'Esa orden ya no está en el piso';
+    else if (!rondaActiva()) msg = 'No hay ronda activa';
+    else if (generalSusp()) msg = 'Mercado en SUSPENSIÓN GENERAL';
+    else if (isSusp(e)) msg = 'Emisora suspendida: subasta por volatilidad';
+    else if (compro && tot !== null && disp !== null && tot > disp + 1e-6) msg = 'Fondos insuficientes: tienes ' + money(disp);
+    else if (!compro && disp < q) msg = 'No tienes suficientes acciones de ' + o.ticker + ' (tienes ' + ent(Math.max(0, disp)) + ' disponibles)';
+    var v = $('accValid');
+    v.className = msg ? 'valid' : 'valid okmsg';
+    v.textContent = msg || 'El precio final puede variar un poco si alguien opera antes que tú.';
+    $('accOk').disabled = !!msg;
+  }
+  function confirmAccept() {
+    var a = S.acc; if (!a || a.busy) return;
+    a.busy = true;
+    var ok = $('accOk'); ok.disabled = true; ok.textContent = 'Cerrando…';
+    var o = a.o;
+    rpc('accept_order', { p_token: S.token, p_folio: o.folio }, 20000).then(function (r) {
+      var d = r.data || {};
+      if (S.acc === a) closeAccept();
+      if (!r.netErr && d.ok) {
+        S.piso = S.piso.filter(function (x) { return String(x.folio) !== String(o.folio); });
+        S.pisoSig = ''; S.ePisoSig = '';
+        toast('¡CERRADO! ' + (d.lado === 'compra' ? 'Compraste ' : 'Vendiste ') + ent(d.qty) + ' ' + d.ticker +
+          ' a ' + money(d.precio) + ' · folio ' + d.folio);
+        vib([60, 40, 120]);
+      } else {
+        var err = r.netErr ? 'Sin conexión: revisa “Mis fichas” antes de reintentar' : (d.error || 'No se pudo aceptar');
+        if (/ya no está|aceptó primero|ya no es válida/.test(err)) {
+          S.piso = S.piso.filter(function (x) { return String(x.folio) !== String(o.folio); });
+          S.pisoSig = ''; S.ePisoSig = '';
+        }
+        toast(err);
+        vib(200);
+      }
+      refreshMe();
+      renderLive();
+    });
+  }
+  function cancelOffer(folio, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Cancelando…'; }
+    rpc('cancel_order', { p_token: S.token, p_folio: folio }).then(function (r) {
+      var d = r.data || {};
+      if (!r.netErr && d.ok) {
+        S.piso = S.piso.filter(function (x) { return String(x.folio) !== String(folio); });
+        delete S.myOpen[folio];
+        S.pisoSig = ''; S.ePisoSig = '';
+        toast('Orden ' + folio + ' cancelada: ya no está en el piso');
+      } else {
+        toast(r.netErr ? 'Sin conexión: no se pudo cancelar' : (d.error || 'No se pudo cancelar'));
+        if (btn) { btn.disabled = false; btn.textContent = 'Cancelar'; }
+      }
+      S.fichasSig = '';
+      refreshMe();
+      renderLive();
+    });
+  }
+
+  /* =========================================================
+     Arranque, registro y credencial
+     ========================================================= */
+  function setBoot(msg, retry) {
+    $('vBoot').hidden = false;
+    $('bootMsg').textContent = msg;
+    $('bootRetry').hidden = !retry;
+  }
+  function bootFail(msg) {
+    setBoot(msg, true);
+    $('bootRetry').onclick = function () { location.reload(); };
+  }
+
+  function boot() {
+    fixHeight();
+    buildCorros();
+    bindStatic();
+    try { history.replaceState({ bmv: 0 }, ''); S.histOK = true; } catch (e) { S.histOK = false; }
+
+    if (!SIM || !SIM.SUPABASE_URL || !window.supabase || typeof window.supabase.createClient !== 'function') {
+      bootFail('No se pudo cargar el sistema del piso. Revisa tu conexión a internet.');
+      return;
+    }
+    try {
+      S.sb = window.supabase.createClient(SIM.SUPABASE_URL, SIM.SUPABASE_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+      });
+    } catch (e) {
+      bootFail('No se pudo iniciar la conexión con el piso.');
+      return;
+    }
+
+    var tok = lsGet(TOKEN_KEY), fresh = false;
+    if (!tok) { tok = uuid(); fresh = true; lsSet(TOKEN_KEY, tok); }
+    S.token = tok;
+
+    loadConfig();
+    loadSnapshot();
+    connectRT();
+    setInterval(clockLoop, 500);
+    setInterval(watchdog, 5000);
+    setInterval(periodic, 10000);
+
+    if (fresh) showRegistro(null);
+    else checkSession(0);
+  }
+
+  function checkSession(attempt) {
+    if (S.bootT) { clearTimeout(S.bootT); S.bootT = null; }
+    setBoot(attempt ? 'Sin conexión. Reintentando' : 'Buscando tu credencial', attempt > 0);
+    $('bootRetry').onclick = function () { checkSession(0); };
+    rpc('get_my_state', { p_token: S.token }).then(function (r) {
+      if (r.netErr) {
+        var wait = Math.min(15000, Math.round(2000 * Math.pow(1.6, attempt)));
+        setBoot('Sin conexión. Reintentando', true);
+        S.bootT = setTimeout(function () { checkSession(attempt + 1); }, wait);
+        return;
+      }
+      var d = r.data || {};
+      if (d.ok) { setMe(d); enterApp(); }
+      else if (d.error === 'no_registrado') showRegistro(null);
+      else showRegistro(d.error || null);
+    });
+  }
+
+  function showRegistro(notice) {
+    $('vBoot').hidden = true;
+    $('vReg').hidden = false;
+    var n = $('regNotice');
+    if (notice) { n.textContent = notice; n.hidden = false; } else n.hidden = true;
+    $('regErr').hidden = true;
+    updateConn();
+  }
+
+  var regBusy = false;
+  function onRegister(ev) {
+    ev.preventDefault();
+    if (regBusy) return;
+    var inp = $('regName'), name = inp.value.replace(/\s+/g, ' ').trim();
+    if (name.length < 2) { regErr('Escribe tu nombre (mínimo 2 letras)'); return; }
+    if (!S.sb) { regErr('Sin conexión con el piso. Recarga la página.'); return; }
+    regBusy = true;
+    var btn = $('regBtn'); btn.disabled = true; btn.textContent = 'Tramitando…';
+    rpc('register_player', { p_nombre: name, p_token: S.token }).then(function (r) {
+      regBusy = false; btn.disabled = false; btn.textContent = 'Solicitar credencial';
+      if (r.netErr) { regErr(r.server ? 'El piso no respondió bien. Intenta de nuevo.' : 'Sin conexión. Revisa tu internet e intenta de nuevo.'); return; }
+      var d = r.data || {};
+      if (!d.ok && d.error === 'Dispositivo inválido' && !S.tokenRetried) {
+        S.tokenRetried = true; S.token = uuid(); lsSet(TOKEN_KEY, S.token); onRegister(ev); return;
+      }
+      if (!d.ok) { regErr(d.error || 'No se pudo registrar. Intenta de nuevo.'); return; }
+      $('regErr').hidden = true;
+      inp.blur();
+      setMe(d);
+      showCred(true, d.nuevo === false);
+    });
+  }
+  function regErr(msg) { var e = $('regErr'); e.textContent = msg; e.hidden = false; }
+
+  function initials(n) {
+    var w = String(n || '').trim().split(/\s+/).filter(Boolean);
+    var s = (w[0] ? w[0].charAt(0) : '') + (w[1] ? w[1].charAt(0) : (w[0] && w[0].length > 1 ? w[0].charAt(1) : ''));
+    return s.toUpperCase() || '?';
+  }
+  function showCred(first, back) {
+    var j = (S.me && S.me.jugador) || {};
+    var color = CASA_COLOR[j.casa] || '#b23f07';
+    $('credCard').style.setProperty('--casa', color);
+    $('credCard').innerHTML =
+      '<div class="gaf-slot"></div>' +
+      '<div class="gaf-band"><b>Bolsa de Valores Anáhuac</b><span>Piso de remates · Agente de bolsa</span></div>' +
+      '<div class="gaf-main"><div class="gaf-foto" aria-hidden="true">' + esc(initials(j.nombre)) + '</div>' +
+      '<div><div class="gaf-lbl">Agente No.</div><div class="gaf-num">' + esc(pad3(j.agente)) + '</div></div></div>' +
+      '<div class="gaf-field"><span>Nombre</span><b>' + esc(j.nombre || '—') + '</b></div>' +
+      '<div class="gaf-field"><span>Casa de bolsa</span><b>' + esc(j.casa || '—') + '</b></div>' +
+      '<div class="gaf-bar" aria-hidden="true"></div>' +
+      '<div class="gaf-foot"><span>' + (TICKERS.length === 1 ? 'Corro 1' : 'Corros 1 a ' + TICKERS.length) + '</span></div>';
+    var msg = $('credMsg');
+    if (first && back) msg.innerHTML = '<b>¡Bienvenido de vuelta!</b> Recuperamos tu sesión con tu portafolio.';
+    else if (first) msg.innerHTML = 'Tu dotación: <b>$1,000,000</b> (sim), mitad en efectivo y mitad en acciones.';
+    else msg.innerHTML = 'Muestra tu credencial si te la piden en el piso.';
+    $('credGo').textContent = first ? 'Entrar al piso' : 'Cerrar';
+    $('credGo').onclick = function () { closeCred(); if (first) enterApp(); };
+    $('credModal').hidden = false;
+  }
+  function closeCred() { $('credModal').hidden = true; }
+
+  function enterApp() {
+    if (S.bootT) { clearTimeout(S.bootT); S.bootT = null; }
+    S.inApp = true;
+    $('vBoot').hidden = true;
+    $('vReg').hidden = true;
+    setTab(S.tab || 'corros');
+    renderLive();
+    renderMeBits();
+    updateConn();
+  }
+
+  /* =========================================================
+     Navegación: pestañas y pantallas apiladas
+     ========================================================= */
+  function setTab(name) {
+    S.tab = name;
+    $('vCorros').hidden = name !== 'corros';
+    $('vFichas').hidden = name !== 'fichas';
+    $('vPort').hidden = name !== 'portafolio';
+    qsa('.tab', $('tabbar')).forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false'); });
+    if (name === 'fichas') { renderFichas(); refreshMe(); }
+    if (name === 'portafolio') { renderPort(); refreshMe(); }
+  }
+
+  function pushStack(name) {
+    S.stack.push(name);
+    if (S.histOK) { try { history.pushState({ bmv: S.stack.length }, ''); } catch (e) { S.histOK = false; } }
+    showStack();
+  }
+  function goBack() {
+    if (!S.stack.length) return;
+    if (S.histOK) { try { history.back(); return; } catch (e) { /* manual */ } }
+    S.stack.pop(); closeSheet(); showStack();
+  }
+  function onPop(ev) {
+    var d = (ev && ev.state && toNum(ev.state.bmv)) || 0;
+    if (d > S.stack.length) { try { history.replaceState({ bmv: S.stack.length }, ''); } catch (e) { /* nada */ } return; }
+    while (S.stack.length > d) S.stack.pop();
+    closeSheet();
+    showStack();
+  }
+  function popAll() {
+    var n = S.stack.length;
+    if (!n) return;
+    S.stack = [];
+    closeSheet();
+    showStack();
+    if (S.histOK) { try { history.go(-n); } catch (e) { /* nada */ } }
+  }
+  function enter(node) { node.hidden = false; node.classList.remove('enter'); void node.offsetWidth; node.classList.add('enter'); }
+  function showStack() {
+    var hasE = S.stack.indexOf('emisora') >= 0, hasF = S.stack.indexOf('ficha') >= 0;
+    var se = $('sEmisora'), sf = $('sFicha');
+    if (hasE && se.hidden) enter(se);
+    if (!hasE) se.hidden = true;
+    if (hasF && sf.hidden) enter(sf);
+    if (!hasF) sf.hidden = true;
+    if (hasE) renderEmisora();
+    renderClocks();
+  }
+
+  /* =========================================================
+     Corros
+     ========================================================= */
+  function buildCorros() {
+    var h = '';
+    TICKERS.forEach(function (t) {
+      h += '<button type="button" class="corro" data-t="' + t + '">' +
+        '<span class="corro-top"><span class="corro-id"><span class="tk">' + t + '</span><span class="serie">' + esc(SERIES[t]) + '</span></span>' +
+        '<span class="corro-var num fl" data-f="var">—</span></span>' +
+        '<span class="corro-sub"><span data-f="perfil">' + esc(NOMBRES[t]) + '</span><span class="corro-mine" data-f="mine"></span></span>' +
+        '<span class="corro-q">' +
+        '<span class="q"><span class="lbl" data-f="l1">' + (p2p() ? 'Precio' : 'Compra') + '</span><span class="num qv fl" data-f="bid">—</span></span>' +
+        '<span class="q"><span class="lbl" data-f="l2">' + (p2p() ? 'Compran' : 'Venta') + '</span><span class="num qv fl" data-f="ask">—</span></span>' +
+        '<span class="q"><span class="lbl" data-f="l3">' + (p2p() ? 'Venden' : 'Último') + '</span><span class="num qv fl" data-f="last">—</span></span>' +
+        '</span>' +
+        '<span class="corro-susp" data-f="susp" hidden><span class="cs-stamp">SUSPENDIDA</span><span class="cs-cd num" data-f="cd"></span></span>' +
+        '</button>';
+    });
+    $('corrosList').innerHTML = h;
+  }
+  function cardField(t, f) { return document.querySelector('.corro[data-t="' + t + '"] [data-f="' + f + '"]'); }
+
+  function isSusp(e) { return !!(e && e.suspendida_hasta); }
+  function generalSusp() { return !!(S.mercado && S.mercado.estado === 'suspension_general'); }
+  function rondaActiva() { return !!(S.ronda && S.ronda.estado === 'activa'); }
+
+  function renderTop() {
+    var m = S.mercado;
+    if (m) {
+      setVal($('ipcVal'), m.indice, dec2(m.indice));
+      setVal($('ipcVar'), m.var, arrow(m.var) + pct(m.var), signCls(m.var));
+      var ms = $('mktState');
+      if (m.estado === 'suspension_general') { ms.className = 'mkt suspendido'; ms.lastChild.textContent = 'Suspensión general'; }
+      else { ms.className = 'mkt abierto'; ms.lastChild.textContent = 'Mercado abierto'; }
+    }
+  }
+
+  function renderCorros() {
+    TICKERS.forEach(function (t) {
+      var e = S.em[t]; if (!e) return;
+      if (p2p()) {
+        // Entre participantes: precio único y acciones esperando en el piso de cada lado
+        var ps = e.piso || {};
+        setVal(cardField(t, 'bid'), e.bid, money(e.bid));
+        setVal(cardField(t, 'ask'), toNum(ps.compra) || 0, ent(toNum(ps.compra) || 0));
+        setVal(cardField(t, 'last'), toNum(ps.venta) || 0, ent(toNum(ps.venta) || 0));
+      } else {
+        setVal(cardField(t, 'bid'), e.bid, money(e.bid));
+        setVal(cardField(t, 'ask'), e.ask, money(e.ask));
+        setVal(cardField(t, 'last'), e.last, money(e.last));
+      }
+      setVal(cardField(t, 'var'), e['var'], arrow(e['var']) + pct(e['var']), signCls(e['var']));
+      var pf = cardField(t, 'perfil'), ptxt = NOMBRES[t] + (e.perfil ? ' · ' + e.perfil : '');
+      if (pf._t !== ptxt) { pf.textContent = ptxt; pf._t = ptxt; }
+      var sp = cardField(t, 'susp');
+      sp.hidden = !isSusp(e);
+    });
+    renderMine();
+  }
+  function renderMine() {
+    TICKERS.forEach(function (t) {
+      var n = cardField(t, 'mine'); if (!n) return;
+      var q = S.me ? posQty(t) : 0;
+      var txt = q > 0 ? 'Tienes ' + ent(q) : '';
+      if (n._t !== txt) { n.textContent = txt; n._t = txt; }
+    });
+  }
+
+  /* =========================================================
+     Vista de emisora
+     ========================================================= */
+  function openEmisora(t) {
+    if (!S.me) return;
+    S.sel = t;
+    $('eTitle').innerHTML = esc(t) + ' <span>' + esc(SERIES[t]) + '</span>';
+    var h = '';
+    for (var i = 0; i < 5; i++) {
+      h += '<div class="dp-row"><div class="dp-q b"><i></i><span>—</span></div><div class="dp-p b"><span class="fl">—</span></div>' +
+        '<div class="dp-p a"><span class="fl">—</span></div><div class="dp-q a"><i></i><span>—</span></div></div>';
+    }
+    $('eDepth').innerHTML = h;
+    ['eBid', 'eAsk', 'ePx', 'eLast', 'eVar', 'eSpread', 'eVol'].forEach(function (id) { var n = $(id); n._v = undefined; n._t = undefined; n.textContent = '—'; });
+    S.ePisoSig = '';
+    $('sEmisora').querySelector('.sv-body').scrollTop = 0;
+    pushStack('emisora');
+  }
+
+  function renderEmisora() {
+    var t = S.sel, e = S.em[t];
+    if (!t) return;
+    $('eName').textContent = (e && e.nombre) || NOMBRES[t];
+    $('ePerfil').textContent = (e && e.perfil) || '';
+    var mp = p2p();
+    $('ePost').hidden = mp; $('eLibro').hidden = mp;
+    $('ePxBox').hidden = !mp; $('ePisoBox').hidden = !mp;
+    if (e && mp) {
+      var ps = e.piso || {}, nP = (toNum(ps.n_compra) || 0) + (toNum(ps.n_venta) || 0);
+      setVal($('ePx'), e.bid, money(e.bid));
+      setVal($('eLast'), e.last, money(e.last));
+      setVal($('eVar'), e['var'], pct(e['var']), signCls(e['var']));
+      setVal($('eSpread'), nP, ent(nP));
+      setVal($('eVol'), e.vol, vol(e.vol));
+      renderPiso();
+    } else if (e) {
+      setVal($('eBid'), e.bid, money(e.bid));
+      setVal($('eAsk'), e.ask, money(e.ask));
+      setVal($('eLast'), e.last, money(e.last));
+      setVal($('eVar'), e['var'], pct(e['var']), signCls(e['var']));
+      setVal($('eSpread'), e.spread, money(e.spread));
+      setVal($('eVol'), e.vol, vol(e.vol));
+      var pc = (e.prof && e.prof.compra) || [], pv = (e.prof && e.prof.venta) || [], mx = 1;
+      pc.concat(pv).forEach(function (l) { var q = l ? toNum(l[1]) : null; if (q !== null && q > mx) mx = q; });
+      qsa('.dp-row', $('eDepth')).forEach(function (row, i) {
+        var b = pc[i], a = pv[i];
+        var qb = row.children[0], pb = row.children[1].firstChild, pa = row.children[2].firstChild, qa = row.children[3];
+        depthQty(qb, b ? b[1] : null, mx);
+        setVal(pb, b ? b[0] : null, b ? dec2(b[0]) : '—');
+        setVal(pa, a ? a[0] : null, a ? dec2(a[0]) : '—');
+        depthQty(qa, a ? a[1] : null, mx);
+      });
+    }
+    var susp = isSusp(e) || generalSusp();
+    $('eSusp').hidden = !isSusp(e);
+    $('eBuy').disabled = susp || !S.me;
+    $('eSell').disabled = susp || !S.me;
+    var q = posQty(t), enPiso = mp ? misAbiertas(t, 'venta').qty : 0;
+    $('eMine').innerHTML = 'Tienes <b>' + ent(q) + '</b> acciones' + (enPiso ? ' (' + ent(enPiso) + ' en venta en el piso)' : '') +
+      ' · Efectivo <b>' + money(S.me ? S.me.cash : null) + '</b>';
+    var nr = $('eNoRound');
+    if (!rondaActiva()) { nr.textContent = 'No hay ronda activa: puedes revisar el corro, pero las órdenes se aceptan hasta que suene la campana de apertura.'; nr.hidden = false; }
+    else nr.hidden = true;
+    renderClocks();
+  }
+  function depthQty(cell, q, mx) {
+    var bar = cell.firstChild, txt = cell.lastChild;
+    q = toNum(q);
+    bar.style.width = q === null ? '0' : Math.max(4, Math.round(q / mx * 100)) + '%';
+    setVal(txt, q, q === null ? '—' : ent(q));
+  }
+
+  /* =========================================================
+     Ficha de compra-venta
+     ========================================================= */
+  function openFicha(lado) {
+    if (!S.me || !S.sel) return;
+    newFicha(S.sel, lado);
+    pushStack('ficha');
+  }
+  function newFicha(t, lado) {
+    S.ficha = { t: t, lado: lado, qty: S.lastQty || 100, tipo: 'mercado', limite: null, limTxt: '', phase: 'captura', err: null, result: null };
+    buildFicha();
+    recalcFicha();
+    $('fBody').scrollTop = 0;
+  }
+
+  function cell(cls, label, inner) {
+    return '<div class="cell ' + cls + '"><span class="clbl">' + label + '</span>' + inner + '</div>';
+  }
+  function buildFicha() {
+    var f = S.ficha, t = f.t, j = (S.me && S.me.jugador) || {}, compra = f.lado === 'compra';
+    var h =
+      '<div class="papeleta ' + (compra ? 'is-compra' : 'is-venta') + '" id="pap">' +
+      '<div class="pap-head"><div class="pap-org"><b>Bolsa de Valores Anáhuac</b><span>Ficha de compra-venta · Piso de remates</span></div>' +
+      '<div class="pap-lado">' + (compra ? 'COMPRA' : 'VENTA') + '</div></div>' +
+      '<div class="pap-grid">' +
+      cell('c-plazo', 'Días de plazo', '<span class="cval typed">MISMO DÍA</span>') +
+      cell('c-folio', 'Folio', '<span class="cval typed" id="fFolio">—</span>') +
+      cell('c-agente r', 'Agente', '<span class="cval typed">' + esc(pad3(j.agente)) + '</span><span class="cval-sub typed">' + esc(j.casa || '') + '</span>') +
+      cell('c-fecha', 'Fecha y hora', '<span class="cval typed" id="fFecha">' + fechaHora(nowSrv()) + '</span>') +
+      cell('c-tvalor r', 'T. valor', '<span class="cval typed">1</span>') +
+      cell('c-emisora', 'Emisora', '<span class="cval typed big">' + esc(t) + '</span>') +
+      cell('c-serie r', 'Serie', '<span class="cval typed big">' + esc(SERIES[t]) + '</span>') +
+      '<div class="cell c-lado r"><span class="clbl">Operación</span><div class="lado-sw" role="radiogroup" aria-label="Compra o venta">' +
+      '<button type="button" role="radio" data-lado="compra" aria-checked="' + compra + '">Compra</button>' +
+      '<button type="button" role="radio" data-lado="venta" aria-checked="' + !compra + '">Venta</button></div></div>' +
+      '<div class="cell c-cant r"><label class="clbl" for="fQty">Cantidad (acciones)</label>' +
+      '<div class="qty-row"><button type="button" class="nudge" data-dq="-100" aria-label="Restar 100 acciones">−100</button>' +
+      '<input id="fQty" class="qty-in typed" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" enterkeyhint="done" value="' + (f.qty ? ent(f.qty) : '') + '">' +
+      '<button type="button" class="nudge" data-dq="100" aria-label="Sumar 100 acciones">+100</button></div>' +
+      '<div class="quick" id="fQuick"><button type="button" data-q="100">100</button><button type="button" data-q="500">500</button>' +
+      '<button type="button" data-q="1000">1,000</button><button type="button" data-q="5000">5,000</button></div></div>' +
+      '<div class="cell c-precio r"><span class="clbl">Precio</span>' +
+      '<div id="fPxM"><div class="px-mkt"><span class="cval typed">A MERCADO</span><span class="num typed px-est"><span class="fl" id="fPxEst">—</span></span></div>' +
+      '<div class="px-hint" id="fPxHint"></div></div>' +
+      '<div id="fPxL" hidden><div class="qty-row"><button type="button" class="nudge" data-dp="-1" aria-label="Bajar un centavo">−0.01</button>' +
+      '<input id="fLim" class="qty-in typed" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" aria-label="Precio límite">' +
+      '<button type="button" class="nudge" data-dp="1" aria-label="Subir un centavo">+0.01</button></div>' +
+      '<div class="px-hint" id="fLimHint"></div></div></div>' +
+      '<div class="cell c-firma r"><span class="clbl">Firma del agente</span><div class="firma-box" id="fFirma"><span class="firma-ph">Se firma al cerrar la operación</span></div></div>' +
+      '</div>' +
+      '<div class="pap-foot"><span>Original · Bolsa</span></div>' +
+      '<div class="stamp" id="fStamp" hidden></div>' +
+      '</div>' +
+      '<div class="estim" id="fEstim">' +
+      '<div class="er"><span id="eaPxL">Precio estimado</span><b id="eaPx">—</b></div>' +
+      '<div class="er"><span>Importe</span><b id="eaImp">—</b></div>' +
+      '<div class="er"><span id="eaComL">Comisión</span><b id="eaCom">—</b></div>' +
+      '<div class="er tot"><span id="eaTotL">' + (compra ? 'Costo estimado' : 'Ingreso estimado') + '</span><b id="eaTot">—</b></div>' +
+      '<div class="er disp"><span id="eaDispL">' + (compra ? 'Efectivo disponible' : 'Posición disponible') + '</span><b id="eaDisp">—</b></div>' +
+      '</div>' +
+      '<p class="valid" id="fValid" role="status" aria-live="polite"></p>' +
+      '<div id="fResult" aria-live="assertive" hidden></div>';
+    $('fBody').innerHTML = h;
+    renderFichaFoot();
+  }
+
+  function renderFichaFoot() {
+    var f = S.ficha, foot = $('fFoot');
+    if (!f) { foot.innerHTML = ''; return; }
+    var cls = f.lado === 'compra' ? 'btn-compra' : 'btn-venta';
+    if (f.phase === 'resultado') {
+      foot.className = 'sv-foot';
+      foot.innerHTML = '<button type="button" class="btn-big btn-compra chico" data-nueva="compra">Otra compra</button>' +
+        '<button type="button" class="btn-big btn-venta chico" data-nueva="venta">Otra venta</button>';
+    } else {
+      foot.className = 'sv-foot one';
+      foot.innerHTML = '<button type="button" class="btn-big ' + cls + '" id="fGo">' +
+        (f.phase === 'enviando' ? (p2p() ? 'Lanzando al piso…' : 'Enviando ficha…') : (p2p() ? 'Firmar y lanzar al piso' : 'Firmar y cerrar')) + '</button>';
+    }
+  }
+
+  function parseQty(s) { var d = String(s || '').replace(/[^0-9]/g, ''); return d ? parseInt(d, 10) : 0; }
+  function parsePx(s) {
+    var t = String(s || '').trim().replace(/\s/g, '').replace(/\$/g, '');
+    if (t.indexOf(',') >= 0 && t.indexOf('.') < 0) t = t.replace(',', '.'); else t = t.replace(/,/g, '');
+    if (!/^\d*\.?\d*$/.test(t) || t === '' || t === '.') return null;
+    var v = Number(t); return isFinite(v) ? v : null;
+  }
+
+  function estimate() {
+    var f = S.ficha, e = S.em[f.t], c = S.cfg, compra = f.lado === 'compra';
+    var out = { ref: null, px: null, imp: null, com: null, tot: null };
+    if (e) out.ref = toNum(compra ? e.ask : e.bid);
+    var q = f.qty;
+    if (p2p()) {
+      // Entre participantes: el precio del momento movido por el impacto de tu orden
+      if (out.ref !== null && q > 0) out.px = pxPiso(f.t, f.lado, q);
+    } else if (f.tipo === 'mercado') {
+      if (out.ref !== null && q > 0) {
+        var k = (c.gamma_slip || 0) * q / (c.depth_d || 5000);
+        out.px = compra ? Math.ceil(out.ref * (1 + k) * 100 - 1e-6) / 100 : Math.floor(out.ref * (1 - k) * 100 + 1e-6) / 100;
+      }
+    } else if (f.limite !== null && f.limite > 0) {
+      out.px = f.limite;
+    }
+    if (out.px !== null && q > 0) {
+      out.imp = out.px * q;
+      out.com = out.imp * (c.comision || 0);
+      out.tot = compra ? out.imp + out.com : out.imp - out.com;
+    }
+    return out;
+  }
+
+  function validate(est) {
+    var f = S.ficha, e = S.em[f.t], c = S.cfg, q = f.qty, compra = f.lado === 'compra';
+    if (!S.me) return 'Sin sesión de agente';
+    if (!e) return 'Esperando cotizaciones del corro…';
+    if (generalSusp()) return 'Mercado en SUSPENSIÓN GENERAL';
+    if (isSusp(e)) return 'Emisora suspendida: subasta por volatilidad';
+    if (!rondaActiva()) return 'No hay ronda activa: espera la campana de apertura';
+    if (!q) return 'Escribe la cantidad de acciones';
+    if (q % 100 !== 0) return 'La cantidad debe ser múltiplo de 100';
+    if (c.max_qty && q > c.max_qty) return 'Cantidad máxima por orden: ' + ent(c.max_qty);
+    if (f.tipo === 'limite') {
+      if (f.limite === null || !(f.limite > 0)) return 'Precio límite inválido';
+      var pend = toNum(S.me.pendientes) || 0;
+      if (c.max_pendientes != null && pend >= c.max_pendientes) return 'Máximo ' + ent(c.max_pendientes) + ' órdenes pendientes';
+    }
+    if (est.tot === null) return 'Esperando cotizaciones del corro…';
+    if (p2p() && c.max_pendientes != null && misAbiertas().n >= c.max_pendientes) {
+      return 'Máximo ' + ent(c.max_pendientes) + ' órdenes abiertas en el piso: espera o cancela alguna';
+    }
+    if (compra) {
+      var cash = toNum(S.me.cash) || 0, res = p2p() ? reservado() : 0;
+      if (est.tot + res > cash + 1e-6) return 'Fondos insuficientes: tienes ' + money(cash) + (res ? ' (' + money(res) + ' ya comprometidos en el piso)' : '');
+    } else {
+      var have = posQty(f.t), comp = p2p() ? misAbiertas(f.t, 'venta').qty : 0;
+      if (have <= 0) return 'No tienes acciones de ' + f.t + ' para vender (no hay ventas en corto)';
+      if (comp && q > have - comp) return 'Posición insuficiente: tienes ' + ent(have) + ' y ' + ent(comp) + ' ya están en venta en el piso';
+      if (q > have) return 'Posición insuficiente: tienes ' + ent(have) + ' acciones (no hay ventas en corto)';
+    }
+    return null;
+  }
+
+  function recalcFicha() {
+    var f = S.ficha; if (!f || !$('pap')) return;
+    var compra = f.lado === 'compra', est = estimate(), c = S.cfg;
+    // botones rápidos
+    qsa('#fQuick button').forEach(function (b) { b.setAttribute('aria-pressed', parseInt(b.getAttribute('data-q'), 10) === f.qty ? 'true' : 'false'); });
+    // precio
+    var refLbl = compra ? 'Postura de venta' : 'Postura de compra';
+    if (p2p()) {
+      setVal($('fPxEst'), est.px, est.px === null ? '—' : '≈ ' + money(est.px));
+      $('fPxHint').textContent = 'Precio actual ' + money(est.ref) + ' · se cierra cuando otro agente la acepte, al precio de ese momento';
+    } else if (f.tipo === 'mercado') {
+      setVal($('fPxEst'), est.px, est.px === null ? '—' : '≈ ' + money(est.px));
+      $('fPxHint').textContent = refLbl + ' ' + money(est.ref) + ' · el estimado incluye slippage por tamaño';
+    } else {
+      $('fLimHint').textContent = refLbl + ' ' + money(est.ref) + ' · si tu límite la alcanza, se ejecuta al momento; si no, queda pendiente';
+    }
+    $('eaPxL').textContent = f.tipo === 'mercado' ? 'Precio estimado' : 'Precio límite';
+    setVal($('eaPx'), est.px, est.px === null ? '—' : money(est.px) + ' × ' + ent(f.qty || 0));
+    setVal($('eaImp'), est.imp, money(est.imp));
+    $('eaComL').textContent = 'Comisión (' + dec2((c.comision || 0) * 100) + ' %)';
+    setVal($('eaCom'), est.com, money(est.com));
+    setVal($('eaTot'), est.tot, money(est.tot));
+    if (compra) setVal($('eaDisp'), S.me ? S.me.cash : null, money(S.me ? S.me.cash : null));
+    else setVal($('eaDisp'), posQty(f.t), ent(posQty(f.t)) + ' acc.');
+    // validación
+    var msg = f.phase === 'captura' ? validate(est) : null;
+    var v = $('fValid');
+    if (msg) { v.className = 'valid'; v.textContent = msg; }
+    else if (f.err && f.phase === 'captura') { v.className = 'valid'; v.textContent = f.err; }
+    else if (f.phase === 'captura') { v.className = 'valid okmsg'; v.textContent = p2p() ? 'Ficha lista. Firma para lanzarla al piso.' : 'Ficha lista. Firma para cerrar la operación.'; }
+    else v.textContent = '';
+    var go = $('fGo');
+    if (go) go.disabled = f.phase !== 'captura' || !!msg;
+    f.est = est;
+  }
+
+  function setQty(n) {
+    var f = S.ficha; if (!f || f.phase !== 'captura') return;
+    n = Math.max(0, Math.min(n, 1000000));
+    f.qty = n; f.err = null;
+    var inp = $('fQty'); if (inp && document.activeElement !== inp) inp.value = n ? ent(n) : '';
+    else if (inp) inp.value = n ? String(n) : '';
+    recalcFicha();
+  }
+  function setLado(lado) {
+    var f = S.ficha; if (!f || f.phase !== 'captura' || f.lado === lado) return;
+    f.lado = lado; f.err = null;
+    buildFicha();
+    recalcFicha();
+    vib(20);
+  }
+  function setTipo(tipo) {
+    var f = S.ficha; if (!f || f.phase !== 'captura') return;
+    f.tipo = tipo; f.err = null;
+    qsa('.seg button', $('fBody')).forEach(function (b) { b.setAttribute('aria-checked', b.getAttribute('data-tipo') === tipo ? 'true' : 'false'); });
+    $('fPxM').hidden = tipo !== 'mercado';
+    $('fPxL').hidden = tipo !== 'limite';
+    if (tipo === 'limite' && f.limite === null) {
+      var e = S.em[f.t], ref = e ? toNum(f.lado === 'compra' ? e.ask : e.bid) : null;
+      if (ref !== null) { f.limite = r2(ref); $('fLim').value = f.limite.toFixed(2); }
+    }
+    recalcFicha();
+  }
+  function nudgePx(cents) {
+    var f = S.ficha; if (!f || f.phase !== 'captura') return;
+    var base = f.limite !== null ? f.limite : 0;
+    var v = Math.max(0.01, r2(base + cents / 100));
+    f.limite = v; f.err = null; $('fLim').value = v.toFixed(2);
+    recalcFicha();
+  }
+
+  function lockFicha() {
+    var pap = $('pap'); if (!pap) return;
+    pap.classList.add('locked');
+    qsa('#pap button, #pap input', $('fBody')).forEach(function (n) { n.disabled = true; });
+  }
+
+  /* ---------- firma a dedo ---------- */
+  var sig = { cv: null, ctx: null, down: false, len: 0, last: null, mid: null, rect: null, pid: null };
+  function openSheet() {
+    var f = S.ficha; if (!f || f.phase !== 'captura') return;
+    var est = f.est || estimate();
+    if (validate(est)) { recalcFicha(); return; }
+    var compra = f.lado === 'compra';
+    $('sigSum').innerHTML = '<b>' + (compra ? 'COMPRA' : 'VENTA') + ' ' + ent(f.qty) + ' ' + esc(f.t) + ' ' + esc(SERIES[f.t]) + '</b> · ' +
+      (p2p() ? 'se lanza al piso ≈ ' + money(est.px) : f.tipo === 'mercado' ? 'a mercado ≈ ' + money(est.px) : 'límite ' + money(f.limite)) +
+      ' · ' + (compra ? 'costo' : 'ingreso') + ' estimado <b>' + money(est.tot) + '</b>';
+    var ok = $('sigOk');
+    ok.className = 'btn-big ' + (compra ? 'btn-compra' : 'btn-venta');
+    ok.textContent = p2p() ? 'Lanzar al piso' : 'Cerrar operación';
+    $('sigSheet').hidden = false;
+    sigSetup();
+  }
+  function closeSheet() { $('sigSheet').hidden = true; sig.down = false; }
+  function sigSetup() {
+    var cv = $('sigCanvas'); sig.cv = cv;
+    var r = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 3);
+    cv.width = Math.max(1, Math.round(r.width * dpr));
+    cv.height = Math.max(1, Math.round(r.height * dpr));
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#3a1a08'; ctx.fillStyle = '#3a1a08'; ctx.lineWidth = 2.8;
+    sig.ctx = ctx; sig.len = 0; sig.down = false;
+    $('sigPh').hidden = false;
+    $('sigOk').disabled = true;
+    $('sigReuse').hidden = true;
+    // Firma anterior: se dibuja ya puesta para lanzar la siguiente orden de un toque
+    var prev = S.firma || lsGet('bva_firma');
+    if (prev) {
+      var img = new Image();
+      img.onload = function () {
+        if (sig.ctx !== ctx || sig.len > 0) return;
+        ctx.drawImage(img, 0, 0, r.width, r.height);
+        sig.len = 999;
+        $('sigPh').hidden = true;
+        $('sigOk').disabled = false;
+        $('sigReuse').hidden = false;
+      };
+      img.src = prev;
+    }
+  }
+  function sigPt(e) { var r = sig.rect; return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  function sigDown(e) {
+    if (!sig.ctx) return;
+    e.preventDefault();
+    if (!$('sigReuse').hidden) sigClear(); // empieza una firma nueva sobre la anterior
+    sig.rect = sig.cv.getBoundingClientRect();
+    try { sig.cv.setPointerCapture(e.pointerId); } catch (x) { /* nada */ }
+    sig.down = true; sig.pid = e.pointerId;
+    var p = sigPt(e); sig.last = p; sig.mid = p;
+    sig.ctx.beginPath(); sig.ctx.arc(p.x, p.y, 1.3, 0, Math.PI * 2); sig.ctx.fill();
+    $('sigPh').hidden = true;
+  }
+  function sigMove(e) {
+    if (!sig.down || e.pointerId !== sig.pid) return;
+    e.preventDefault();
+    var evs = (typeof e.getCoalescedEvents === 'function') ? e.getCoalescedEvents() : null;
+    if (!evs || !evs.length) evs = [e];
+    var ctx = sig.ctx;
+    for (var i = 0; i < evs.length; i++) {
+      var p = sigPt(evs[i]);
+      var mid = { x: (sig.last.x + p.x) / 2, y: (sig.last.y + p.y) / 2 };
+      ctx.beginPath(); ctx.moveTo(sig.mid.x, sig.mid.y); ctx.quadraticCurveTo(sig.last.x, sig.last.y, mid.x, mid.y); ctx.stroke();
+      sig.len += Math.sqrt((p.x - sig.last.x) * (p.x - sig.last.x) + (p.y - sig.last.y) * (p.y - sig.last.y));
+      sig.last = p; sig.mid = mid;
+    }
+    $('sigOk').disabled = sig.len < 40;
+  }
+  function sigUp(e) {
+    if (!sig.down || (e && e.pointerId !== sig.pid)) return;
+    sig.down = false;
+    if (sig.last && sig.mid) { sig.ctx.beginPath(); sig.ctx.moveTo(sig.mid.x, sig.mid.y); sig.ctx.lineTo(sig.last.x, sig.last.y); sig.ctx.stroke(); }
+    $('sigOk').disabled = sig.len < 40;
+  }
+  function sigClear() {
+    if (!sig.ctx) return;
+    sig.ctx.save(); sig.ctx.setTransform(1, 0, 0, 1, 0, 0); sig.ctx.clearRect(0, 0, sig.cv.width, sig.cv.height); sig.ctx.restore();
+    sig.len = 0; $('sigPh').hidden = false; $('sigOk').disabled = true; $('sigReuse').hidden = true;
+  }
+  function sigConfirm() {
+    if (sig.len < 40) return;
+    var url = null;
+    try { url = sig.cv.toDataURL('image/png'); } catch (e) { url = null; }
+    var box = $('fFirma');
+    if (box && url) box.innerHTML = '<img alt="Firma del agente" src="' + url + '">';
+    if (url) { S.firma = url; lsSet('bva_firma', url); }
+    closeSheet();
+    sendOrder();
+  }
+
+  /* ---------- envío de la orden ---------- */
+  function sendOrder() {
+    var f = S.ficha; if (!f || f.phase !== 'captura') return;
+    f.phase = 'enviando'; f.err = null;
+    S.lastQty = f.qty;
+    lockFicha(); renderFichaFoot(); recalcFicha();
+    var before = maxFolio();
+    var args = { p_token: S.token, p_ticker: f.t, p_side: f.lado, p_qty: f.qty, p_type: f.tipo, p_limit: f.tipo === 'limite' ? r2(f.limite) : null };
+    rpc('place_order', args, 20000).then(function (r) {
+      if (r.netErr) {
+        // No sabemos si llegó: revisa las fichas antes de dejar reintentar.
+        return rpc('get_my_state', { p_token: S.token }).then(function (r2_) {
+          if (!r2_.netErr && r2_.data && r2_.data.ok) setMe(r2_.data);
+          var nf = null;
+          ((S.me && S.me.fichas) || []).forEach(function (x) {
+            if (!nf && x && toNum(x.folio) > before && x.ticker === f.t && x.lado === f.lado && toNum(x.qty) === f.qty) nf = x;
+          });
+          if (nf) { finishOrder(f, fromFicha(nf)); return; }
+          if (S.ficha !== f) return;
+          f.phase = 'captura';
+          f.err = r.server ? 'El piso no aceptó la ficha por un error del servidor. Intenta de nuevo.' :
+            'No se pudo enviar la ficha (sin conexión). Revisa “Mis fichas” y vuelve a intentar.';
+          unlockFicha();
+        });
+      }
+      var d = r.data || {};
+      if (d.ok && d.status === 'ejecutada') finishOrder(f, { status: 'ejecutada', folio: d.folio, precio: toNum(d.precio), postura: toNum(d.postura), slippage: toNum(d.slippage), comision: toNum(d.comision), total: toNum(d.total) });
+      else if (d.ok && d.status === 'pendiente' && d.piso) finishOrder(f, { status: 'pendiente', piso: true, folio: d.folio, expira: d.expira });
+      else if (d.ok && d.status === 'pendiente') finishOrder(f, { status: 'pendiente', folio: d.folio, limite: toNum(d.limite) });
+      else if (d.status === 'rechazada') finishOrder(f, { status: 'rechazada', folio: d.folio, motivo: d.error || 'Orden rechazada' });
+      else {
+        if (S.ficha !== f) { toast('Ficha no enviada: ' + (d.error || 'error')); return; }
+        f.phase = 'captura'; f.err = d.error || 'No se pudo enviar la ficha.';
+        unlockFicha();
+        vib(150);
+      }
+      refreshMe();
+    });
+  }
+  function unlockFicha() {
+    var f = S.ficha;
+    var pap = $('pap'); if (pap) pap.classList.remove('locked');
+    qsa('#pap button, #pap input', $('fBody')).forEach(function (n) { n.disabled = false; });
+    var box = $('fFirma'); if (box) box.innerHTML = '<span class="firma-ph">Se firma al cerrar la operación</span>';
+    renderFichaFoot(); recalcFicha();
+    if (f && f.err) { var v = $('fValid'); if (v) v.scrollIntoView({ block: 'nearest' }); }
+  }
+  function fromFicha(x) {
+    var st = x.status, q = toNum(x.qty) || 0, px = toNum(x.precio), com = toNum(x.comision);
+    if (st === 'ejecutada') {
+      var tot = px !== null ? (x.lado === 'compra' ? px * q + (com || 0) : px * q - (com || 0)) : null;
+      var slip = toNum(x.slippage);
+      return { status: 'ejecutada', folio: x.folio, precio: px, postura: (px !== null && slip !== null) ? r2(x.lado === 'compra' ? px - slip : px + slip) : null, slippage: slip, comision: com, total: tot, contra: x.contra || null, rol: x.rol || null };
+    }
+    if (st === 'pendiente' && x.rol === 'lanza') return { status: 'pendiente', piso: true, folio: x.folio, expira: x.expira };
+    if (st === 'pendiente') return { status: 'pendiente', folio: x.folio, limite: toNum(x.limite) };
+    return { status: st || 'rechazada', folio: x.folio, motivo: x.motivo || 'Orden rechazada' };
+  }
+
+  function finishOrder(f, res) {
+    f.phase = 'resultado'; f.result = res;
+    var here = S.ficha === f && S.stack.indexOf('ficha') >= 0;
+    if (!here) {
+      var t = res.status === 'ejecutada' ? '¡CERRADO! Folio ' + res.folio + ' a ' + money(res.precio)
+        : res.status === 'pendiente' && res.piso ? 'EN EL PISO: folio ' + res.folio + ', espera a que otro agente la acepte'
+        : res.status === 'pendiente' ? 'PENDIENTE: folio ' + res.folio + ', límite ' + money(res.limite)
+        : 'RECHAZADA: ' + (res.motivo || '');
+      toast(t);
+      vib(res.status === 'ejecutada' ? [60, 40, 120] : [200]);
+      return;
+    }
+    lockFicha();
+    var fol = $('fFolio'); if (fol && res.folio != null) fol.textContent = String(res.folio);
+    var fe = $('fFecha'); if (fe) fe.textContent = fechaHora(nowSrv());
+    var kind = res.status === 'ejecutada' ? 'ok' : res.status === 'pendiente' ? 'pend' : 'rej';
+    var main = kind === 'ok' ? '¡CERRADO!' : kind === 'pend' ? (res.piso ? 'EN EL PISO' : 'PENDIENTE')
+      : res.status === 'expirada' ? 'EXPIRADA' : res.status === 'cancelada' ? 'CANCELADA' : 'RECHAZADA';
+    var sub = kind === 'ok' ? 'A ' + money(res.precio) : kind === 'pend' ? (res.piso ? 'FOLIO ' + res.folio : 'LÍMITE ' + money(res.limite)) : (res.folio != null ? 'FOLIO ' + res.folio : 'SIN FOLIO');
+    var st = $('fStamp');
+    st.className = 'stamp st-' + kind;
+    st.innerHTML = '<div class="stamp-in"><div class="stamp-main">' + main + '</div><div class="stamp-sub">' + esc(sub) + '</div></div>';
+    st.hidden = false; void st.offsetWidth; st.classList.add('drop');
+    var pap = $('pap'); pap.classList.remove('thud'); void pap.offsetWidth; pap.classList.add('thud');
+    setTimeout(function () { vib(kind === 'ok' ? [60, 40, 120] : kind === 'pend' ? [70] : [200, 80, 200]); }, 260);
+
+    $('fEstim').hidden = true;
+    $('fValid').textContent = '';
+    var compra = f.lado === 'compra', box = $('fResult'), h = '';
+    if (kind === 'ok' && res.contra) {
+      // Entre participantes: la aceptó otro agente
+      h = '<div class="res ok"><h3>¡Te la aceptaron!</h3>' +
+        rr('Folio', String(res.folio)) +
+        rr('Precio ejecutado', money(res.precio)) +
+        rr(compra ? 'Te vendió' : 'Te compró', 'AG ' + pad3(res.contra.agente)) +
+        rr('Casa', res.contra.casa || '—') +
+        rr('Comisión', money(res.comision)) +
+        '<div class="rr tot"><span>' + (compra ? 'Total pagado' : 'Total recibido') + '</span><b>' + money(res.total) + '</b></div></div>';
+    } else if (kind === 'ok') {
+      var slipTot = res.slippage !== null ? res.slippage * f.qty : null;
+      h = '<div class="res ok"><h3>Operación cerrada</h3>' +
+        rr('Folio', String(res.folio)) +
+        rr('Precio ejecutado', money(res.precio)) +
+        (res.postura !== null ? rr('Postura al enviar', money(res.postura)) : '') +
+        rr('Slippage por acción', money(res.slippage)) +
+        rr('Slippage total', money(slipTot)) +
+        rr('Comisión', money(res.comision)) +
+        '<div class="rr tot"><span>' + (compra ? 'Total pagado' : 'Total recibido') + '</span><b>' + money(res.total) + '</b></div></div>';
+    } else if (kind === 'pend' && res.piso) {
+      h = '<div class="res pend"><h3>Tu orden está en el piso</h3>' +
+        rr('Folio', String(res.folio)) +
+        '<div class="rr"><span>Expira en</span><b data-exp="' + esc(res.expira || '') + '">—</b></div>' +
+        '<p>Se cierra cuando otro agente la acepte, al precio de ese momento. Si nadie la acepta a tiempo, expira y no pasa nada.</p>' +
+        '<button type="button" class="btn-sec" data-cancel="' + esc(res.folio) + '">Cancelar orden</button></div>';
+    } else if (kind === 'pend') {
+      h = '<div class="res pend"><h3>Orden límite en el corro</h3>' +
+        rr('Folio', String(res.folio)) + rr('Límite', money(res.limite)) +
+        '<p>Tu límite no cruzó con la postura actual. Se ejecuta sola si el precio llega a tu límite antes de que cierre la ronda; si no, expira.</p></div>';
+    } else {
+      h = '<div class="res rej"><h3>' + (res.status === 'expirada' ? 'Nadie la aceptó' : res.status === 'cancelada' ? 'Orden cancelada' : 'Ficha rechazada') + '</h3>' +
+        (res.folio != null ? rr('Folio', String(res.folio)) : '') +
+        '<p><b>Motivo:</b> ' + esc(res.motivo || '—') + '</p></div>';
+    }
+    h += '<button type="button" class="btn-link res-links" id="fDone">Volver al corro</button>' +
+      '<button type="button" class="btn-link" id="fSee">Ver mis fichas</button>';
+    box.innerHTML = h; box.hidden = false;
+    renderFichaFoot();
+    setTimeout(function () { try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { box.scrollIntoView(false); } }, 650);
+  }
+  function rr(l, v) { return '<div class="rr"><span>' + esc(l) + '</span><b>' + esc(v) + '</b></div>'; }
+
+  /* =========================================================
+     Mis fichas
+     ========================================================= */
+  function renderFichas() {
+    var me = S.me, list = $('fichasList'), sum = $('fichasSum');
+    var fs = (me && me.fichas) || [];
+    var sigTxt = JSON.stringify(fs);
+    if (sigTxt === S.fichasSig && list.childNodes.length) return;
+    S.fichasSig = sigTxt;
+    var pend = toNum(me && me.pendientes) || 0;
+    sum.textContent = fs.length ? ent(fs.length) + (fs.length === 1 ? ' ficha' : ' fichas') +
+      (pend ? ' · ' + pend + (p2p() ? ' en el piso' : ' pendiente' + (pend === 1 ? '' : 's')) : '') : '';
+    if (!fs.length) {
+      list.innerHTML = '<div class="empty">Aún no tienes fichas.<br>Ve a <b>Corros</b>, elige una emisora y llena tu primera ficha.</div>';
+      return;
+    }
+    var h = '';
+    fs.forEach(function (x, i) {
+      var st = x.status || 'pendiente', compra = x.lado === 'compra';
+      var rot = (i % 3 === 0 ? -0.7 : i % 3 === 1 ? 0.5 : -0.2), dx = (i % 2 ? 3 : -2);
+      var precio, enPiso = st === 'pendiente' && x.rol === 'lanza';
+      if (st === 'ejecutada') precio = money(x.precio);
+      else if (x.tipo === 'limite') precio = 'Lím. ' + money(x.limite);
+      else if (x.rol) precio = 'Al aceptarse';
+      else precio = 'Mercado';
+      var tipo = x.tipo === 'limite' ? 'Límite' : x.rol === 'lanza' ? 'Al piso' : x.rol === 'acepta' ? 'Aceptada' : 'Mercado';
+      var cp = x.contra ? 'AG ' + pad3(x.contra.agente) + ' · ' + (x.contra.casa || '') : '';
+      var extra = '';
+      if (st === 'ejecutada' && x.rol) extra = '<div class="slip-extra">' + (x.rol === 'acepta' ? 'Aceptaste la orden de ' : 'La aceptó ') + esc(cp) + ' · Comisión ' + money(x.comision) + '</div>';
+      else if (st === 'ejecutada') extra = '<div class="slip-extra">Slippage ' + money(x.slippage) + '/acc. · Comisión ' + money(x.comision) + '</div>';
+      else if (enPiso) extra = '<div class="slip-extra">Esperando que otro agente la acepte · expira en <b data-exp="' + esc(x.expira || '') + '">—</b></div>' +
+        '<button type="button" class="btn-sec slip-btn" data-cancel="' + esc(x.folio) + '">Cancelar orden</button>';
+      else if (st === 'pendiente') extra = '<div class="slip-extra">Esperando que el precio cruce tu límite. Expira al cierre de la ronda.</div>';
+      var t = st === 'ejecutada' && x.exec_ts ? x.exec_ts : x.ts;
+      h += '<article class="slip ' + (compra ? 'compra' : 'venta') + '" style="--r:' + rot + 'deg;--x:' + dx + 'px">' +
+        '<div class="slip-head"><span class="slip-lado">' + (compra ? 'COMPRA' : 'VENTA') + '</span>' +
+        '<span class="slip-folio">Folio <b>' + esc(x.folio) + '</b></span></div>' +
+        '<div class="slip-body">' +
+        '<div class="slip-em">' + esc(x.ticker) + '<span>' + esc(x.serie || SERIES[x.ticker] || '') + '</span></div>' +
+        '<div class="sf"><span class="clbl">Cantidad</span><b>' + ent(x.qty) + '</b></div>' +
+        '<div class="sf"><span class="clbl">Precio</span><b>' + esc(precio) + '</b></div>' +
+        '<div class="sf"><span class="clbl">Hora</span><b>' + hora(t) + '</b></div>' +
+        '<div class="sf"><span class="clbl">Tipo</span><b>' + tipo + '</b></div>' +
+        extra +
+        ((st === 'rechazada' || st === 'expirada') && x.motivo ? '<div class="slip-motivo">' + esc(x.motivo) + '</div>' : '') +
+        '</div>' +
+        '<div class="mini-stamp ' + (enPiso ? 'piso' : esc(st)) + '">' + (enPiso ? 'EN EL PISO' : esc(STATUS_TXT[st] || String(st).toUpperCase())) + '</div>' +
+        '</article>';
+    });
+    list.innerHTML = h;
+  }
+
+  /* =========================================================
+     Portafolio
+     ========================================================= */
+  function valuacion() {
+    var me = S.me; if (!me) return null;
+    var cash = toNum(me.cash) || 0, tot = cash, rows = [];
+    (me.posiciones || []).forEach(function (p) {
+      var q = p ? toNum(p.qty) : null; if (!q || q <= 0) return;
+      var e = S.em[p.ticker], bid = e && toNum(e.bid) !== null ? toNum(e.bid) : toNum(p.bid);
+      var v = bid !== null ? q * bid : toNum(p.valor) || 0;
+      tot += v;
+      rows.push({ t: p.ticker, serie: p.serie || SERIES[p.ticker] || '', qty: q, bid: bid, valor: v });
+    });
+    rows.sort(function (a, b) { return TICKERS.indexOf(a.t) - TICKERS.indexOf(b.t); });
+    return { cash: cash, total: tot, pnl: (tot / DOTACION - 1) * 100, rows: rows };
+  }
+  function renderPort() {
+    var v = valuacion(); if (!v) return;
+    setVal($('pTotal'), v.total, money(v.total));
+    setVal($('pPnl'), v.pnl, pct(v.pnl), signCls(v.pnl));
+    setVal($('pCash'), v.cash, money(v.cash));
+    var me = S.me;
+    $('pLugar').innerHTML = (toNum(me.lugar) !== null ? 'Lugar <b>' + ent(me.lugar) + '</b> de ' + ent(me.total) : 'Lugar <b>—</b>');
+    var keys = v.rows.map(function (r) { return r.t; }).join(',');
+    var tb = $('pRows');
+    if (keys !== S.portKeys || !tb.childNodes.length) {
+      S.portKeys = keys;
+      if (!v.rows.length) tb.innerHTML = '<tr><td colspan="3" style="text-align:center;font-weight:400;color:var(--muted)">Sin acciones en cartera</td></tr>';
+      else tb.innerHTML = v.rows.map(function (r) {
+        return '<tr class="go" data-t="' + esc(r.t) + '"><td><span class="tkc">' + esc(r.t) + '</span><span class="sr">' + esc(r.serie) + '</span>' +
+          '<span class="acc" data-c="q">—</span></td><td><span class="fl" data-c="b">—</span></td><td><span class="fl" data-c="v">—</span></td></tr>';
+      }).join('');
+    }
+    v.rows.forEach(function (r) {
+      var tr = tb.querySelector('tr[data-t="' + r.t + '"]'); if (!tr) return;
+      setVal(tr.querySelector('[data-c="q"]'), r.qty, ent(r.qty) + ' acc.');
+      setVal(tr.querySelector('[data-c="b"]'), r.bid, money(r.bid));
+      setVal(tr.querySelector('[data-c="v"]'), r.valor, money(r.valor));
+    });
+    var pend = toNum(me.pendientes) || 0;
+    $('pNote').textContent = (p2p() ? 'Valuado al precio actual' : 'Valuado a postura de compra') +
+      ' en tiempo real. P&L contra la dotación de $1,000,000.' +
+      (pend ? ' Tienes ' + pend + ' orden' + (pend === 1 ? '' : 'es') +
+        (p2p() ? ' en el piso esperando que alguien la' + (pend === 1 ? '' : 's') + ' acepte.' : ' límite pendiente' + (pend === 1 ? '' : 's') + '.') : '');
+  }
+
+  /* =========================================================
+     Render general
+     ========================================================= */
+  function renderMeBits() {
+    var pend = S.me ? (toNum(S.me.pendientes) || 0) : 0;
+    var b = $('tabBadge'); b.textContent = String(pend); b.hidden = !pend;
+    renderMine();
+    renderPiso();
+    if (S.acc) renderAccept();
+    if (S.tab === 'fichas') renderFichas();
+    if (S.tab === 'portafolio') renderPort();
+    if (S.stack.indexOf('emisora') >= 0) renderEmisora();
+    if (S.ficha && S.ficha.phase === 'captura' && S.stack.indexOf('ficha') >= 0) recalcFicha();
+  }
+
+  function renderLive() {
+    renderTop();
+    renderCorros();
+    renderPiso();
+    if (S.acc) renderAccept();
+    if (S.stack.indexOf('emisora') >= 0) renderEmisora();
+    if (S.ficha && S.stack.indexOf('ficha') >= 0 && S.ficha.phase === 'captura') recalcFicha();
+    if (S.tab === 'portafolio' && S.me) renderPort();
+    renderSuspGen();
+    renderClocks();
+  }
+
+  function renderClocks() {
+    var r = S.ronda, now = nowSrv(), html;
+    if (r && r.estado === 'activa') {
+      var cd = mmss(Date.parse(r.fin) - now);
+      html = '<span class="lbl">Cierre de ronda</span><b class="num">' + cd + '</b>';
+      qsa('[data-clock]').forEach(function (n) { var t = '<span class="lbl">Cierre</span><b class="num">' + cd + '</b>'; if (n._h !== t) { n.innerHTML = t; n._h = t; } });
+    } else {
+      html = '<span class="wait">' + (r && r.estado === 'cerrada' ? 'Ronda cerrada · ' : '') + 'Esperando apertura</span>';
+      qsa('[data-clock]').forEach(function (n) { var t = '<span class="lbl">Ronda</span><b class="num" style="font-size:13px">En espera</b>'; if (n._h !== t) { n.innerHTML = t; n._h = t; } });
+    }
+    var box = $('rondaBox'); if (box._h !== html) { box.innerHTML = html; box._h = html; }
+
+    TICKERS.forEach(function (t) {
+      var e = S.em[t]; if (!isSusp(e)) return;
+      var left = Date.parse(e.suspendida_hasta) - now;
+      var n = cardField(t, 'cd'), txt = left > 0 ? 'Reanuda en ' + mmss(left) : 'Reanudando…';
+      if (n && n._t !== txt) { n.textContent = txt; n._t = txt; }
+    });
+    if (S.stack.indexOf('emisora') >= 0) {
+      var e = S.em[S.sel];
+      if (isSusp(e)) { var l = Date.parse(e.suspendida_hasta) - now; $('eSuspCd').textContent = l > 0 ? mmss(l) : 'Reanudando…'; }
+    }
+    if (S.ficha && S.ficha.phase !== 'resultado' && S.stack.indexOf('ficha') >= 0) {
+      var fe = $('fFecha'); if (fe) { var ft = fechaHora(now); if (fe.textContent !== ft) fe.textContent = ft; }
+    }
+    // Cuenta regresiva de las órdenes en el piso
+    qsa('[data-exp]').forEach(function (n) {
+      var lim = Date.parse(n.getAttribute('data-exp')), left = lim - now;
+      var txt = isNaN(lim) ? '—' : left > 0 ? mmss(left) : 'expirando…';
+      if (n._t !== txt) { n.textContent = txt; n._t = txt; }
+    });
+    if (S.sgOn) {
+      var hasta = (S.mercado && S.mercado.suspendido_hasta) || (S.lastSugEv && S.lastSugEv.data && S.lastSugEv.data.hasta) || null;
+      var left2 = hasta ? Date.parse(hasta) - now : NaN;
+      $('sgCd').textContent = isFinite(left2) ? (left2 > 0 ? mmss(left2) : '00:00') : '—';
+      $('sgLbl').textContent = isFinite(left2) && left2 <= 0 ? 'Reabriendo el mercado…' : 'Reapertura en';
+    }
+  }
+
+  function renderSuspGen() {
+    var on = generalSusp();
+    if (on && !S.sgOn) { vib([400, 150, 400]); }
+    S.sgOn = on;
+    $('suspGen').hidden = !on;
+  }
+
+  /* =========================================================
+     Avisos
+     ========================================================= */
+  var bannerT = null, toastT = null;
+  function showBanner(ev) {
+    var b = $('banner');
+    $('bnTitle').textContent = ev.titulo || 'Movimiento fuerte en el mercado';
+    var sub = '';
+    var d = ev.data || {};
+    if (ev.tipo === 'noticia' && d.descripcion) sub = d.descripcion;
+    else if (ev.tipo === 'modo') sub = d.modo === 'participantes'
+      ? 'Lanza tu orden al piso y espera a que otro agente la acepte, o acepta la de alguien más.'
+      : 'Regresan los bots: tus órdenes se cierran al instante.';
+    else if (toNum(d.pct) !== null && ev.tipo !== 'suspension' && ev.tipo !== 'suspension_general') sub = (ev.ticker ? ev.ticker + ' ' : 'Mercado ') + pct(d.pct);
+    var s = $('bnSub'); s.textContent = sub; s.hidden = !sub;
+    b.hidden = false; b.classList.remove('in'); void b.offsetWidth; b.classList.add('in');
+    if (bannerT) clearTimeout(bannerT);
+    bannerT = setTimeout(hideBanner, 6000);
+  }
+  function hideBanner() { $('banner').hidden = true; if (bannerT) { clearTimeout(bannerT); bannerT = null; } }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.hidden = false;
+    t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+    if (toastT) clearTimeout(toastT);
+    toastT = setTimeout(function () { t.hidden = true; }, 3800);
+  }
+
+  /* =========================================================
+     Ciclos
+     ========================================================= */
+  function clockLoop() { renderClocks(); }
+
+  function watchdog() {
+    if (!S.sb) return;
+    var now = Date.now(), vis = document.visibilityState !== 'hidden';
+    var rtAge = now - (S.lastRtAt || 0);
+    // Respaldo por sondeo si el tiempo real no llega.
+    if (vis && rtAge > 15000) {
+      var every = S.rtStatus === 'SUBSCRIBED' ? 10000 : 5000;
+      if (now - S.lastPollAt >= every) loadSnapshot();
+    }
+    // Canal que parece muerto: recrearlo.
+    if (vis && rtAge > 45000 && now - S.rtCreatedAt > 30000) connectRT();
+    updateConn();
+  }
+
+  function periodic() {
+    if (!S.sb || document.visibilityState === 'hidden') return;
+    S.periodicN++;
+    if (S.me && S.inApp && !S.stack.length && (S.tab === 'fichas' || S.tab === 'portafolio')) refreshMe();
+    if (S.periodicN % 6 === 0) loadConfig();
+  }
+
+  function onResume() {
+    if (!S.sb) return;
+    loadSnapshot();
+    if (S.me) refreshMe();
+    if (S.rtStatus !== 'SUBSCRIBED' || Date.now() - S.lastRtAt > 20000) connectRT();
+  }
+
+  function fixHeight() {
+    var ok = false;
+    try { ok = window.CSS && CSS.supports && CSS.supports('height', '100dvh'); } catch (e) { ok = false; }
+    if (ok) return;
+    var app = $('app');
+    var set = function () { app.style.height = window.innerHeight + 'px'; };
+    set();
+    window.addEventListener('resize', set);
+    window.addEventListener('orientationchange', function () { setTimeout(set, 250); });
+  }
+
+  /* =========================================================
+     Eventos de la interfaz
+     ========================================================= */
+  function bindStatic() {
+    $('regForm').addEventListener('submit', onRegister);
+    $('tabbar').addEventListener('click', function (e) {
+      var b = e.target.closest('.tab'); if (!b) return;
+      setTab(b.getAttribute('data-tab'));
+      var v = { corros: 'vCorros', fichas: 'vFichas', portafolio: 'vPort' }[b.getAttribute('data-tab')];
+      if (v && e.detail > 1) $(v).scrollTop = 0;
+    });
+    $('corrosList').addEventListener('click', function (e) {
+      var c = e.target.closest('.corro'); if (c) openEmisora(c.getAttribute('data-t'));
+    });
+    $('pRows').addEventListener('click', function (e) {
+      var tr = e.target.closest('tr[data-t]'); if (tr) openEmisora(tr.getAttribute('data-t'));
+    });
+    qsa('[data-back]').forEach(function (b) { b.addEventListener('click', goBack); });
+    window.addEventListener('popstate', onPop);
+    $('eBuy').addEventListener('click', function () { openFicha('compra'); });
+    $('eSell').addEventListener('click', function () { openFicha('venta'); });
+
+    // Piso (entre participantes): aceptar o cancelar desde las listas y las fichas
+    function pisoClick(e) {
+      var b = e.target.closest('button'); if (!b || b.disabled) return;
+      if (b.hasAttribute('data-acc')) openAccept(b.getAttribute('data-acc'));
+      else if (b.hasAttribute('data-cancel')) cancelOffer(b.getAttribute('data-cancel'), b);
+    }
+    $('pisoList').addEventListener('click', pisoClick);
+    $('ePiso').addEventListener('click', pisoClick);
+    $('fichasList').addEventListener('click', pisoClick);
+    $('accOk').addEventListener('click', confirmAccept);
+    $('accNo').addEventListener('click', closeAccept);
+    $('accBack').addEventListener('click', closeAccept);
+    $('pCred').addEventListener('click', function () { if (S.me) showCred(false, false); });
+    $('banner').addEventListener('click', hideBanner);
+
+    // Ficha (delegado)
+    var body = $('fBody');
+    body.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b || b.disabled) return;
+      var f = S.ficha; if (!f) return;
+      if (b.hasAttribute('data-q')) setQty(parseInt(b.getAttribute('data-q'), 10));
+      else if (b.hasAttribute('data-dq')) setQty(Math.max(100, Math.round((f.qty || 0) / 100) * 100 + parseInt(b.getAttribute('data-dq'), 10)));
+      else if (b.id === 'fSee') { popAll(); setTab('fichas'); }
+      else if (b.id === 'fDone') { goBack(); }
+      else if (b.hasAttribute('data-lado')) setLado(b.getAttribute('data-lado'));
+      else if (b.hasAttribute('data-cancel')) cancelOffer(b.getAttribute('data-cancel'), b);
+      else if (b.hasAttribute('data-tipo')) setTipo(b.getAttribute('data-tipo'));
+      else if (b.hasAttribute('data-dp')) nudgePx(parseInt(b.getAttribute('data-dp'), 10));
+    });
+    body.addEventListener('input', function (e) {
+      var f = S.ficha; if (!f || f.phase !== 'captura') return;
+      if (e.target.id === 'fQty') {
+        var clean = e.target.value.replace(/[^0-9,]/g, '');
+        if (clean !== e.target.value) e.target.value = clean;
+        f.qty = parseQty(clean); f.err = null; recalcFicha();
+      } else if (e.target.id === 'fLim') {
+        var v = parsePx(e.target.value);
+        f.limite = v === null ? null : r2(v); f.err = null; recalcFicha();
+      }
+    });
+    body.addEventListener('focusin', function (e) {
+      if (e.target.id === 'fQty' && S.ficha) e.target.value = S.ficha.qty ? String(S.ficha.qty) : '';
+    });
+    body.addEventListener('focusout', function (e) {
+      var f = S.ficha; if (!f) return;
+      if (e.target.id === 'fQty') e.target.value = f.qty ? ent(f.qty) : '';
+      else if (e.target.id === 'fLim' && f.limite !== null) e.target.value = f.limite.toFixed(2);
+    });
+    body.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && (e.target.id === 'fQty' || e.target.id === 'fLim')) e.target.blur();
+    });
+    $('fFoot').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b || b.disabled) return;
+      var f = S.ficha; if (!f) return;
+      if (b.id === 'fGo') { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); openSheet(); }
+      else if (b.hasAttribute('data-nueva')) { newFicha(f.t, b.getAttribute('data-nueva')); }
+    });
+
+    // Firma
+    var cv = $('sigCanvas');
+    cv.addEventListener('pointerdown', sigDown);
+    cv.addEventListener('pointermove', sigMove);
+    cv.addEventListener('pointerup', sigUp);
+    cv.addEventListener('pointercancel', sigUp);
+    cv.addEventListener('lostpointercapture', sigUp);
+    cv.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+    $('sigClear').addEventListener('click', sigClear);
+    $('sigOk').addEventListener('click', sigConfirm);
+    $('sigCancel').addEventListener('click', closeSheet);
+    $('sigBack').addEventListener('click', closeSheet);
+    window.addEventListener('resize', function () { if (!$('sigSheet').hidden && !sig.down) sigSetup(); });
+
+    // Ciclo de vida
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') onResume(); });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) onResume(); });
+    window.addEventListener('online', onResume);
+    window.addEventListener('offline', function () { markHttp(false); });
+  }
+
+  /* =========================================================
+     Inicio
+     ========================================================= */
+  try { boot(); } catch (e) {
+    var m = document.getElementById('bootMsg');
+    if (m) m.textContent = 'Ocurrió un error al abrir el piso. Recarga la página.';
+    var rb = document.getElementById('bootRetry');
+    if (rb) { rb.hidden = false; rb.onclick = function () { location.reload(); }; }
+  }
+})();
+</script>
+<script>
+/* Botón ⓘ: muestra "Datos simulados" solo al tocarlo (5 s). */
+document.querySelectorAll('.info-sim').forEach(function (b) {
+  b.addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    var abrir = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(abrir));
+    clearTimeout(b._t);
+    if (abrir) b._t = setTimeout(function () { b.setAttribute('aria-expanded', 'false'); }, 5000);
+  });
+});
+</script>
+</body>
+</html>
